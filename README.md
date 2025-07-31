@@ -1,69 +1,85 @@
-# React + TypeScript + Vite
+# 💼 فاتورتي - SaaS لإنشاء الفواتير الإلكترونية
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+منصة ويب متكاملة تساعد رواد الأعمال والمستقلين على إنشاء وإرسال الفواتير الاحترافية، تتبّع المدفوعات، وتحليل الأداء المالي بسهولة وسرعة.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## ✨ الميزات الرئيسية
 
-## Expanding the ESLint configuration
+-   🧾 إنشاء فواتير إلكترونية بتصاميم احترافية
+-   💳 دعم الدفع الإلكتروني (Stripe, PayPal)
+-   📊 تقارير ورسوم بيانية لمتابعة الدخل
+-   📤 إرسال الفواتير تلقائيًا للعملاء
+-   🧠 واجهة بسيطة تدعم العربية والإنجليزية
+-   🔐 تسجيل دخول وتسجيل حساب باستخدام Firebase
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+---
 
-```js
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠️ التقنيات المستخدمة
 
-      // Remove tseslint.configs.recommended and replace with this
-      ...tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      ...tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      ...tseslint.configs.stylisticTypeChecked,
+| المجال             | التقنية                   |
+| ------------------ | ------------------------- |
+| Frontend           | React + Vite + TypeScript |
+| تصميم الواجهة      | TailwindCSS + ShadCN UI   |
+| إدارة الحالة       | Redux Toolkit             |
+| الترجمة            | react-i18next             |
+| باك اند            | Firebase                  |
+| إنشاء PDF          | @react-pdf/renderer       |
+| الرسوم البيانية    | Recharts أو ApexCharts    |
+| التحقق من البيانات | Zod                       |
+| التوست / التنبيهات | Sonner                    |
+| التوجيه            | React Router DOM          |
+| النماذج            | React Hook Form           |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+---
+
+## 📁 هيكل المشروع
+
+```
+src/
+├── components/landing      ← أقسام صفحة الهبوط (Hero, Features, etc.)
+├── pages                   ← الصفحات (Home, Login, Dashboard)
+├── store                   ← إعدادات Redux Toolkit
+├── hooks / utils           ← الأدوات والمساعدات
+├── assets                  ← الصور والأيقونات
+├── i18n                    ← ملفات الترجمة
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+---
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## 🚀 تشغيل المشروع محليًا
 
-export default tseslint.config([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# إنشاء المشروع باستخدام Vite
+npm create vite@latest my-saas-app --template react-ts
+cd my-saas-app
+
+# تثبيت جميع الحزم
+npm install
+
+# تشغيل السيرفر المحلي
+npm run dev
 ```
+
+---
+
+## 🌍 دعم اللغات
+
+-   ✅ اللغة العربية (RTL)
+-   ✅ اللغة الإنجليزية (LTR)
+-   يتم تغيير اتجاه الصفحة تلقائيًا حسب اللغة المختارة.
+
+---
+
+## 📄 ملاحظات إضافية
+
+-   يمكنك تخصيص شكل الفاتورة بسهولة باستخدام مكتبة PDF.
+-   Firebase يُستخدم للمصادقة وتخزين البيانات.
+-   يتم تنظيم الكومبوننتس بطريقة قابلة لإعادة الاستخدام وقابلة للتوسيع.
+
+---
+
+## 👩‍💻 المطور
+
+**Hoda Salah**  
+Front-End Developer 💻 | مهتمة بتطوير تطبيقات SaaS باستخدام React
