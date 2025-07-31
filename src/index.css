@@ -1,0 +1,14 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+
+
+.lang-ar body {
+  font-family: "Cairo", sans-serif;
+}
+
+html[dir='rtl'] body {
+  font-family: "Cairo", sans-serif;
+}
