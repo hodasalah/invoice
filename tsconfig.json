@@ -1,4 +1,9 @@
 {
+  "compilerOptions": {
+        "esModuleInterop": true,
+        "resolveJsonModule": true,
+
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

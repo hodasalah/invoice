@@ -1,105 +1,128 @@
-// src/components/landing/Footer.tsx
+import { Facebook, Linkedin, Mail, Phone, Twitter } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
+import Logo from '../shared/logo';
+
 const Footer = () => {
+	const { t, i18n } = useTranslation();
+	const isArabic = i18n.language === 'ar';
+
+	const year = new Date().getFullYear();
+
 	return (
-		<footer className=' py-10 px-6 text-center mt-16'>
-			<div className='max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-gray-400'>
-				{/* اسم المشروع */}
-				<div className='flex items-center gap-2'>
-					<svg
-						className='w-8 h-8'
-						viewBox='0 0 32 32'
-						xmlns='http://www.w3.org/2000/svg'
-					>
-						<defs>
-							<linearGradient
-								x1='0%'
-								y1='32.443%'
-								x2='104.18%'
-								y2='50%'
-								id='hlogo-a'
+		<footer
+			className='bg-[rgb(30,41,59)] text-gray-300 px-6 py-14 mt-16'
+			dir={isArabic ? 'rtl' : 'ltr'}
+		>
+			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12'>
+				{/* Logo and description */}
+				<div className='flex flex-col gap-4'>
+					<Logo />
+					<p className='text-sm leading-relaxed'>
+						{t('footer.description')}
+					</p>
+				</div>
+
+				{/* Quick Links */}
+				<div>
+					<h4 className='text-lg font-semibold mb-4'>
+						{t('footer.quickLinks')}
+					</h4>
+					<ul className='space-y-2 text-sm'>
+						<li>
+							<a
+								href='#features'
+								className='hover:text-white transition'
 							>
-								<stop
-									stop-color='#FFF'
-									stop-opacity='.299'
-									offset='0%'
-								></stop>
-								<stop
-									stop-color='#7587E4'
-									stop-opacity='0'
-									offset='100%'
-								></stop>
-							</linearGradient>
-							<linearGradient
-								x1='18.591%'
-								y1='0%'
-								x2='100%'
-								y2='100%'
-								id='hlogo-b'
+								{t('footer.links.features')}
+							</a>
+						</li>
+						<li>
+							<a
+								href='#pricing'
+								className='hover:text-white transition'
 							>
-								<stop
-									stop-color='#818CF8'
-									offset='0%'
-								></stop>
-								<stop
-									stop-color='#C7D2FE'
-									offset='100%'
-								></stop>
-							</linearGradient>
-						</defs>
-						<g
-							fill='none'
-							fill-rule='evenodd'
+								{t('footer.links.pricing')}
+							</a>
+						</li>
+						<li>
+							<a
+								href='#contact'
+								className='hover:text-white transition'
+							>
+								{t('footer.links.contact')}
+							</a>
+						</li>
+						<li>
+							<a
+								href='#faq'
+								className='hover:text-white transition'
+							>
+								{t('footer.links.faq')}
+							</a>
+						</li>
+					</ul>
+				</div>
+
+				{/* Contact and social media */}
+				<div>
+					<h4 className='text-lg font-semibold mb-4'>
+						{t('footer.contactUs')}
+					</h4>
+					<ul className='space-y-3 text-sm'>
+						<li className='flex items-center gap-2'>
+							<Mail size={16} /> {t('footer.email')}
+						</li>
+						<li className='flex items-center gap-2'>
+							<Phone size={16} /> {t('footer.phone')}
+						</li>
+					</ul>
+					<div className='flex gap-4 mt-4'>
+						<a
+							href='https://facebook.com'
+							target='_blank'
+							rel='noreferrer'
+							aria-label='Facebook'
+							className='hover:text-white transition'
 						>
-							<path
-								fill='#3730A3'
-								d='M16 18.5V32l15.999-9.25V9.25z'
-							></path>
-							<path
-								fill='#4F46E5'
-								d='m0 23 16 9V18.501L0 9.251z'
-							></path>
-							<path
-								fill-opacity='.64'
-								fill='url(#hlogo-a)'
-								d='M16 13 0 23l16 9 16-9z'
-							></path>
-							<path
-								fill='url(#hlogo-b)'
-								d='M16 0 0 9.25l16 9.25 15.999-9.25z'
-							></path>
-						</g>
-					</svg>
-					<span className='font-bold text-gray-200 text-[1.5rem]'>
-						فــاتــورتــي
-					</span>
+							<Facebook size={20} />
+						</a>
+						<a
+							href='https://twitter.com'
+							target='_blank'
+							rel='noreferrer'
+							aria-label='Twitter'
+							className='hover:text-white transition'
+						>
+							<Twitter size={20} />
+						</a>
+						<a
+							href='https://linkedin.com'
+							target='_blank'
+							rel='noreferrer'
+							aria-label='LinkedIn'
+							className='hover:text-white transition'
+						>
+							<Linkedin size={20} />
+						</a>
+					</div>
 				</div>
+			</div>
 
-				{/* روابط التنقل */}
-				<div className='flex gap-6 text-sm'>
-					<a
-						href='#features'
-						className='hover:text-white transition'
-					>
-						الميزات
-					</a>
-					<a
-						href='#pricing'
-						className='hover:text-white transition'
-					>
-						الأسعار
-					</a>
-					<a
-						href='#contact'
-						className='hover:text-white transition'
-					>
-						تواصل معنا
-					</a>
-				</div>
-
-				{/* حقوق النشر */}
-				<div className='text-xs text-gray-400'>
-					© {new Date().getFullYear()} جميع الحقوق محفوظة.
-				</div>
+			<div className='mt-12 border-t border-slate-700 pt-6 text-xs text-center text-slate-400'>
+				<Trans
+					i18nKey='footer.madeBy'
+					values={{ year }}
+					components={[
+						<></>,
+						<a
+							key='link'
+							href='https://www.linkedin.com/in/hoda-salah/'
+							target='_blank'
+							rel='noreferrer'
+							className=' text-[rgb(99,102,241)] hover:text-white transition'
+						/>,
+					]}
+				/>
 			</div>
 		</footer>
 	);

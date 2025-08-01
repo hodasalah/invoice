@@ -1,0 +1,153 @@
+{
+	"brand": "Fatoorty",
+	"hero": {
+		"title": "Create professional invoices in minutes",
+		"subtitle": "A simple and fast platform for managing invoices and payments, built for freelancers and entrepreneurs. Generate invoices instantly in multiple languages, with an intuitive interface and detailed analytics.",
+		"cta_primary": "Try it Free",
+		"cta_secondary": "Explore Features"
+	},
+	"features": {
+		"title": "Platform Features",
+		"subtitle": "Everything you need to manage your invoices and business — all in one place. Add your invoice data in seconds with just a few clicks.",
+		"items": [
+			{
+				"icon": "🧾",
+				"title": "Create Invoices Easily",
+				"description": "Generate professional invoices in seconds and save or send them instantly."
+			},
+			{
+				"icon": "📤",
+				"title": "Auto-send to Clients",
+				"description": "Send invoices via email or direct link."
+			},
+			{
+				"icon": "💳",
+				"title": "Fast Online Payment",
+				"description": "Connect with Stripe or PayPal to receive payments effortlessly."
+			},
+			{
+				"icon": "⏰",
+				"title": "Auto Reminders",
+				"description": "We remind clients about due invoices automatically to save your time."
+			},
+			{
+				"icon": "📊",
+				"title": "Detailed Reports",
+				"description": "Track your monthly income and expenses with accurate reports and charts."
+			},
+			{
+				"icon": "👥",
+				"title": "Client Management",
+				"description": "Store client data, invoice history, and communications."
+			}
+		]
+	},
+	"whyUs": {
+		"title": "Why do thousands choose us?",
+		"subtitle": "We provide all the tools you need to organize your work and achieve more.",
+		"items": [
+			{
+				"icon": "✨",
+				"title": "Simple & Easy Interface",
+				"description": "We designed the interface to be easy to use even for non-technical users."
+			},
+			{
+				"icon": "💬",
+				"title": "Fast Support",
+				"description": "We’re here to help you anytime via chat or email."
+			},
+			{
+				"icon": "🔒",
+				"title": "Secure & Private",
+				"description": "Your data is protected with advanced encryption and security technologies."
+			},
+			{
+				"icon": "📱",
+				"title": "Cross-device Friendly",
+				"description": "Work from your phone or computer anytime, anywhere."
+			}
+		]
+	},
+	"pricing": {
+		"title": "Flexible Plans for Everyone",
+		"subtitle": "Choose the plan that fits your business needs and start today.",
+		"plans": [
+			{
+				"name": "Free",
+				"description": "Start without a credit card",
+				"price": "0",
+				"features": [
+					"Up to 3 clients",
+					"5 invoices per month",
+					"Email support only",
+					"Manage from 2 branches"
+				],
+				"button": "Start for Free"
+			},
+			{
+				"name": "Pro",
+				"description": "Most popular",
+				"price": "12",
+				"features": [
+					"Unlimited clients",
+					"Unlimited invoices",
+					"Online payments",
+					"Detailed reports"
+				],
+				"button": "Subscribe Now"
+			},
+			{
+				"name": "Business",
+				"description": "For teams and small companies",
+				"price": "25",
+				"features": [
+					"All Pro features",
+					"Add team members",
+					"Live support",
+					"Multi-branch management"
+				],
+				"button": "Subscribe Now"
+			}
+		],
+		"perMonth": "/month"
+	},
+	"testimonials": {
+		"title": "What Our Customers Say",
+		"subtitle": "We help thousands of professionals manage their business easily and professionally.",
+		"items": [
+			{
+				"name": "Ahmed Sami",
+				"role": "Freelance Graphic Designer",
+				"comment": "Now I finish invoices in 3 minutes! The platform saved me so much time and made my work easier!",
+				"avatar": "🧑🏻‍💻"
+			},
+			{
+				"name": "Nada Khaled",
+				"role": "Accountant - Startup",
+				"comment": "The dashboard is flexible and easy. The monthly reports helped us track our financial performance.",
+				"avatar": "👩🏻‍💼"
+			},
+			{
+				"name": "Youssef Emad",
+				"role": "Web Development Freelancer",
+				"comment": "Now I can send invoices from my phone even while on the go! Amazing experience.",
+				"avatar": "🧔🏻‍♂️"
+			}
+		]
+	},
+	"footer": {
+		"description": "Your smart platform for managing invoices and simplifying payments and financial follow-up easily and securely.",
+		"quickLinks": "Quick Links",
+		"contactUs": "Contact Us",
+		"links": {
+			"features": "Features",
+			"pricing": "Pricing",
+			"contact": "Contact",
+			"faq": "FAQ"
+		},
+		"email": "support@example.com",
+		"phone": "010-1234-5678",
+		"copyright": "© {{year}} All rights reserved.",
+		"madeBy": "© {{year}} All rights reserved — Made with ❤️ by <1>Hoda Salah</1>"
+	}
+}

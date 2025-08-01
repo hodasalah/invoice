@@ -2,9 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
-
 .lang-ar body {
   font-family: "Cairo", sans-serif;
 }
