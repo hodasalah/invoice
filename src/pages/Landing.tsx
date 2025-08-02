@@ -9,7 +9,7 @@ import {
 
 const Landing = () => {
 	return (
-		<main className='bg-[rgb(15,23,42)] text-white'>
+		<main className=''>
 			<Hero />
 			<Features />
 			<WhyUs />

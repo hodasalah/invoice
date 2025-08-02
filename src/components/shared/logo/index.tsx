@@ -75,7 +75,7 @@ const Logo = () => {
 					/>
 				</g>
 			</svg>
-			<span className={`text-[1.5rem] font-bold text-gray-200 `}>
+			<span className={`text-[1.5rem] font-bold dark:text-gray-200 text-[rgb(25,29,37)] `}>
 				{t('brand')}
 			</span>
 		</div>

@@ -10,7 +10,7 @@ const Footer = () => {
 
 	return (
 		<footer
-			className='bg-[rgb(30,41,59)] text-gray-300 px-6 py-14 mt-16'
+			className=' dark:text-gray-300  px-6 py-14 mt-16'
 			dir={isArabic ? 'rtl' : 'ltr'}
 		>
 			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12'>
@@ -31,7 +31,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#features'
-								className='hover:text-white transition'
+								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 							>
 								{t('footer.links.features')}
 							</a>
@@ -39,7 +39,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#pricing'
-								className='hover:text-white transition'
+								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 							>
 								{t('footer.links.pricing')}
 							</a>
@@ -47,7 +47,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#contact'
-								className='hover:text-white transition'
+								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 							>
 								{t('footer.links.contact')}
 							</a>
@@ -55,7 +55,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#faq'
-								className='hover:text-white transition'
+								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 							>
 								{t('footer.links.faq')}
 							</a>
@@ -82,7 +82,7 @@ const Footer = () => {
 							target='_blank'
 							rel='noreferrer'
 							aria-label='Facebook'
-							className='hover:text-white transition'
+							className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 						>
 							<Facebook size={20} />
 						</a>
@@ -91,7 +91,7 @@ const Footer = () => {
 							target='_blank'
 							rel='noreferrer'
 							aria-label='Twitter'
-							className='hover:text-white transition'
+							className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 						>
 							<Twitter size={20} />
 						</a>
@@ -100,7 +100,7 @@ const Footer = () => {
 							target='_blank'
 							rel='noreferrer'
 							aria-label='LinkedIn'
-							className='hover:text-white transition'
+							className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
 						>
 							<Linkedin size={20} />
 						</a>
@@ -108,7 +108,7 @@ const Footer = () => {
 				</div>
 			</div>
 
-			<div className='mt-12 border-t border-slate-700 pt-6 text-xs text-center text-slate-400'>
+			<div className='mt-12 border-t dark:border-slate-700 border-gray-200 pt-6 text-xs text-center text-slate-400'>
 				<Trans
 					i18nKey='footer.madeBy'
 					values={{ year }}
@@ -119,7 +119,7 @@ const Footer = () => {
 							href='https://www.linkedin.com/in/hoda-salah/'
 							target='_blank'
 							rel='noreferrer'
-							className=' text-[rgb(99,102,241)] hover:text-white transition'
+							className=' text-[rgb(99,102,241)] dark:hover:text-white transition'
 						/>,
 					]}
 				/>

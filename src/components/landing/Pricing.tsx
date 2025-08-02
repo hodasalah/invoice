@@ -21,14 +21,14 @@ const Pricing = () => {
 				<h2 className='text-3xl md:text-4xl font-bold mb-4'>
 					{t('pricing.title')}
 				</h2>
-				<p className='text-slate-300 mb-12'>{t('pricing.subtitle')}</p>
+				<p className='dark:text-slate-300 text-gray-500 mb-12'>{t('pricing.subtitle')}</p>
 				<div className='grid grid-cols-1 md:grid-cols-3 gap-8'>
 					{plans.map((plan, idx) => (
 						<div
 							key={idx}
 							className={`border p-6 rounded-lg shadow-sm transition ${
 								idx === 1
-									? 'border-primary bg-gray-300'
+									? 'border-primary dark:bg-gray-300 bg-transparent shadow-[10px_10px_30px_0px_rgba(99,102,241,0.5)]'
 									: 'bg-[rgb(30,41,59)]'
 							}`}
 						>

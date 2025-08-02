@@ -36,7 +36,7 @@ const Nav = () => {
 					<li>
 						<Link
 							to='/login'
-							className='text-white hover:text-gray-300 transition'
+							className='dark:text-white text-gray-700 dark:hover:text-gray-300 transition'
 						>
 							{isArabic ? 'تسـجـيل الدخـول' : 'Login'}
 						</Link>

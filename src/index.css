@@ -9,3 +9,12 @@
 html[dir='rtl'] body {
   font-family: "Cairo", sans-serif;
 }
+
+.dark body {
+  background-color: rgb(15, 23, 42);
+  color: #f9f9f9;
+}
+.light body {
+  background-color: #f9f9f9;
+  color: #333;
+}

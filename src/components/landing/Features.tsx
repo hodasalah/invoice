@@ -19,12 +19,14 @@ const Features = () => {
 				<h2 className='text-3xl md:text-4xl font-bold mb-4'>
 					{t('features.title')}
 				</h2>
-				<p className='text-slate-300 mb-12'>{t('features.subtitle')}</p>
+				<p className='dark:text-slate-300 text-gray-500 mb-12'>
+					{t('features.subtitle')}
+				</p>
 				<div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8'>
 					{features.map((feature, idx) => (
 						<div
 							key={idx}
-							className='bg-[rgb(30,41,59)] p-6 rounded-lg shadow-sm border hover:shadow-md transition border-slate-500'
+							className='dark:bg-[rgb(30,41,59)] bg-[rgb(30,41,59)] p-6 rounded-lg shadow-sm border hover:shadow-md transition border-slate-500'
 						>
 							<div className='text-4xl mb-4'>{feature.icon}</div>
 							<h3 className='text-xl font-semibold text-white mb-2'>

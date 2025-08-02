@@ -2,7 +2,12 @@ import { useEffect, useState } from 'react';
 
 const ThemeToggle = () => {
 	const [isDark, setIsDark] = useState(() => {
-		return localStorage.getItem('theme') === 'dark';
+		if (typeof window !== 'undefined') {
+			const saved = localStorage.getItem('theme');
+			if (saved) return saved === 'dark';
+			return window.matchMedia('(prefers-color-scheme: dark)').matches;
+		}
+		return false;
 	});
 
 	useEffect(() => {
@@ -18,10 +23,11 @@ const ThemeToggle = () => {
 
 	return (
 		<button
-			onClick={() => setIsDark(!isDark)}
-			className='text-white hover:text-gray-300 text-sm border px-3 py-1 rounded'
+			onClick={() => setIsDark((prev) => !prev)}
+			className='text-sm border px-3 py-1 rounded transition duration-300
+				text-gray-800 border-gray-800 dark:text-yellow-400 dark:border-yellow-400'
 		>
-			{isDark ? '🌙 داكن' : '☀️ فاتح'}
+			{isDark ? '🌙 الوضع الداكن' : '☀️ الوضع الفاتح'}
 		</button>
 	);
 };

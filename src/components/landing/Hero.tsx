@@ -15,7 +15,7 @@ const Hero = () => {
 				<h1 className='text-4xl md:text-5xl font-bold  leading-tight mb-6'>
 					{t('hero.title')}
 				</h1>
-				<p className='text-md  mb-8 text-slate-300 max-w-2xl mx-auto'>
+				<p className='text-md  mb-8 dark:text-slate-300 text-gray-500 max-w-2xl mx-auto'>
 					{t('hero.subtitle')}
 				</p>
 				<div className='flex justify-center gap-4 mb-24'>
@@ -43,7 +43,7 @@ const Hero = () => {
 				<img
 					src='/assets/hero-dashboard.png'
 					alt='Dashboard Preview'
-					className='w-full max-w-3xl mx-auto mt-12 rounded-xl shadow-md'
+					className='w-full bg-[rgb(15,23,42)] max-w-3xl mx-auto mt-12 rounded-xl shadow-md'
 				/>
 			</div>
 		</section>
