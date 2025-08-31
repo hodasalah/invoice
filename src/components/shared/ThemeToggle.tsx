@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
+import { useTranslation } from 'react-i18next';
 
 const ThemeToggle = () => {
 	const [isDark, setIsDark] = useState(() => {
@@ -20,14 +21,16 @@ const ThemeToggle = () => {
 			localStorage.setItem('theme', 'light');
 		}
 	}, [isDark]);
-
+	const {i18n,t}=useTranslation()
+	const isArabic= i18n.language === 'ar'
 	return (
 		<button
 			onClick={() => setIsDark((prev) => !prev)}
 			className='text-sm border px-3 py-1 rounded transition duration-300
 				text-gray-800 border-gray-800 dark:text-yellow-400 dark:border-yellow-400'
 		>
-			{isDark ? '🌙 الوضع الداكن' : '☀️ الوضع الفاتح'}
+			{isDark ? isArabic?'🌙 الوضع الداكن':'🌙 Dark' 
+				: isArabic?'☀️ الوضع الفاتح': '☀️ Light'}
 		</button>
 	);
 };

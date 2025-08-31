@@ -1,12 +1,12 @@
 import { ArrowRight } from 'lucide-react';
-import Nav from './Nav';
 import { useTranslation } from 'react-i18next';
+import { PrimaryBtn, SecondaryBtn } from '../shared/button';
+import Nav from './Nav';
 
 // src/components/landing/Hero.tsx
 const Hero = () => {
-	const { i18n,t } = useTranslation();
-		const isArabic = i18n.language === 'ar';
-
+	const { i18n, t } = useTranslation();
+	const isArabic = i18n.language === 'ar';
 
 	return (
 		<section className='px-6 text-center w-full'>
@@ -19,26 +19,39 @@ const Hero = () => {
 					{t('hero.subtitle')}
 				</p>
 				<div className='flex justify-center gap-4 mb-24'>
-					<button className='flex gap-2 items-center text-white hover:text-gray-300 transition bg-[rgb(99,102,241)] px-4 py-2 rounded-md'>
+					<PrimaryBtn
+						onClick={() => console.log('btn clicked')}
+						type='button'
+						disabled={false}
+						icon={
+							<ArrowRight
+								className={`${
+									isArabic ? 'rotate-180' : ''
+								} text-[rgb(125,211,252)] mt-1`}
+								size={16}
+								height={14}
+							/>
+						}
+					>
 						{t('hero.cta_primary')}
-						<ArrowRight
-							className={`${
-								isArabic ? 'rotate-180' : ''
-							} text-[rgb(125,211,252)] mt-1`}
-							size={16}
-							height={14}
-						/>
-					</button>
-					<button className='flex gap-2 items-center text-white hover:bg-slate-600 transition text-[rgb(203,215,225))] bg-[rgb(51,65,85)] px-4 py-2 rounded-md border-[.5px] border-slate-300'>
+					</PrimaryBtn>
+
+					<SecondaryBtn
+						type='button'
+						disabled={false}
+						onClick={() => console.log('secondary btn clicked')}
+						icon={
+							<ArrowRight
+								className={`${
+									isArabic ? 'rotate-180' : ''
+								} text-[rgb(125,211,252)] mt-1`}
+								size={16}
+								height={14}
+							/>
+						}
+					>
 						{t('hero.cta_secondary')}
-						<ArrowRight
-							className={`${
-								isArabic ? 'rotate-180' : ''
-							} text-[rgb(125,211,252)] mt-1`}
-							size={16}
-							height={14}
-						/>
-					</button>
+					</SecondaryBtn>
 				</div>
 				<img
 					src='/assets/hero-dashboard.png'

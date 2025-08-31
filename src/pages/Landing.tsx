@@ -9,7 +9,7 @@ import {
 
 const Landing = () => {
 	return (
-		<main className=''>
+		<main >
 			<Hero />
 			<Features />
 			<WhyUs />

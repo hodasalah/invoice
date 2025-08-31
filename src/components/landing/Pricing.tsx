@@ -28,7 +28,7 @@ const Pricing = () => {
 							key={idx}
 							className={`border p-6 rounded-lg shadow-sm transition ${
 								idx === 1
-									? 'border-primary dark:bg-gray-300 bg-transparent shadow-[10px_10px_30px_0px_rgba(99,102,241,0.5)]'
+									? 'border-primary dark:bg-slate-100 bg-transparent shadow-[10px_10px_30px_0px_rgba(99,102,241,0.5)]'
 									: 'bg-[rgb(30,41,59)]'
 							}`}
 						>

@@ -1,6 +1,6 @@
-import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import AppRoutes from './routes';
+import { useEffect } from 'react';
 
 function App() {
 	const { i18n } = useTranslation();
@@ -8,8 +8,6 @@ function App() {
 	useEffect(() => {
 		const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 		document.documentElement.dir = dir;
-		document.documentElement.className =
-			i18n.language === 'ar' ? 'lang-ar' : 'lang-en';
 	}, [i18n.language]);
 
 	return (
