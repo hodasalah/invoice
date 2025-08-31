@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 const Pricing = () => {
-	const { t, i18n } = useTranslation();
+	const { t, i18n } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
 
 	const plans = t('pricing.plans', { returnObjects: true }) as {

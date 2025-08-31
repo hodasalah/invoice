@@ -5,7 +5,7 @@ import Nav from './Nav';
 
 // src/components/landing/Hero.tsx
 const Hero = () => {
-	const { i18n, t } = useTranslation();
+	const { i18n, t } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
 
 	return (

@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 const WhyUs = () => {
-	const { t, i18n } = useTranslation();
+	const { t, i18n } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
 
 	const benefits = t('whyUs.items', { returnObjects: true }) as {
@@ -19,7 +19,9 @@ const WhyUs = () => {
 				<h2 className='text-3xl md:text-4xl font-bold mb-6'>
 					{t('whyUs.title')}
 				</h2>
-				<p className='dark:text-slate-300 text-gray-500 mb-12'>{t('whyUs.subtitle')}</p>
+				<p className='dark:text-slate-300 text-gray-500 mb-12'>
+					{t('whyUs.subtitle')}
+				</p>
 				<div
 					className={`grid grid-cols-1 sm:grid-cols-2 gap-8 ${
 						isArabic ? 'text-right' : 'text-left'

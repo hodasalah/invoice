@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 const Testimonials = () => {
-	const { t, i18n } = useTranslation();
+	const { t, i18n } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
 
 	const testimonials = t('testimonials.items', { returnObjects: true }) as {

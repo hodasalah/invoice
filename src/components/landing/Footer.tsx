@@ -3,14 +3,14 @@ import { Trans, useTranslation } from 'react-i18next';
 import Logo from '../shared/logo';
 
 const Footer = () => {
-	const { t, i18n } = useTranslation();
+	const { t, i18n } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
 
 	const year = new Date().getFullYear();
 
 	return (
 		<footer
-			className=' dark:text-gray-300  px-6 py-14 mt-16'
+			className=' dark:text-gray-300 dark:bg-transparent bg-[rgb(236,236,237)] px-6 py-14 mt-16'
 			dir={isArabic ? 'rtl' : 'ltr'}
 		>
 			<div className='max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12'>
