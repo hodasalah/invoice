@@ -1,38 +1,18 @@
-import { useEffect, useState, useTransition } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleTheme } from '../../features/theme/themeSlice';
 
-const ThemeToggle = () => {
-	const [isDark, setIsDark] = useState(() => {
-		if (typeof window !== 'undefined') {
-			const saved = localStorage.getItem('theme');
-			if (saved) return saved === 'dark';
-			return window.matchMedia('(prefers-color-scheme: dark)').matches;
-		}
-		return false;
-	});
+const ThemeSwitcher = () => {
+	const dispatch = useDispatch();
+	const mode = useSelector((state: any) => state.theme.mode);
 
-	useEffect(() => {
-		const html = document.documentElement;
-		if (isDark) {
-			html.classList.add('dark');
-			localStorage.setItem('theme', 'dark');
-		} else {
-			html.classList.remove('dark');
-			localStorage.setItem('theme', 'light');
-		}
-	}, [isDark]);
-	const {i18n,t}=useTranslation()
-	const isArabic= i18n.language === 'ar'
 	return (
 		<button
-			onClick={() => setIsDark((prev) => !prev)}
-			className='text-sm border px-3 py-1 rounded transition duration-300
-				text-gray-800 border-gray-800 dark:text-yellow-400 dark:border-yellow-400'
+			onClick={() => dispatch(toggleTheme())}
+			className='dark:text-white dark:hover:text-gray-300 text-sm border px-3 py-1 rounded dark:border-slate-400 border-gray-800 transition duration-300 ml-2'
 		>
-			{isDark ? isArabic?'🌙 الوضع الداكن':'🌙 Dark' 
-				: isArabic?'☀️ الوضع الفاتح': '☀️ Light'}
+			{mode === 'light' ? '🌙 Dark' : '☀️ Light'}
 		</button>
 	);
 };
 
-export default ThemeToggle;
+export default ThemeSwitcher;

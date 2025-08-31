@@ -1,23 +1,17 @@
-import { useTranslation } from 'react-i18next';
+import { useDispatch, useSelector } from 'react-redux';
+import { toggleLanguage } from '../../features/theme/languageSlice';
 
 const LanguageSwitcher = () => {
-	const { i18n } = useTranslation();
+	const dispatch = useDispatch();
+	// Replace 'RootState' with the actual type of your Redux root state if different
+	const lang = useSelector((state: any) => state.language.lang);
 
-	const toggleLang = () => {
-		const newLang = i18n.language === 'ar' ? 'en' : 'ar';
-		i18n.changeLanguage(newLang);
-		document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-		
-		document.documentElement.setAttribute('lang',newLang)
-		document.documentElement.setAttribute('dir',newLang==='ar'?'rtl':'ltr')
-	};
-const isArabic = i18n.language === 'ar';
 	return (
 		<button
-			onClick={toggleLang}
+			onClick={() => dispatch(toggleLanguage())}
 			className='dark:text-white dark:hover:text-gray-300 text-sm border px-3 py-1 rounded dark:border-slate-400 border-gray-800 transition duration-300'
 		>
-			{i18n.language === 'ar' ? 'English' : 'عـــربي'}
+			{lang === 'ar' ? 'English' : 'عـــربي'}
 		</button>
 	);
 };
