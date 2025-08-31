@@ -1,30 +1,30 @@
-import { createSlice } from '@reduxjs/toolkit';
-import i18n from '../../i18n';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
-const initialState = {
-	lang: 'ar',
-};
+export type LangState = 'en' | 'ar';
+
+const initialState: LangState =
+	(localStorage.getItem('lang') as LangState) || 'en';
 
 const languageSlice = createSlice({
 	name: 'language',
 	initialState,
 	reducers: {
-		toggleLanguage: (state) => {
-			const newLang = state.lang === 'ar' ? 'en' : 'ar';
-			state.lang = newLang;
-			i18n.changeLanguage(newLang);
-			document.documentElement.lang = newLang;
-			document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
-		},
-		setLanguage: (state, action) => {
-			state.lang = action.payload;
-			i18n.changeLanguage(action.payload);
+		setLanguage: (_, action: PayloadAction<LangState>) => {
+			localStorage.setItem('lang', action.payload);
 			document.documentElement.lang = action.payload;
 			document.documentElement.dir =
 				action.payload === 'ar' ? 'rtl' : 'ltr';
+			return action.payload;
+		},
+		toggleLanguage: (state) => {
+			const newLang = state === 'ar' ? 'en' : 'ar';
+			localStorage.setItem('lang', newLang);
+			document.documentElement.lang = newLang;
+			document.documentElement.dir = newLang === 'ar' ? 'rtl' : 'ltr';
+			return newLang;
 		},
 	},
 });
 
-export const { toggleLanguage, setLanguage } = languageSlice.actions;
+export const { setLanguage, toggleLanguage } = languageSlice.actions;
 export default languageSlice.reducer;

@@ -1,18 +1,30 @@
-import { useDispatch, useSelector } from 'react-redux';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { toggleTheme } from '../../features/theme/themeSlice';
+import { useTranslation } from 'react-i18next';
 
-const ThemeSwitcher = () => {
-	const dispatch = useDispatch();
-	const mode = useSelector((state: any) => state.theme.mode);
+const ThemeToggle = () => {
+	const dispatch = useAppDispatch();
+	const theme = useAppSelector((state) => state.theme);
+	const { i18n } = useTranslation();
+
+	const isArabic = i18n.language === 'ar';
+	const isDark = theme === 'dark';
 
 	return (
 		<button
 			onClick={() => dispatch(toggleTheme())}
-			className='dark:text-white dark:hover:text-gray-300 text-sm border px-3 py-1 rounded dark:border-slate-400 border-gray-800 transition duration-300 ml-2'
+			className='text-sm border px-3 py-1 rounded transition duration-300
+        text-gray-800 border-gray-800 dark:text-yellow-400 dark:border-yellow-400'
 		>
-			{mode === 'light' ? '🌙 Dark' : '☀️ Light'}
+			{isDark
+				? isArabic
+					? '🌙 الوضع الداكن'
+					: '🌙 Dark'
+				: isArabic
+				? '☀️ الوضع الفاتح'
+				: '☀️ Light'}
 		</button>
 	);
 };
 
-export default ThemeSwitcher;
+export default ThemeToggle;
