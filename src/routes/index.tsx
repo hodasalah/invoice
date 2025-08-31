@@ -1,9 +1,12 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router';
+
 // Lazy load pages
 const Landing = lazy(() => import('../pages/Landing'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const Invoices = lazy(() => import('../pages/Invoices'));
+const Login = lazy(() => import('../pages/Login'));
+const Signup = lazy(() => import('../pages/Signup'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 
 const AppRoutes = () => {
@@ -13,6 +16,14 @@ const AppRoutes = () => {
 				<Route
 					path='/'
 					element={<Landing />}
+				/>
+				<Route
+					path='/login'
+					element={<Login />}
+				/>
+				<Route
+					path='/signup'
+					element={<Signup />}
 				/>
 				<Route
 					path='/dashboard'

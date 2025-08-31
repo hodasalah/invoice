@@ -2,6 +2,10 @@
   "compilerOptions": {
         "esModuleInterop": true,
         "resolveJsonModule": true,
+        "baseUrl": "src",
+    "paths": {
+      "@/*": ["*"]
+    }
 
   },
   "files": [],
