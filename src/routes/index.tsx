@@ -1,5 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router';
+import {Toaster} from  'sonner'
+
 
 // Lazy load pages
 const Landing = lazy(() => import('../pages/Landing'));
@@ -12,6 +14,7 @@ const NotFound = lazy(() => import('../pages/NotFound'));
 const AppRoutes = () => {
 	return (
 		<Suspense fallback={<div>Loading...</div>}>
+			<Toaster position='top-right' />
 			<Routes>
 				<Route
 					path='/'

@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { login } from '@/firebaseConfigs/auth';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 
 type LoginFormInputs = {
 	email: string;
@@ -22,10 +23,10 @@ const Login = () => {
 	const onSubmit = async (data: LoginFormInputs) => {
 		try {
 			await login(data.email, data.password);
-			alert('تم تسجيل الدخول بنجاح');
+			toast.success('تم تسجيل الدخول بنجاح');
 			navigate('/dashboard'); // توجه للداشبورد بعد الدخول
 		} catch (err: any) {
-			alert(err.message);
+			toast.error(err.message);
 		}
 	};
 

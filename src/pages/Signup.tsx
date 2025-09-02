@@ -3,6 +3,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { signup } from '../firebaseConfigs/auth';
 
 type SignupFormInputs = {
@@ -22,15 +23,15 @@ const Signup = () => {
 
 	const onSubmit = async (data: SignupFormInputs) => {
 		if (data.password !== data.confirmPassword) {
-			alert('كلمة المرور غير متطابقة');
+			toast.error('كلمة المرور غير متطابقة');
 			return;
 		}
 		try {
 			await signup(data.email, data.password);
-			alert('تم إنشاء الحساب بنجاح');
+			toast.success('تم إنشاء الحساب بنجاح');
 			navigate('/dashboard');
 		} catch (err: any) {
-			alert(err.message);
+			toast.error(err.message);
 		}
 	};
 
