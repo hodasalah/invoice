@@ -7,6 +7,7 @@ import {
 	getDoc,
 	getDocs,
 	updateDoc,
+	setDoc,
 } from 'firebase/firestore';
 import { db } from './firebase';
 
@@ -45,4 +46,9 @@ export const updateData = async (
 export const deleteData = async (collectionName: string, id: string) => {
 	const docRef = doc(db, collectionName, id);
 	await deleteDoc(docRef);
+};
+ // تخزين بيانات مستخدم باستخدام uid كمفتاح
+export const setUserData = async (uid: string, data: any) => {
+    const docRef = doc(db, 'users', uid);
+    await setDoc(docRef, data);
 };

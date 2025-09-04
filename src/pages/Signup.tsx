@@ -1,141 +1,153 @@
-import AuthLoader from '@/components/shared/AuthLoader';
+import StepAccount from '@/components/signup/StepAccount';
+import StepBusinessInfo from '@/components/signup/StepBusinessInfo';
+import StepUserInfo from '@/components/signup/StepUserInfo';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { signup } from '@/firebaseConfigs/auth';
+import { setUserData } from '@/firebaseConfigs/firestore';
+import { signupSchema } from '@/validations/signupSchema';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router';
+import { Link } from 'react-router';
 import { toast } from 'sonner';
-import { signup } from '../firebaseConfigs/auth';
 
-type SignupFormInputs = {
+type FormData = {
 	email: string;
 	password: string;
 	confirmPassword: string;
+	firstName: string;
+	lastName: string;
+	phone: string;
+	position?: string;
+	companySize?: string;
+	businessName: string;
+	address: string;
+	city: string;
+	vatNumber?: string;
+	crNumber?: string;
+	postalCode: string;
+	secondaryCrNumber?: string;
+};
+
+const stepFields: Record<number, (keyof FormData)[]> = {
+	1: ['email', 'password', 'confirmPassword'],
+	2: ['firstName', 'lastName', 'phone', 'position', 'companySize'],
+	3: ['businessName', 'address', 'city', 'postalCode', 'crNumber'],
 };
 
 const Signup = () => {
-	const { t } = useTranslation('auth'); // نحدد namespace "auth"
+	const [step, setStep] = useState(1);
+	const { t } = useTranslation('auth');
+
+	const methods = useForm<FormData>({
+		resolver: zodResolver(signupSchema(t)),
+		mode: 'onTouched',
+	});
+
 	const {
-		register,
-		handleSubmit,
-		formState: { errors },
-	} = useForm<SignupFormInputs>();
-	const navigate = useNavigate();
-	const [status, setStatus] = useState<'loading' | 'success' | null>(null);
+		trigger,
+		formState: { isValid },
+	} = methods;
 
-	const onSubmit = async (data: SignupFormInputs) => {
-		if (data.password !== data.confirmPassword) {
-			toast.error(t('password_mismatch'));
-			return;
-		}
+	const validateCurrentStep = async () => {
+		const fields = stepFields[step];
+		const valid = await trigger(fields);
+		return valid;
+	};
+
+	const onSubmit = async (data: FormData) => {
 		try {
-			setStatus('loading'); // تشغيل اللودر
+			toast.loading(t('creating_account'));
 
-			await signup(data.email, data.password);
+			const userCredential = await signup(data.email, data.password);
+			const uid = userCredential.uid;
+
+			await setUserData(uid, {
+				email: data.email,
+				firstName: data.firstName,
+				lastName: data.lastName,
+				phone: data.phone,
+				position: data.position,
+				companySize: data.companySize,
+				businessName: data.businessName,
+				address: data.address,
+				city: data.city,
+				vatNumber: data.vatNumber || '',
+				crNumber: data.crNumber || '',
+				postalCode: data.postalCode,
+				secondaryCrNumber: data.secondaryCrNumber || '',
+				createdAt: new Date().toISOString(),
+			});
+
 			toast.success(t('signup_success'));
-			navigate('/dashboard');
-		} catch (err: any) {
-			toast.error(err.message || t('signup_error'));
-		} finally {
-			setStatus(null);
+			// navigate('/dashboard');
+		} catch (error: unknown) {
+			const errorMessage =
+				error instanceof Error ? error.message : t('signup_error');
+			toast.error(errorMessage);
 		}
 	};
 
 	return (
-		<div className='flex min-h-screen items-center justify-center bg-gray-50 dark:bg-gray-900'>
-			{/* OVERLAY LOADER */}
-			{status && <AuthLoader status={status} />}
-			<div className='flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden max-w-4xl w-full'>
-				{/* صورة جانبية */}
-				<div className='hidden md:block md:w-1/2'>
-					<img
-						src='/assets/signup.jpg'
-						alt='Signup Illustration'
-						className='h-full w-full object-cover'
-					/>
-				</div>
+		<div className='min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900'>
+			<div className='bg-white dark:bg-gray-800 p-8 rounded-xl shadow-md w-full max-w-3xl'>
+				<h2 className='text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center'>
+					{t('signup_title')}
+				</h2>
 
-				{/* فورم التسجيل */}
-				<div className='w-full md:w-1/2 p-8'>
-					<h2 className='text-2xl font-bold mb-6 text-gray-800 dark:text-white'>
-						{t('signup_title')}
-					</h2>
-					<form
-						onSubmit={handleSubmit(onSubmit)}
-						className='space-y-4'
-					>
-						<div>
-							<Label>{t('email')}</Label>
-							<Input
-								{...register('email', {
-									required: t('email_required'),
-								})}
-								type='email'
-								placeholder={t('email_placeholder')}
-							/>
-							{errors.email && (
-								<p className='text-red-500 text-sm'>
-									{errors.email.message}
-								</p>
+				<p className='text-center text-sm text-muted-foreground mb-4'>
+					{t('step', { count: step })}
+				</p>
+
+				<FormProvider {...methods}>
+					<form onSubmit={methods.handleSubmit(onSubmit)}>
+						{step === 1 && <StepAccount />}
+						{step === 2 && <StepUserInfo />}
+						{step === 3 && <StepBusinessInfo />}
+
+						<div className='flex justify-between mt-6'>
+							{step > 1 && (
+								<Button
+									type='button'
+									onClick={() => setStep(step - 1)}
+								>
+									{t('previous')}
+								</Button>
+							)}
+							{step < 3 ? (
+								<Button
+									type='button'
+									onClick={async () => {
+										const valid =
+											await validateCurrentStep();
+										if (valid) setStep(step + 1);
+									}}
+									disabled={!isValid}
+								>
+									{t('next')}
+								</Button>
+							) : (
+								<Button
+									type='submit'
+									disabled={!isValid}
+								>
+									{t('submit')}
+								</Button>
 							)}
 						</div>
 
-						<div>
-							<Label>{t('password')}</Label>
-							<Input
-								{...register('password', {
-									required: t('password_required'),
-									minLength: {
-										value: 6,
-										message: t('password_min'),
-									},
-								})}
-								type='password'
-								placeholder={t('password_placeholder')}
-							/>
-							{errors.password && (
-								<p className='text-red-500 text-sm'>
-									{errors.password.message}
-								</p>
-							)}
-						</div>
-
-						<div>
-							<Label>{t('confirm_password')}</Label>
-							<Input
-								{...register('confirmPassword', {
-									required: t('confirm_password_required'),
-								})}
-								type='password'
-								placeholder={t('confirm_password_placeholder')}
-							/>
-							{errors.confirmPassword && (
-								<p className='text-red-500 text-sm'>
-									{errors.confirmPassword.message}
-								</p>
-							)}
-						</div>
-
-						<Button
-							type='submit'
-							className='w-full mt-4'
-						>
-							{t('submit')}
-						</Button>
+						<p className='mt-4 text-center text-sm text-gray-600 dark:text-gray-300'>
+							{t('already_have_account')}{' '}
+							<Link
+								to='/login'
+								className='text-blue-500 hover:underline'
+							>
+								{t('login')}
+							</Link>
+						</p>
 					</form>
-
-					<p className='mt-4 text-gray-600 dark:text-gray-300'>
-						{t('already_have_account')}{' '}
-						<span
-							className='text-blue-500 cursor-pointer'
-							onClick={() => navigate('/login')}
-						>
-							{t('login')}
-						</span>
-					</p>
-				</div>
+				</FormProvider>
 			</div>
 		</div>
 	);
