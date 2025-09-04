@@ -4,7 +4,7 @@ import StepUserInfo from '@/components/signup/StepUserInfo';
 import { Button } from '@/components/ui/button';
 import { signup } from '@/firebaseConfigs/auth';
 import { setUserData } from '@/firebaseConfigs/firestore';
-import { signupSchema } from '@/validations/signupSchema';
+import { signupSchema, type SignupSchema } from '@/validations/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -38,11 +38,12 @@ const stepFields: Record<number, (keyof FormData)[]> = {
 
 const Signup = () => {
 	const [step, setStep] = useState(1);
+	const [isStepValid, setIsStepValid] = useState(true);
 	const { t } = useTranslation('auth');
 
-	const methods = useForm<FormData>({
+	const methods = useForm<SignupSchema>({
 		resolver: zodResolver(signupSchema(t)),
-		mode: 'onTouched',
+		mode: 'onChange',
 	});
 
 	const {
@@ -55,6 +56,9 @@ const Signup = () => {
 		const valid = await trigger(fields);
 		return valid;
 	};
+
+
+
 
 	const onSubmit = async (data: FormData) => {
 		try {
@@ -88,6 +92,15 @@ const Signup = () => {
 			toast.error(errorMessage);
 		}
 	};
+	const handleNext = async () => {
+		const valid = await trigger(stepFields[step]);
+		setIsStepValid(valid);
+
+		if (valid) setStep(step + 1);
+		else toast.error(t('please_fix_errors'));
+	};
+
+
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900'>
@@ -118,12 +131,8 @@ const Signup = () => {
 							{step < 3 ? (
 								<Button
 									type='button'
-									onClick={async () => {
-										const valid =
-											await validateCurrentStep();
-										if (valid) setStep(step + 1);
-									}}
-									disabled={!isValid}
+									onClick={handleNext}
+									disabled={!isStepValid}
 								>
 									{t('next')}
 								</Button>

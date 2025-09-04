@@ -6,24 +6,32 @@ export const signupSchema = (t: TFunction) =>
 		.object({
 			email: z
 				.string()
-				.min(1, { message: t('email_required') })
+				.nonempty({ message: t('email_required') })
 				.email({ message: t('email_invalid') }),
 
 			password: z
 				.string()
+				.nonempty({ message: t('password_required') })
 				.min(6, { message: t('password_min') })
 				.regex(/[A-Z]/, { message: t('password_uppercase') }),
 
 			confirmPassword: z
 				.string()
-				.min(1, { message: t('confirm_password_required') }),
+				.nonempty({ message: t('confirm_password_required') }),
 
-			firstName: z.string().min(2, { message: t('first_name_min') }),
-			lastName: z.string().min(2, { message: t('last_name_min') }),
+			firstName: z
+				.string()
+				.nonempty({ message: t('first_name_required') })
+				.min(2, { message: t('first_name_min') }),
+
+			lastName: z
+				.string()
+				.nonempty({ message: t('last_name_required') })
+				.min(2, { message: t('last_name_min') }),
 
 			phone: z
 				.string()
-				.min(1, { message: t('phone_required') })
+				.nonempty({ message: t('phone_required') })
 				.regex(/^(\+?\d{7,15})$/, { message: t('phone_invalid') }),
 
 			position: z.string().optional(),
@@ -31,10 +39,18 @@ export const signupSchema = (t: TFunction) =>
 
 			businessName: z
 				.string()
+				.nonempty({ message: t('business_name_required') })
 				.min(2, { message: t('business_name_min') }),
 
-			address: z.string().min(5, { message: t('address_min') }),
-			city: z.string().min(2, { message: t('city_min') }),
+			address: z
+				.string()
+				.nonempty({ message: t('address_required') })
+				.min(5, { message: t('address_min') }),
+
+			city: z
+				.string()
+				.nonempty({ message: t('city_required') })
+				.min(2, { message: t('city_min') }),
 
 			vatNumber: z
 				.string()
@@ -48,10 +64,18 @@ export const signupSchema = (t: TFunction) =>
 
 			postalCode: z
 				.string()
-				.min(1, { message: t('postal_code_required') }),
+				.nonempty({ message: t('postal_code_required') }),
+
 			secondaryCrNumber: z.string().optional(),
 		})
-		.refine((data) => data.password === data.confirmPassword, {
-			message: t('password_mismatch'),
-			path: ['confirmPassword'],
+		.superRefine((data, ctx) => {
+			if (data.password !== data.confirmPassword) {
+				ctx.addIssue({
+					code: z.ZodIssueCode.custom,
+					message: t('password_mismatch'),
+					path: ['confirmPassword'],
+				});
+			}
 		});
+
+export type SignupSchema = z.infer<ReturnType<typeof signupSchema>>;
