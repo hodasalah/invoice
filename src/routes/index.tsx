@@ -10,6 +10,7 @@ const Invoices = lazy(() => import('../pages/Invoices'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
 const NotFound = lazy(() => import('../pages/NotFound'));
+const Seed = lazy(() => import('../pages/Seed'));
 
 const AppRoutes = () => {
 	return (
@@ -36,6 +37,7 @@ const AppRoutes = () => {
 					path='/invoices'
 					element={<Invoices />}
 				/>
+				<Route path='/seed' element={<Seed />} />
 				<Route
 					path='*'
 					element={<NotFound />}

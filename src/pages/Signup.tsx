@@ -11,6 +11,9 @@ import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
+import { doc, setDoc } from 'firebase/firestore';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { auth, db } from '@/firebaseConfigs/firebase'; // تأكدي من مسار التصدير الصحيح
 
 type FormData = {
 	email: string;
@@ -64,16 +67,24 @@ const Signup = () => {
 		try {
 			toast.loading(t('creating_account'));
 
-			const userCredential = await signup(data.email, data.password);
-			const uid = userCredential.uid;
+			// 1) أنشئي المستخدم (modular SDK example)
+			const userCredential = await createUserWithEmailAndPassword(
+				auth,
+				data.email,
+				data.password,
+			);
+			const uid = userCredential.user.uid;
+			console.log('created user uid:', uid);
 
-			await setUserData(uid, {
+			// 2) اكتبي مباشرةً إلى Firestore للتحقق (تجاوزي wrapper مؤقتًا)
+			const docRef = doc(db, 'users', uid);
+			await setDoc(docRef, {
 				email: data.email,
 				firstName: data.firstName,
 				lastName: data.lastName,
 				phone: data.phone,
-				position: data.position,
-				companySize: data.companySize,
+				position: data.position || '',
+				companySize: data.companySize || '',
 				businessName: data.businessName,
 				address: data.address,
 				city: data.city,
@@ -85,11 +96,14 @@ const Signup = () => {
 			});
 
 			toast.success(t('signup_success'));
-			// navigate('/dashboard');
-		} catch (error: unknown) {
-			const errorMessage =
-				error instanceof Error ? error.message : t('signup_error');
-			toast.error(errorMessage);
+		} catch (error: any) {
+			// سجّلي تفاصيل الخطأ كاملة
+			console.error('Firestore write failed:', error);
+			// حاول استخراج الكود والرسالة لو موجودة
+			console.error('error.code', error?.code);
+			console.error('error.message', error?.message);
+			// عرض للمستخدم رسالة عامة
+			toast.error(error?.message || t('signup_error'));
 		}
 	};
 	const handleNext = async () => {

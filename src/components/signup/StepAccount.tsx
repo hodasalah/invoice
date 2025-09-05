@@ -68,7 +68,6 @@ const StepAccount = () => {
 					placeholder=' '
 					{...register('password')}
 					type='password'
-					onBlur={() => trigger(['password'])}
 				/>
 				<Label htmlFor='signup_password'>{t('password')}</Label>
 				{errors.password && (
@@ -86,7 +85,6 @@ const StepAccount = () => {
 					{...register('confirmPassword')}
 					type='password'
 					placeholder=' '
-					onBlur={() => trigger(['password', 'confirmPassword'])}
 				/>
 				<Label htmlFor='signup_confirm_password'>
 					{t('confirm_password')}
