@@ -2,18 +2,16 @@ import StepAccount from '@/components/signup/StepAccount';
 import StepBusinessInfo from '@/components/signup/StepBusinessInfo';
 import StepUserInfo from '@/components/signup/StepUserInfo';
 import { Button } from '@/components/ui/button';
-import { signup } from '@/firebaseConfigs/auth';
-import { setUserData } from '@/firebaseConfigs/firestore';
+import { auth, db } from '@/firebaseConfigs/firebase'; // تأكدي من مسار التصدير الصحيح
 import { signupSchema, type SignupSchema } from '@/validations/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router';
 import { toast } from 'sonner';
-import { doc, setDoc } from 'firebase/firestore';
-import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth, db } from '@/firebaseConfigs/firebase'; // تأكدي من مسار التصدير الصحيح
 
 type FormData = {
 	email: string;
@@ -54,58 +52,40 @@ const Signup = () => {
 		formState: { isValid },
 	} = methods;
 
-	const validateCurrentStep = async () => {
-		const fields = stepFields[step];
-		const valid = await trigger(fields);
-		return valid;
-	};
-
-
-
-
 	const onSubmit = async (data: FormData) => {
 		try {
-			toast.loading(t('creating_account'));
+			await toast.promise(
+				(async () => {
+					// إنشاء المستخدم
+					const { user } = await createUserWithEmailAndPassword(
+						auth,
+						data.email,
+						data.password,
+					);
 
-			// 1) أنشئي المستخدم (modular SDK example)
-			const userCredential = await createUserWithEmailAndPassword(
-				auth,
-				data.email,
-				data.password,
+					// كتابة بيانات Firestore
+					await setDoc(doc(db, 'users', user.uid), {
+						...data,
+						position: data.position ?? '',
+						companySize: data.companySize ?? '',
+						vatNumber: data.vatNumber ?? '',
+						crNumber: data.crNumber ?? '',
+						secondaryCrNumber: data.secondaryCrNumber ?? '',
+						createdAt: new Date().toISOString(),
+					});
+				})(),
+				{
+					loading: t('creating_account'),
+					success: t('signup_success'),
+					error: (err) => err?.message || t('signup_error'),
+				},
 			);
-			const uid = userCredential.user.uid;
-			console.log('created user uid:', uid);
-
-			// 2) اكتبي مباشرةً إلى Firestore للتحقق (تجاوزي wrapper مؤقتًا)
-			const docRef = doc(db, 'users', uid);
-			await setDoc(docRef, {
-				email: data.email,
-				firstName: data.firstName,
-				lastName: data.lastName,
-				phone: data.phone,
-				position: data.position || '',
-				companySize: data.companySize || '',
-				businessName: data.businessName,
-				address: data.address,
-				city: data.city,
-				vatNumber: data.vatNumber || '',
-				crNumber: data.crNumber || '',
-				postalCode: data.postalCode,
-				secondaryCrNumber: data.secondaryCrNumber || '',
-				createdAt: new Date().toISOString(),
-			});
-
-			toast.success(t('signup_success'));
-		} catch (error: any) {
-			// سجّلي تفاصيل الخطأ كاملة
-			console.error('Firestore write failed:', error);
-			// حاول استخراج الكود والرسالة لو موجودة
-			console.error('error.code', error?.code);
-			console.error('error.message', error?.message);
-			// عرض للمستخدم رسالة عامة
-			toast.error(error?.message || t('signup_error'));
+		} catch (err) {
+			console.error('❌ Signup failed:', err);
 		}
 	};
+
+
 	const handleNext = async () => {
 		const valid = await trigger(stepFields[step]);
 		setIsStepValid(valid);
@@ -113,8 +93,6 @@ const Signup = () => {
 		if (valid) setStep(step + 1);
 		else toast.error(t('please_fix_errors'));
 	};
-
-
 
 	return (
 		<div className='min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900'>
