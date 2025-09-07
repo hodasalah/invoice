@@ -1,33 +1,44 @@
-// pages/dashboard.tsx
-import { Header } from '@/components/dashboard/header';
+// pages/DashboardPage.tsx
+import { useState, useEffect } from 'react';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { MobileSidebar } from '@/components/dashboard/sidebar/MobileSidebar';
-import { useState } from 'react';
+import { Header } from '@/components/dashboard/header';
 
 export default function DashboardPage() {
+	const [collapsed, setCollapsed] = useState<boolean>(() => {
+		const saved = localStorage.getItem('sidebarCollapsed');
+		return saved ? JSON.parse(saved) : false;
+	});
+
 	const [mobileOpen, setMobileOpen] = useState(false);
+
+	useEffect(() => {
+		localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
+	}, [collapsed]);
 
 	return (
 		<div className='flex h-screen overflow-hidden'>
-			{/* Desktop (wide/mini) sidebar */}
-			<Sidebar />
+			{/* Desktop Sidebar */}
+			<Sidebar collapsed={collapsed} />
 
-			{/* Mobile sidebar */}
+			{/* Mobile Sidebar */}
 			<MobileSidebar
 				open={mobileOpen}
 				onClose={() => setMobileOpen(false)}
 			/>
 
-			{/* Main content area */}
+			{/* المحتوى الرئيسي + الهيدر */}
 			<div className='flex-1 flex flex-col overflow-auto'>
-				{/* Header with burger menu on mobile */}
-				<Header onMobileMenuClick={() => setMobileOpen(true)} />
+				<Header
+					collapsed={collapsed}
+					toggleCollapse={() => setCollapsed((prev) => !prev)}
+					onMobileMenuClick={() => setMobileOpen(true)}
+				/>
 
-				{/* Your dashboard content goes here */}
-				<main className='p-4'>
-					{/* e.g. Greeting, search, action buttons, charts… */}
-				</main>
+				{/* باقي محتوى الداشبورد */}
+				<main className='p-4'>{/* ... */}</main>
 			</div>
 		</div>
 	);
 }
+
