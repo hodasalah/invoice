@@ -31,7 +31,7 @@ const Logo = () => {
 						/>
 						<stop
 							offset='100%'
-							stopColor='#7587E4'
+							stopColor='var(--color-primary)'
 							stopOpacity='0'
 						/>
 					</linearGradient>
@@ -44,11 +44,11 @@ const Logo = () => {
 					>
 						<stop
 							offset='0%'
-							stopColor='#818CF8'
+							stopColor='var(--color-primary)'
 						/>
 						<stop
 							offset='100%'
-							stopColor='#C7D2FE'
+							stopColor='var(--color-primary)'
 						/>
 					</linearGradient>
 				</defs>
@@ -57,11 +57,11 @@ const Logo = () => {
 					fillRule='evenodd'
 				>
 					<path
-						fill='#3730A3'
+						fill='var(--color-primary-hover)'
 						d='M16 18.5V32l15.999-9.25V9.25z'
 					/>
 					<path
-						fill='#4F46E5'
+						fill='var(--color-primary)'
 						d='m0 23 16 9V18.501L0 9.251z'
 					/>
 					<path
@@ -75,7 +75,9 @@ const Logo = () => {
 					/>
 				</g>
 			</svg>
-			<span className={`text-[1.5rem] font-bold dark:text-gray-200 text-[rgb(25,29,37)] `}>
+			<span
+				className={`text-[1.5rem] font-bold dark:text-gray-200 text-primary`}
+			>
 				{t('brand')}
 			</span>
 		</div>

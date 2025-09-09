@@ -5,7 +5,6 @@ import {
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
-import { TooltipProvider } from '@radix-ui/react-tooltip';
 import type { LucideIcon } from 'lucide-react';
 
 interface SidebarItemProps {
@@ -13,6 +12,7 @@ interface SidebarItemProps {
 	label: string;
 	collapsed: boolean;
 	isActive?: boolean;
+	path: string;
 	onClick: () => void;
 }
 
@@ -38,19 +38,17 @@ export function SidebarItem({
 	);
 
 	return collapsed ? (
-		<TooltipProvider>
-			<Tooltip>
-				<TooltipTrigger asChild>
-					<button>{item}</button>
-				</TooltipTrigger>
-				<TooltipContent
-					side='left'
-					arrow
-				>
-					{label}
-				</TooltipContent>
-			</Tooltip>
-		</TooltipProvider>
+		<Tooltip>
+			<TooltipTrigger asChild>
+				<button>{item}</button>
+			</TooltipTrigger>
+			<TooltipContent
+				side='left'
+				arrow
+			>
+				{label}
+			</TooltipContent>
+		</Tooltip>
 	) : (
 		item
 	);

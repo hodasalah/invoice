@@ -7,6 +7,8 @@ module.exports = {
 		extend: {
 			colors: {
 				bg: 'var(--color-bg)',
+				'bg-sidebar': 'var(--color-bg-sidebar)',
+				'text-dark': 'var(--color-text-dark)',
 				card: 'var(--color-card)',
 				text: 'var(--color-text)',
 				primary: 'var(--color-primary)',

@@ -1,12 +1,13 @@
-// components/sidebar/Sidebar.tsx
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
+import Logo from '@/components/shared/logo';
 import { sidebarLinks } from '@/constants/sidebar-links';
 import { cn } from '@/lib/utils';
 import { SidebarItem } from './SidebarItem';
+import { UserDropdown } from './UserDropdow';
 
 interface SidebarProps {
 	collapsed: boolean;
@@ -14,6 +15,7 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed }: SidebarProps) {
 	const [expandedSection, setExpandedSection] = useState<string | null>(null);
+	const [isOpen, setIsOpen] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
 
@@ -32,10 +34,30 @@ export function Sidebar({ collapsed }: SidebarProps) {
 	return (
 		<aside
 			className={cn(
-				'hidden md:flex flex-col border-r bg-white h-screen transition-all duration-300 ease-in-out',
+				'hidden md:flex flex-col border-r bg-white h-screen transition-all duration-300 ease-in-out px-4 py-2',
 				collapsed ? 'w-16' : 'w-64',
 			)}
 		>
+			{/* Logo + User Info */}
+			<div className='flex flex-col items-center py-4 gap-6'>
+				{/* Logo */}
+				<div className='w-full flex justify-center'>
+					<Logo />
+				</div>
+
+				{/* User Info */}
+				{!collapsed ? (
+					<UserDropdown />
+				) : (
+					<img
+						src='/assets/user.jpg'
+						alt='User'
+						className='w-8 h-8 rounded-full object-cover'
+					/>
+				)}
+			</div>
+
+			{/* Sidebar Links */}
 			<nav className='flex flex-col mt-4'>
 				{sidebarLinks.map(({ label, icon: Icon, path, children }) => {
 					const isActive = location.pathname.startsWith(path);
@@ -47,7 +69,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 							key={label}
 							className='relative'
 						>
-							{/* main row */}
+							{/* Main Link */}
 							<div
 								onClick={() =>
 									handleParentClick(path, hasChildren, label)
@@ -87,7 +109,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 									))}
 							</div>
 
-							{/* sub-links */}
+							{/* Sub-links */}
 							<AnimatePresence>
 								{!collapsed && isExpanded && hasChildren && (
 									<motion.div

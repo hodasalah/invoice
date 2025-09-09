@@ -23,9 +23,12 @@ body {
 :root {
   --color-bg: #ffffff;
   --color-card: #f9fafb;
-  --color-text: #1f2937;
-  --color-primary: #4f46e5;
-  --color-secondary: #9333ea;
+  --color-bg-sidebar: #f3f4f6;
+  --color-text: #717579;
+  --color-text-dark: #111827;
+  --color-primary: #44814E;
+  --color-primary-hover: #32603a;
+  --color-secondary: #FF2E2E;
   --color-border: #e5e7eb;
   --color-accent: #f59e0b;
 }
@@ -36,11 +39,11 @@ body {
   --color-bg: #1f2937;
   --color-card: #111827;
   --color-text: #f9f9f9;
-  --color-primary: #8b5cf6;
-  --color-secondary: #c084fc;
+
   --color-border: #374151;
   --color-accent: #fbbf24;
 }
+
 body {
   background-color: var(--color-bg);
   color: var(--color-text);
@@ -53,4 +56,24 @@ body {
     transition-duration: 300ms;
     transition-timing-function: ease-in-out;
   }
+}
+
+.bg-gradient1 {
+  background: linear-gradient(227.32deg, #ac39d5 -5.2%, #d539c5 73.99%);
+}
+
+.bg-gradient2 {
+  background: linear-gradient(204.11deg, #40d5a8 15.46%, #40bad5 95.79%);
+}
+
+.bg-gradient3 {
+  background: linear-gradient(221.17deg, #ff827a 5.91%, #ffa825 97.67%);
+}
+
+.bg-gradient4 {
+  background: linear-gradient(198.93deg, #461ee7 12.77%, #1eb6e7 94.68%);
+}
+
+.bg-gradient5 {
+  background: linear-gradient(221.17deg, var(--color-primary) 12.77%, var(--color-primary-hover) 94.67%);
 }

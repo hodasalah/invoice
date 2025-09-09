@@ -1,9 +1,9 @@
 // pages/DashboardPage.tsx
-import { useState, useEffect } from 'react';
+import { Header } from '@/components/dashboard/header';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { MobileSidebar } from '@/components/dashboard/sidebar/MobileSidebar';
-import { Header } from '@/components/dashboard/header';
-
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { useEffect, useState } from 'react';
 export default function DashboardPage() {
 	const [collapsed, setCollapsed] = useState<boolean>(() => {
 		const saved = localStorage.getItem('sidebarCollapsed');
@@ -19,26 +19,25 @@ export default function DashboardPage() {
 	return (
 		<div className='flex h-screen overflow-hidden'>
 			{/* Desktop Sidebar */}
-			<Sidebar collapsed={collapsed} />
+			<TooltipProvider>
+				<Sidebar collapsed={collapsed} />
 
-			{/* Mobile Sidebar */}
-			<MobileSidebar
-				open={mobileOpen}
-				onClose={() => setMobileOpen(false)}
-			/>
-
-			{/* المحتوى الرئيسي + الهيدر */}
-			<div className='flex-1 flex flex-col overflow-auto'>
-				<Header
-					collapsed={collapsed}
-					toggleCollapse={() => setCollapsed((prev) => !prev)}
-					onMobileMenuClick={() => setMobileOpen(true)}
+				{/* Mobile Sidebar */}
+				<MobileSidebar
+					open={mobileOpen}
+					onClose={() => setMobileOpen(false)}
 				/>
 
-				{/* باقي محتوى الداشبورد */}
-				<main className='p-4'>{/* ... */}</main>
-			</div>
+				{/* المحتوى الرئيسي + الهيدر */}
+				<div className='flex-1 flex flex-col overflow-auto'>
+					<Header
+						collapsed={collapsed}
+						toggleCollapse={() => setCollapsed((prev) => !prev)}
+						onMobileMenuClick={() => setMobileOpen(true)}
+					/>
+					<main className='p-4'>Dashboard contant will be here</main>
+				</div>
+			</TooltipProvider>
 		</div>
 	);
 }
-

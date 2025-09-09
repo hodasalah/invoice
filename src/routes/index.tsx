@@ -1,50 +1,22 @@
-import { lazy, Suspense } from 'react';
-import { Route, Routes } from 'react-router';
-import {Toaster} from  'sonner'
+// AppRoutes.tsx
+import { Suspense } from 'react';
+import { Routes, Route } from 'react-router';
+import { Toaster } from 'sonner';
+import { appRoutes } from './routesConfig';
 
-
-// Lazy load pages
-const Landing = lazy(() => import('../pages/Landing'));
-const Dashboard = lazy(() => import('../pages/Dashboard'));
-const Invoices = lazy(() => import('../pages/Invoices'));
-const Login = lazy(() => import('../pages/Login'));
-const Signup = lazy(() => import('../pages/Signup'));
-const NotFound = lazy(() => import('../pages/NotFound'));
-const Seed = lazy(() => import('../pages/Seed'));
-
-const AppRoutes = () => {
-	return (
-		<Suspense fallback={<div>Loading...</div>}>
-			<Toaster position='top-right' />
-			<Routes>
+const AppRoutes = () => (
+	<Suspense fallback={<div>Loading...</div>}>
+		<Toaster position='top-right' />
+		<Routes>
+			{appRoutes.map((route) => (
 				<Route
-					path='/'
-					element={<Landing />}
+					key={route.path}
+					path={route.path}
+					element={route.element}
 				/>
-				<Route
-					path='/login'
-					element={<Login />}
-				/>
-				<Route
-					path='/signup'
-					element={<Signup />}
-				/>
-				<Route
-					path='/dashboard'
-					element={<Dashboard />}
-				/>
-				<Route
-					path='/invoices'
-					element={<Invoices />}
-				/>
-				<Route path='/seed' element={<Seed />} />
-				<Route
-					path='*'
-					element={<NotFound />}
-				/>
-			</Routes>
-		</Suspense>
-	);
-};
+			))}
+		</Routes>
+	</Suspense>
+);
 
 export default AppRoutes;
