@@ -9,27 +9,28 @@ type PrimaryBtnProps = {
 export const PrimaryBtn = ({
 	children,
 	className,
-	onClick,
-	type = 'button',
-	disabled = false,
 	icon,
+	onClick,
+	disabled = false,
+	type = 'button',
 }: PrimaryBtnProps) => {
 	return (
 		<button
 			type={type}
-			onClick={onClick}
 			disabled={disabled}
-			className={` ${
-				icon && 'gap-2 flex  items-center'
-			} text-white hover:text-gray-300 transition bg-[rgb(99,102,241)] px-4 py-2 rounded-md ${
+			onClick={onClick}
+			className={`relative overflow-hidden ${
+				icon && 'gap-2 flex items-center'
+			} text-white hover:text-gray-300 transition bg-primary px-4 py-2 rounded-md ${
 				className || ''
-			}`}
+			} ripple`}
 		>
 			{children}
 			{icon}
 		</button>
 	);
 };
+
 export const PrimaryOutlineBtn = () => {
 	return <div>index</div>;
 };
@@ -50,7 +51,7 @@ export const SecondaryBtn = ({
 				icon && 'gap-2 flex  items-center'
 			} text-white hover:bg-slate-600 transition text-[rgb(203,215,225))] bg-[rgb(51,65,85)] px-4 py-2 rounded-md border-[.5px] border-slate-300 ${
 				className || ''
-			}`}
+			} ripple`}
 		>
 			{children}
 			{icon}

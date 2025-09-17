@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
 
 import Logo from '@/components/shared/logo';
+import MiniLogo from '@/components/shared/logo/MiniLogo';
 import { sidebarLinks } from '@/constants/sidebar-links';
 import { cn } from '@/lib/utils';
 import { SidebarItem } from './SidebarItem';
@@ -42,7 +43,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 			<div className='flex flex-col items-center py-4 gap-6'>
 				{/* Logo */}
 				<div className='w-full flex justify-center'>
-					<Logo />
+					{collapsed ? <MiniLogo /> : <Logo />}
 				</div>
 
 				{/* User Info */}

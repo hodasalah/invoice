@@ -27,7 +27,7 @@ const Testimonials = () => {
 					{testimonials.map((t, index) => (
 						<div
 							key={index}
-							className='bg-[rgb(30,41,59)] p-6 rounded-lg dark:shadow-sm shadow-[10px_10px_30px_0px_rgba(99,102,241,0.5)] border hover:shadow-md transition flex flex-col items-center text-center'
+							className='bg-[rgb(30,41,59)] p-6 rounded-lg dark:shadow-sm shadow-[10px_10px_30px_0px_rgba(68,129,78,0.5)] border hover:shadow-md transition flex flex-col items-center text-center'
 						>
 							<div className='w-20 h-20 flex items-center justify-center rounded-full bg-gray-200 text-3xl mb-4'>
 								{t.avatar}

@@ -44,13 +44,13 @@ const Nav = () => {
 					<li>
 						<Link
 							to='/register'
-							className='flex gap-2 items-center text-white hover:text-gray-300 transition bg-[rgb(99,102,241)] px-4 py-2 rounded-md'
+							className='flex gap-2 items-center text-white hover:text-gray-300 transition bg-primary px-4 py-2 rounded-md ripple'
 						>
 							{isArabic ? 'ابــــدأ الآن' : 'Get Started'}
 							<ArrowRight
 								className={`${
 									isArabic ? 'rotate-180' : ''
-								} text-[rgb(125,211,252)] mt-1`}
+								} text-white mt-1`}
 								size={16}
 								height={14}
 							/>

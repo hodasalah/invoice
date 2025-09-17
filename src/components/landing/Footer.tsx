@@ -31,7 +31,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#features'
-								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+								className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 							>
 								{t('footer.links.features')}
 							</a>
@@ -39,7 +39,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#pricing'
-								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+								className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 							>
 								{t('footer.links.pricing')}
 							</a>
@@ -47,7 +47,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#contact'
-								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+								className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 							>
 								{t('footer.links.contact')}
 							</a>
@@ -55,7 +55,7 @@ const Footer = () => {
 						<li>
 							<a
 								href='#faq'
-								className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+								className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 							>
 								{t('footer.links.faq')}
 							</a>
@@ -82,7 +82,7 @@ const Footer = () => {
 							target='_blank'
 							rel='noreferrer'
 							aria-label='Facebook'
-							className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+							className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 						>
 							<Facebook size={20} />
 						</a>
@@ -91,7 +91,7 @@ const Footer = () => {
 							target='_blank'
 							rel='noreferrer'
 							aria-label='Twitter'
-							className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+							className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 						>
 							<Twitter size={20} />
 						</a>
@@ -100,7 +100,7 @@ const Footer = () => {
 							target='_blank'
 							rel='noreferrer'
 							aria-label='LinkedIn'
-							className='dark:hover:text-white hover:text-[rgb(85,85,239)] transition'
+							className='dark:hover:text-white hover:text-[rgb(68,129,78)] transition'
 						>
 							<Linkedin size={20} />
 						</a>
@@ -119,7 +119,7 @@ const Footer = () => {
 							href='https://www.linkedin.com/in/hoda-salah/'
 							target='_blank'
 							rel='noreferrer'
-							className=' text-[rgb(99,102,241)] dark:hover:text-white transition'
+							className=' text-[rgb(68,129,78)] dark:hover:text-white transition'
 						/>,
 					]}
 				/>

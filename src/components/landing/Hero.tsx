@@ -27,7 +27,7 @@ const Hero = () => {
 							<ArrowRight
 								className={`${
 									isArabic ? 'rotate-180' : ''
-								} text-[rgb(125,211,252)] mt-1`}
+								} text-white mt-1`}
 								size={16}
 								height={14}
 							/>
@@ -44,7 +44,7 @@ const Hero = () => {
 							<ArrowRight
 								className={`${
 									isArabic ? 'rotate-180' : ''
-								} text-[rgb(125,211,252)] mt-1`}
+								} text-white mt-1`}
 								size={16}
 								height={14}
 							/>

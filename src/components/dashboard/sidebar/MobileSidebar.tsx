@@ -1,8 +1,9 @@
 // components/sidebar/mobile-sidebar.tsx
+import { PrimaryBtn } from '@/components/shared/button';
 import { SidebarItem } from './SidebarItem';
-import { Button } from '@/components/ui/button';
 import { sidebarLinks } from '@/constants/sidebar-links';
 import { cn } from '@/lib/utils';
+import { LucideSidebarClose } from 'lucide-react';
 
 interface MobileSidebarProps {
 	open: boolean;
@@ -18,13 +19,13 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 			)}
 		>
 			<div className='flex justify-end mb-4'>
-				<Button
-					variant='ghost'
-					size='sm'
+				<PrimaryBtn
+					type='button'
+					className=''
 					onClick={onClose}
-				>
-					إغلاق
-				</Button>
+					children={<LucideSidebarClose className='h-5 w-5' />}
+					disabled={false}
+				></PrimaryBtn>
 			</div>
 			<nav className='flex flex-col gap-2'>
 				{sidebarLinks.map(({ label, icon, path, children }) => (

@@ -1,18 +1,11 @@
 // Header.tsx
-import { Button } from '@/components/ui/button';
+import { PrimaryBtn } from '@/components/shared/button';
+import { SearchBar } from '@/components/shared/ٍSearchBar';
 import { appRoutes } from '@/routes/routesConfig';
-import { Bell, ChevronsLeft, ChevronsRight, Inbox, Mail, Menu, Plus } from 'lucide-react';
+import { Bell, Inbox, Mail, Menu, Plus } from 'lucide-react';
 import { matchPath, useLocation } from 'react-router';
 import { HeaderIcon } from './HeaderIcon';
 import { SidebarButton } from './SidebarButton';
-import { SearchBar } from '@/components/shared/ٍSearchBar';
-import {
-	DropdownMenu,
-	DropdownMenuTrigger,
-	DropdownMenuContent,
-	DropdownMenuItem,
-} from '@radix-ui/react-dropdown-menu';
-import { ChevronDownIcon, LogOut, User } from 'lucide-react';
 
 type HeaderProps = {
 	collapsed: boolean;
@@ -37,14 +30,14 @@ export function Header({
 	return (
 		<header className='flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900'>
 			<div className='flex items-center gap-3'>
-				<Button
-					variant='outline'
-					size='icon'
+				<PrimaryBtn
+					type='button'
+					disabled={false}
 					className='md:hidden'
 					onClick={onMobileMenuClick}
 				>
 					<Menu className='w-5 h-5' />
-				</Button>
+				</PrimaryBtn>
 				<SidebarButton
 					collapsed={collapsed}
 					toggleCollapse={toggleCollapse}
@@ -76,10 +69,14 @@ export function Header({
 						count={10}
 					/>
 				</div>
-				<Button className='bg-primary hover:bg-primary-hover text-white px-4 py-6 rounded-md hidden md:flex items-center text-sm md:text-base'>
-					<Plus className='w-4 h-4 mr-2' />
+				<PrimaryBtn
+					type='button'
+					disabled={false}
+					icon={<Plus className='w-4 h-4' />}
+					onClick={() => console.log('Create Invoice')}
+				>
 					Create Invoice
-				</Button>
+				</PrimaryBtn>
 			</div>
 		</header>
 	);
