@@ -1,9 +1,10 @@
-import Logo from '@/components/shared/logo';
+import WhiteLogo from '@/components/shared/logo/WhiteLogo';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { login } from '@/firebaseConfigs/auth';
 import { loginSchema } from '@/validations/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { TagsIcon } from 'lucide-react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -16,6 +17,18 @@ type LoginFormInputs = {
 
 const Login = () => {
 	const { t } = useTranslation('auth');
+	const list = [
+		t('module_sales'),
+		t('module_inventory'),
+		t('module_pos'),
+		t('module_booking'),
+		t('module_membership'),
+		t('module_chart'),
+		t('module_clients'),
+		t('module_branches'),
+		t('module_hr'),
+		t('module_points'),
+	];
 	const navigate = useNavigate();
 	const {
 		register,
@@ -41,103 +54,119 @@ const Login = () => {
 		}
 	};
 
+	// min-height: 600px;
+	// height: calc(100vh - 200px);
+	// box-shadow: 0 0 60px 10px #552c2c33;
+
 	return (
-		<div className='min-h-screen flex items-center justify-center bg-gray-100 dark:bg-gray-900'>
-			<div className='flex flex-col md:flex-row bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden max-w-4xl w-full'>
+		<div className='bg-[url("/assets/login-bg.jpg")] bg-center bg-cover h-screen md:p-[100px] p-[50px]'>
+			{/* login-wrapper */}
+			<div className='flex flex-col md:flex-row bg-white  shadow-[0,0,60px,10px,#552c2c33] overflow-hidden max-w-6xl  min-h-[600px] md:h-[calc(100vh-200px)] h-[calc((100vh-100px)]  mx-auto'>
 				{/* Left side */}
-				<div className='hidden md:block md:w-1/2 p-8 bg-gray-50 dark:bg-gray-900'>
-					<Logo />
-					<h2 className='text-xl font-bold mb-2 text-gray-800 dark:text-white'>
+				<div className='hidden md:block  p-[50px] l-bg-gradient bg-bottom max-w-[60%] flex-grow-0 flex-shrink-0 basis-[60%] '>
+					<WhiteLogo />
+					<h2 className='text-5xl font-bold my-10 text-[#1b2b00]'>
 						{t('tagline')}
 					</h2>
-					<p className='text-sm text-gray-600 dark:text-gray-300 mb-4'>
+					<p className='text-md text-[#1b2b00] mb-4 max-w-md'>
 						{t('description')}
 					</p>
-					<ul className='list-disc pl-5 text-sm text-gray-700 dark:text-gray-400 space-y-1'>
-						<li>{t('module_sales')}</li>
-						<li>{t('module_inventory')}</li>
-						<li>{t('module_pos')}</li>
-						<li>{t('module_booking')}</li>
-						<li>{t('module_membership')}</li>
-						<li>{t('module_chart')}</li>
-						<li>{t('module_clients')}</li>
-						<li>{t('module_branches')}</li>
-						<li>{t('module_hr')}</li>
-						<li>{t('module_points')}</li>
+					<ul className='list pl-5 text-xl text-[#1b2b00] space-y-1 p-8 flex flex-wrap font-bold'>
+						{list.map((item, index) => (
+							<li
+								key={index}
+								className='flex items-center w-1/2 mb-2'
+							>
+								<TagsIcon className='w-4 h-4 text-[#1b2b00]' />
+								<span className='ml-2'>{item}</span>
+							</li>
+						))}
 					</ul>
 				</div>
 
 				{/* Right side */}
-				<div className='w-full md:w-1/2 p-8'>
-					<h2 className='text-2xl font-bold mb-6 text-gray-800 dark:text-white text-center'>
-						{t('login_title')}
-					</h2>
-					<form
-						onSubmit={handleSubmit(onSubmit)}
-						className='space-y-4'
-					>
-						<div className=''>
-							<div className='relative z-0 w-full mb-5 group'>
-								<Input
-									type='email'
-									{...register('email')}
-									id='floating_email'
-									placeholder=' '
-									required
-								/>
-								<Label htmlFor='floating_email'>
-									{t('email')}
-								</Label>
-								{errors.email && (
-									<p className='text-red-500 text-sm'>
-										{errors.email.message}
-									</p>
-								)}
-							</div>
-
-							<div className='relative z-0 w-full mb-5 group'>
-								<Input
-									id='floating_password'
-									{...register('password')}
-									type='password'
-									placeholder=' '
-									required
-								/>
-								<Label htmlFor='floating_password'>
-									{t('password')}
-								</Label>
-								{errors.password && (
-									<p className='text-red-500 text-sm'>
-										{errors.password.message}
-									</p>
-								)}
-							</div>
+				<div className='p-12 w-full h-full flex flex-col justify-center items-center '>
+					<div className='flex flex-col h-full'>
+						<div className='mb-6'>
+							<h2 className='text-3xl font-semibold mb-3 text-gray-800 dark:text-white'>
+								{t('login_title')}
+							</h2>
+							<p className='text-gray-600 text-sm'>
+								{t('login_description')}
+							</p>
 						</div>
 
-						<div className='text-right text-sm text-blue-500 cursor-pointer'>
-							{t('forgot_password')}
-						</div>
-
-						<button
-							type='submit'
-							disabled={!isValid}
-							className={`w-full ${
-								!isValid ? 'opacity-50 cursor-not-allowed' : ''
-							} bg-green-600 text-white py-2 rounded-md mt-4`}
+						<form
+							onSubmit={handleSubmit(onSubmit)}
+							className='my-auto'
 						>
-							{t('login_button')}
-						</button>
-					</form>
+							<div className=''>
+								<div className='relative z-0 w-full mb-5 group'>
+									<Input
+										type='email'
+										{...register('email')}
+										id='floating_email'
+										placeholder=' '
+										required
+										className='py-4'
+									/>
+									<Label htmlFor='floating_email' >
+										{t('email')}
+									</Label>
+									{errors.email && (
+										<p className='text-red-500 text-sm'>
+											{errors.email.message}
+										</p>
+									)}
+								</div>
 
-					<p className='mt-4 text-center text-sm text-gray-600 dark:text-gray-300'>
-						{t('no_account')}{' '}
-						<span
-							className='text-blue-500 cursor-pointer'
-							onClick={() => navigate('/signup')}
-						>
-							{t('create_account')}
-						</span>
-					</p>
+								<div className='relative z-0 w-full mb-5 group'>
+									<Input
+										id='floating_password'
+										{...register('password')}
+										type='password'
+										placeholder=' '
+										required
+										className='py-4'
+									/>
+									<Label htmlFor='floating_password'>
+										{t('password')}
+									</Label>
+									{errors.password && (
+										<p className='text-red-500 text-sm'>
+											{errors.password.message}
+										</p>
+									)}
+								</div>
+							</div>
+
+							<div className='text-right text-sm text-blue-500 cursor-pointer'>
+								{t('forgot_password')}
+							</div>
+
+							<button
+								type='submit'
+								disabled={!isValid}
+								className={`w-full ${
+									!isValid
+										? 'opacity-50 cursor-not-allowed'
+										: ''
+								} bg-green-600 text-white py-2 rounded-md mt-4`}
+							>
+								{t('login_button')}
+							</button>
+						</form>
+
+						<p className='mt-4 text-center text-sm text-gray-600 dark:text-gray-300'>
+							{t('no_account')}{' '}
+							<span
+								className='text-blue-500 cursor-pointer'
+								onClick={() => navigate('/signup')}
+							>
+								{t('create_account')}
+							</span>
+						</p>
+					</div>
 				</div>
 			</div>
 		</div>
