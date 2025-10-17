@@ -22,10 +22,10 @@ export const sidebarLinks = [
 		children: [
 			{
 				label: 'Create Invoice',
-				path: '/invoices/create',
+				path: '/dashboard/invoices/create',
 				icon: PlusIcon,
 			},
-			{ label: 'List Invoices', path: '/invoices/list', icon: ListIcon },
+			{ label: 'List Invoices', path: '/dashboard/invoices/list', icon: ListIcon },
 		],
 	},
 	{

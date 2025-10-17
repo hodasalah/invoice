@@ -4,6 +4,7 @@ import { Sidebar } from '@/components/dashboard/sidebar';
 import { MobileSidebar } from '@/components/dashboard/sidebar/MobileSidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { useEffect, useState } from 'react';
+import { Outlet } from 'react-router';
 export default function DashboardPage() {
 	const [collapsed, setCollapsed] = useState<boolean>(() => {
 		const saved = localStorage.getItem('sidebarCollapsed');
@@ -35,7 +36,9 @@ export default function DashboardPage() {
 						toggleCollapse={() => setCollapsed((prev) => !prev)}
 						onMobileMenuClick={() => setMobileOpen(true)}
 					/>
-					<main className='p-4'>Dashboard contant will be here</main>
+					<main className='p-4'>
+						<Outlet />
+					</main>
 				</div>
 			</TooltipProvider>
 		</div>

@@ -1,9 +1,9 @@
 // Header.tsx
 import { PrimaryBtn } from '@/components/shared/button';
 import { SearchBar } from '@/components/shared/ٍSearchBar';
-import { appRoutes } from '@/routes/routesConfig';
+import { usePageTitle } from '@/hooks/usePageTitle';
 import { Bell, Inbox, Mail, Menu, Plus } from 'lucide-react';
-import { matchPath, useLocation } from 'react-router';
+import { useEffect } from 'react';
 import { HeaderIcon } from './HeaderIcon';
 import { SidebarButton } from './SidebarButton';
 
@@ -18,15 +18,11 @@ export function Header({
 	toggleCollapse,
 	onMobileMenuClick,
 }: HeaderProps) {
-	const location = useLocation();
+	  const title = usePageTitle();
 
-	// نجيب العنوان من الـ route object مباشرة
-	const currentRoute = appRoutes.find((route) =>
-		matchPath({ path: route.path, end: true }, location.pathname),
-	);
-
-	const pageTitle = currentRoute?.title || 'Page';
-
+		useEffect(() => {
+			document.title = `${title} `;
+		}, [title]);
 	return (
 		<header className='flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900'>
 			<div className='flex items-center gap-3'>
@@ -44,7 +40,7 @@ export function Header({
 				/>
 
 				<h2 className='text-lg md:text-xl font-semibold text-primary dark:text-gray-100'>
-					{pageTitle}
+					{title}
 				</h2>
 			</div>
 			<SearchBar />
