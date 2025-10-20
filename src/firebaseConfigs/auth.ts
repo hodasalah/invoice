@@ -4,7 +4,8 @@ import {
 	signInWithEmailAndPassword,
 	signOut,
 } from 'firebase/auth';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
+import { doc, getDoc } from 'firebase/firestore';
 
 // تسجيل مستخدم جديد
 export const signup = async (
@@ -17,17 +18,28 @@ export const signup = async (
 		password,
 	);
 	return userCredential.user;
-};
+}
 
-// تسجيل دخول
-export const login = async (email: string, password: string): Promise<User> => {
+export const login = async (email: string, password: string) => {
 	const userCredential = await signInWithEmailAndPassword(
 		auth,
 		email,
 		password,
 	);
-	return userCredential.user;
+	const user = userCredential.user;
+
+	const userDoc = await getDoc(doc(db, 'users', user.uid));
+
+	if (!userDoc.exists()) {
+		throw new Error('User record not found in Firestore');
+	}
+
+	const userData = userDoc.data();
+	console.log('📌 Logged in user data:');
+	console.table(userData);
+	return { ...user, ...userData };
 };
+
 
 // تسجيل خروج
 export const logout = async () => {

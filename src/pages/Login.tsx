@@ -38,21 +38,27 @@ const Login = () => {
 		resolver: zodResolver(loginSchema(t)),
 		mode: 'onTouched',
 	});
-	const onSubmit = async (data: LoginFormInputs) => {
-		try {
-			await login(data.email, data.password);
-			toast.success(t('login_success'));
+const onSubmit = async (data: LoginFormInputs) => {
+	try {
+		const userData = await login(data.email, data.password);
+
+		toast.success(t('login_success'));
+
+		if (userData.role === 'admin') {
 			navigate('/dashboard');
-		} catch (error: unknown) {
-			const errorMessage =
-				typeof error === 'object' &&
-				error !== null &&
-				'message' in error
-					? (error as { message?: string }).message
-					: undefined;
-			toast.error(errorMessage || t('signup_error'));
+		} else {
+			navigate('/dashboard/user');
 		}
-	};
+	} catch (error: unknown) {
+		const errorMessage =
+			typeof error === 'object' && error !== null && 'message' in error
+				? (error as { message?: string }).message
+				: undefined;
+		toast.error(errorMessage || t('signup_error'));
+	}
+};
+
+
 
 	// min-height: 600px;
 	// height: calc(100vh - 200px);

@@ -1,19 +1,140 @@
-// src/routes/SeedPage.tsx
 import { faker } from '@faker-js/faker';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../firebaseConfigs/firebase';
-import { addData, setUserData } from '../firebaseConfigs/firestore';
+import { auth, db } from '../firebaseConfigs/firebase';
+import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
 
 const SeedPage = () => {
 	const handleSeed = async () => {
-		const usersCount = 3;
+		const usersCount = 2; // عدد المستخدمين العاديين
 
+		// --------- 1️⃣ إنشاء admin ثابت ---------
+		try {
+			const adminEmail = 'hoda@gmail.com';
+			const adminPassword = 'admin123';
+			const adminCredential = await createUserWithEmailAndPassword(
+				auth,
+				adminEmail,
+				adminPassword,
+			);
+			const adminUser = adminCredential.user;
+
+			const adminData = {
+				uid: adminUser.uid,
+				firstName: 'Hoda',
+				lastName: 'Salah',
+				email: adminEmail,
+				password: adminPassword, // ⚠️ للـ DEV فقط
+				avatar: faker.image.avatar(),
+				role: 'admin',
+				phone: faker.phone.number('+9665########'),
+				companyName: 'Hoda Co.',
+				address: `${faker.location.city()}, Saudi Arabia`,
+				vatNumber: faker.string.numeric(10),
+				crNumber: `CR-${faker.string.numeric(5)}`,
+				createdAt: new Date().toISOString(),
+			};
+
+			await setDoc(doc(db, 'users', adminUser.uid), adminData);
+			console.log('✅ Admin created:');
+			console.table(adminData);
+
+			// --------- إنشاء بعض العملاء والفواتير للـ admin ---------
+			for (let j = 0; j < 3; j++) {
+				const clientId = (
+					await addDoc(collection(db, 'clients'), {
+						userId: adminUser.uid,
+						name: faker.person.fullName(),
+						email: faker.internet.email(),
+						phone: faker.phone.number('+9665########'),
+						address: `${faker.location.city()}, Saudi Arabia`,
+						createdAt: new Date().toISOString(),
+					})
+				).id;
+
+				const invoicesCount = faker.number.int({ min: 1, max: 3 });
+				for (let k = 0; k < invoicesCount; k++) {
+					const itemsCount = faker.number.int({ min: 1, max: 5 });
+					const items = Array.from({ length: itemsCount }).map(() => {
+						const price = faker.number.int({ min: 100, max: 2000 });
+						const quantity = faker.number.int({ min: 1, max: 5 });
+						return {
+							description: faker.commerce.productName(),
+							quantity,
+							unitPrice: price,
+							total: price * quantity,
+						};
+					});
+
+					const subTotal = items.reduce(
+						(sum, it) => sum + it.total,
+						0,
+					);
+					const vat = Math.round(subTotal * 0.15);
+					const total = subTotal + vat;
+					const status = faker.helpers.arrayElement([
+						'paid',
+						'unpaid',
+						'overdue',
+					]);
+
+					const invoiceDate = faker.date.recent({ days: 30 });
+					const dueDate = new Date(invoiceDate);
+					dueDate.setDate(dueDate.getDate() + 15);
+
+					const invoiceId = (
+						await addDoc(collection(db, 'invoices'), {
+							userId: adminUser.uid,
+							clientId,
+							invoiceNumber: `INV-${faker.date
+								.future()
+								.getFullYear()}-${faker.string.numeric(3)}`,
+							date: invoiceDate.toISOString().split('T')[0],
+							dueDate: dueDate.toISOString().split('T')[0],
+							items,
+							subTotal,
+							vat,
+							total,
+							status,
+							currency: 'SAR',
+							notes: 'Thank you for your business',
+							createdAt: new Date().toISOString(),
+						})
+					).id;
+
+					// إضافة payment إذا الفاتورة مدفوعة
+					if (status === 'paid') {
+						const paymentDate = new Date(invoiceDate);
+						paymentDate.setDate(
+							paymentDate.getDate() +
+								faker.number.int({ min: 1, max: 10 }),
+						);
+
+						await addDoc(collection(db, 'payments'), {
+							userId: adminUser.uid,
+							invoiceId,
+							amount: total,
+							method: faker.helpers.arrayElement([
+								'cash',
+								'credit_card',
+								'bank_transfer',
+							]),
+							transactionId: `TX-${faker.string.numeric(6)}`,
+							date: paymentDate.toISOString(),
+						});
+					}
+				}
+			}
+		} catch (err) {
+			console.error('❌ Error creating admin (maybe exists):', err);
+		}
+
+		// --------- 2️⃣ إنشاء المستخدمين العاديين ---------
 		for (let i = 0; i < usersCount; i++) {
 			const email = faker.internet.email();
 			const password = faker.internet.password({ length: 10 });
+			const avatar = faker.image.avatar();
 
 			try {
-				// ✅ إنشاء المستخدم في Firebase Auth
 				const userCredential = await createUserWithEmailAndPassword(
 					auth,
 					email,
@@ -21,12 +142,14 @@ const SeedPage = () => {
 				);
 				const firebaseUser = userCredential.user;
 
-				// ✅ بيانات إضافية في Firestore
 				const userData = {
 					uid: firebaseUser.uid,
 					firstName: faker.person.firstName(),
 					lastName: faker.person.lastName(),
 					email: firebaseUser.email,
+					password, // ⚠️ للـ DEV فقط
+					avatar,
+					role: 'user',
 					phone: faker.phone.number('+9665########'),
 					companyName: faker.company.name(),
 					address: `${faker.location.city()}, Saudi Arabia`,
@@ -35,25 +158,25 @@ const SeedPage = () => {
 					createdAt: new Date().toISOString(),
 				};
 
-				await setUserData(firebaseUser.uid, userData);
+				await setDoc(doc(db, 'users', firebaseUser.uid), userData);
+				console.log(`✅ User ${i + 1} created:`);
+				console.table(userData);
 
-				// 🟢 Clients
-				const clientsCount = faker.number.int({ min: 3, max: 5 });
+				// --------- إضافة العملاء والفواتير ---------
+				const clientsCount = faker.number.int({ min: 1, max: 3 });
 				for (let j = 0; j < clientsCount; j++) {
-					const clientId = faker.string.uuid();
-					const client = {
-						id: clientId,
-						userId: firebaseUser.uid,
-						name: faker.person.fullName(),
-						email: faker.internet.email(),
-						phone: faker.phone.number('+9665########'),
-						address: `${faker.location.city()}, Saudi Arabia`,
-						createdAt: new Date().toISOString(),
-					};
-					await addData('clients', client);
+					const clientId = (
+						await addDoc(collection(db, 'clients'), {
+							userId: firebaseUser.uid,
+							name: faker.person.fullName(),
+							email: faker.internet.email(),
+							phone: faker.phone.number('+9665########'),
+							address: `${faker.location.city()}, Saudi Arabia`,
+							createdAt: new Date().toISOString(),
+						})
+					).id;
 
-					// 🟢 Invoices
-					const invoicesCount = faker.number.int({ min: 2, max: 4 });
+					const invoicesCount = faker.number.int({ min: 1, max: 3 });
 					for (let k = 0; k < invoicesCount; k++) {
 						const itemsCount = faker.number.int({ min: 1, max: 5 });
 						const items = Array.from({ length: itemsCount }).map(
@@ -76,53 +199,52 @@ const SeedPage = () => {
 						);
 
 						const subTotal = items.reduce(
-							(sum, item) => sum + item.total,
+							(sum, it) => sum + it.total,
 							0,
 						);
 						const vat = Math.round(subTotal * 0.15);
 						const total = subTotal + vat;
 						const status = faker.helpers.arrayElement([
-							'unpaid',
 							'paid',
+							'unpaid',
 							'overdue',
 						]);
+
 						const invoiceDate = faker.date.recent({ days: 30 });
 						const dueDate = new Date(invoiceDate);
 						dueDate.setDate(dueDate.getDate() + 15);
 
-						const invoice = {
-							id: faker.string.uuid(),
-							userId: firebaseUser.uid,
-							clientId,
-							invoiceNumber: `INV-${faker.date
-								.future()
-								.getFullYear()}-${faker.string.numeric(3)}`,
-							date: invoiceDate.toISOString().split('T')[0],
-							dueDate: dueDate.toISOString().split('T')[0],
-							status,
-							subTotal,
-							vat,
-							total,
-							currency: 'SAR',
-							items,
-							notes: 'Thank you for your business.',
-							createdAt: new Date().toISOString(),
-						};
+						const invoiceId = (
+							await addDoc(collection(db, 'invoices'), {
+								userId: firebaseUser.uid,
+								clientId,
+								invoiceNumber: `INV-${faker.date
+									.future()
+									.getFullYear()}-${faker.string.numeric(3)}`,
+								date: invoiceDate.toISOString().split('T')[0],
+								dueDate: dueDate.toISOString().split('T')[0],
+								items,
+								subTotal,
+								vat,
+								total,
+								status,
+								currency: 'SAR',
+								notes: 'Auto-generated invoice',
+								createdAt: new Date().toISOString(),
+							})
+						).id;
 
-						await addData('invoices', invoice);
-
-						// 🟢 Payments (لو الفاتورة مدفوعة)
-						if (invoice.status === 'paid') {
-							const paymentDate = new Date(invoice.date);
+						if (status === 'paid') {
+							const paymentDate = new Date(invoiceDate);
 							paymentDate.setDate(
 								paymentDate.getDate() +
 									faker.number.int({ min: 1, max: 10 }),
 							);
-							const payment = {
-								id: faker.string.uuid(),
-								invoiceId: invoice.id,
+
+							await addDoc(collection(db, 'payments'), {
 								userId: firebaseUser.uid,
-								amount: invoice.total,
+								invoiceId,
+								amount: total,
 								method: faker.helpers.arrayElement([
 									'cash',
 									'credit_card',
@@ -130,8 +252,7 @@ const SeedPage = () => {
 								]),
 								transactionId: `TX-${faker.string.numeric(6)}`,
 								date: paymentDate.toISOString(),
-							};
-							await addData('payments', payment);
+							});
 						}
 					}
 				}
@@ -141,20 +262,17 @@ const SeedPage = () => {
 		}
 
 		alert(
-			'✅ تم إنشاء مستخدمين + بيانات Clients, Invoices, Payments بنجاح!',
+			'✅ تم إنشاء admin + مستخدمين + بيانات clients/invoices/payments',
 		);
 	};
 
 	return (
 		<div style={{ padding: 20 }}>
-			<h1>صفحة توليد بيانات Firestore + Auth</h1>
-			<p>
-				اضغط على الزر لتوليد بيانات Users في Firebase Authentication
-				وكمان Clients, Invoices و Payments في Firestore.
-			</p>
+			<h1>🚀 Seed Database</h1>
+			<p>اضغطي لتوليد admin ومستخدمين تجريبيين مع بياناتهم.</p>
 			<button
 				onClick={handleSeed}
-				className='mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition'
+				className='mt-4 px-4 py-2 bg-blue-600 text-white rounded'
 			>
 				توليد البيانات
 			</button>
