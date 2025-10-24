@@ -1,10 +1,13 @@
 import WhiteLogo from '@/components/shared/logo/WhiteLogo';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { loginUser } from '@/features/user/userSlice';
 import { login } from '@/firebaseConfigs/auth';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginSchema } from '@/validations/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TagsIcon } from 'lucide-react';
+import { use } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -17,6 +20,11 @@ type LoginFormInputs = {
 
 const Login = () => {
 	const { t } = useTranslation('auth');
+	const dispatch = useAppDispatch();
+	const { currentUser, loading, error } = useAppSelector(
+		(state) => state.user,
+	);
+
 	const list = [
 		t('module_sales'),
 		t('module_inventory'),
@@ -38,13 +46,16 @@ const Login = () => {
 		resolver: zodResolver(loginSchema(t)),
 		mode: 'onTouched',
 	});
+
 const onSubmit = async (data: LoginFormInputs) => {
 	try {
 		const userData = await login(data.email, data.password);
-
+    dispatch(loginUser({ email: data.email, password: data.password }));
 		toast.success(t('login_success'));
 
-		if (userData.role === 'admin') {
+		// Cast userData to a type that may include an optional role, or use a safe assertion
+		const role = (userData as { role?: string } & Record<string, any>)?.role;
+		if (role === 'admin') {
 			navigate('/dashboard');
 		} else {
 			navigate('/dashboard/user');
@@ -58,16 +69,11 @@ const onSubmit = async (data: LoginFormInputs) => {
 	}
 };
 
-
-
-	// min-height: 600px;
-	// height: calc(100vh - 200px);
-	// box-shadow: 0 0 60px 10px #552c2c33;
-
 	return (
 		<div className='bg-[url("/assets/login-bg.jpg")] bg-center bg-cover h-screen md:p-[100px] p-[50px]'>
 			{/* login-wrapper */}
-			<div className='flex flex-col md:flex-row bg-white  shadow-[0,0,60px,10px,#552c2c33] overflow-hidden max-w-6xl  min-h-[600px] md:h-[calc(100vh-200px)] h-[calc((100vh-100px)]  mx-auto'>
+			{loading && (<h1>loading...</h1>)}
+			<div className='flex flex-col md:flex-row bg-white  overflow-hidden max-w-6xl  mx-auto'>
 				{/* Left side */}
 				<div className='hidden md:block  p-[50px] l-bg-gradient bg-bottom max-w-[60%] flex-grow-0 flex-shrink-0 basis-[60%] '>
 					<WhiteLogo />

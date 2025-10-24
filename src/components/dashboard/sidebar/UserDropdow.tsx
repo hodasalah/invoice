@@ -1,10 +1,20 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRightIcon, LogOut, User } from 'lucide-react';
-import { useState } from 'react';
+import { use, useState } from 'react';
 import { DropdownItem } from '../../shared/DropdownItem';
+import { useAppDispatch } from '@/store/hooks';
+import { logoutUser } from '@/features/user/userSlice';
+import { useNavigate } from 'react-router';
 
 export const UserDropdown = () => {
 	const [isOpen, setIsOpen] = useState(false);
+	const dispatch = useAppDispatch();
+	const navigate = useNavigate();
+
+	const handleLogout = () => {
+		dispatch(logoutUser()); // استخدم الإجراء لتسجيل الخروج
+		navigate('/login');
+	};
 
 	return (
 		<div className='w-full'>
@@ -56,7 +66,7 @@ export const UserDropdown = () => {
 						<DropdownItem
 							icon={LogOut}
 							label='تسجيل الخروج'
-							onClick={() => console.log('Logout')}
+							onClick={() => handleLogout()}
 						/>
 					</motion.div>
 				)}
