@@ -3,6 +3,7 @@ import invoiceReducer from '../features/invoices/invoiceSlice';
 import themeReducer from '../features/theme/themeSlice';
 import languageReducer from '../features/theme/languageSlice';
 import userReducer from '../features/user/userSlice';
+import clientsReducer from '../features/clients/clientsSlice';
 
 export const store = configureStore({
 	reducer: {
@@ -10,6 +11,7 @@ export const store = configureStore({
 		theme: themeReducer,
 		language: languageReducer,
 		user: userReducer,
+		clients: clientsReducer,
 	},
 });
 

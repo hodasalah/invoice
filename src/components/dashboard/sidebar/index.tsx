@@ -7,6 +7,7 @@ import Logo from '@/components/shared/logo';
 import MiniLogo from '@/components/shared/logo/MiniLogo';
 import { sidebarLinks } from '@/constants/sidebar-links';
 import { cn } from '@/lib/utils';
+import { useAppSelector } from '@/store/hooks';
 import { SidebarItem } from './SidebarItem';
 import { UserDropdown } from './UserDropdow';
 
@@ -19,7 +20,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 	const [isOpen, setIsOpen] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
-
+	const currentUser = useAppSelector((state) => state.user.currentUser);
 	const handleParentClick = (
 		path: string,
 		hasChildren: boolean,
@@ -51,9 +52,9 @@ export function Sidebar({ collapsed }: SidebarProps) {
 					<UserDropdown />
 				) : (
 					<img
-						src='/assets/user.jpg'
+						src={currentUser?.avatar || '/assets/user.jpg'}
 						alt='User'
-						className='w-8 h-8 rounded-full object-cover'
+						className='w-8 h-8 rounded-md object-cover'
 					/>
 				)}
 			</div>

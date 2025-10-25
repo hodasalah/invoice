@@ -3,7 +3,7 @@ import { lazy } from 'react';
 const Landing = lazy(() => import('../pages/Landing'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const InvoicesList = lazy(() => import('../pages/invoices/InvoicesList'));
-const InvoiceForm = lazy(() => import('../pages/invoices/InvoiceForm'));
+const CreateInvoice = lazy(() => import('../pages/invoices/CreateInvoice'));
 
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
@@ -37,12 +37,17 @@ export const appRoutes: Route[] = [
 			},
 			{
 				path: 'invoices/create',
-				element: <InvoiceForm />,
+				element: <CreateInvoice />,
 				title: 'Create Invoice',
 				protected: true,
 			},
 		],
 	},
 	{ path: '/seed', element: <Seed />, title: 'Seed', protected: true },
-	{ path: '*', element: <NotFound />, title: 'Page Not Found', protected: false},
+	{
+		path: '*',
+		element: <NotFound />,
+		title: 'Page Not Found',
+		protected: false,
+	},
 ];

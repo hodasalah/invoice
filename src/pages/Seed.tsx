@@ -11,15 +11,24 @@ const SeedPage = () => {
 		try {
 			const adminEmail = 'hoda@gmail.com';
 			const adminPassword = 'admin123';
-			const adminCredential = await createUserWithEmailAndPassword(
-				auth,
-				adminEmail,
-				adminPassword,
-			);
-			const adminUser = adminCredential.user;
+			const adminUid = 'h38maJ96swN6eltPXAfhvNrFRLy2'; // UID ثابت
+
+			// إنشاء حساب admin في Firebase Auth (لو مش موجود)
+			let adminUser;
+			try {
+				const adminCredential = await createUserWithEmailAndPassword(
+					auth,
+					adminEmail,
+					adminPassword,
+				);
+				adminUser = adminCredential.user;
+			} catch (err: any) {
+				console.warn('Admin قد يكون موجود بالفعل، نستخدم UID ثابت');
+				adminUser = { uid: adminUid, email: adminEmail };
+			}
 
 			const adminData = {
-				uid: adminUser.uid,
+				uid: adminUid,
 				firstName: 'Hoda',
 				lastName: 'Salah',
 				email: adminEmail,
@@ -34,15 +43,15 @@ const SeedPage = () => {
 				createdAt: new Date().toISOString(),
 			};
 
-			await setDoc(doc(db, 'users', adminUser.uid), adminData);
+			await setDoc(doc(db, 'users', adminUid), adminData);
 			console.log('✅ Admin created:');
 			console.table(adminData);
 
-			// --------- إنشاء بعض العملاء والفواتير للـ admin ---------
+			// إنشاء بعض العملاء والفواتير للـ admin
 			for (let j = 0; j < 3; j++) {
 				const clientId = (
 					await addDoc(collection(db, 'clients'), {
-						userId: adminUser.uid,
+						userId: adminUid,
 						name: faker.person.fullName(),
 						email: faker.internet.email(),
 						phone: faker.phone.number('+9665########'),
@@ -83,7 +92,7 @@ const SeedPage = () => {
 
 					const invoiceId = (
 						await addDoc(collection(db, 'invoices'), {
-							userId: adminUser.uid,
+							userId: adminUid,
 							clientId,
 							invoiceNumber: `INV-${faker.date
 								.future()
@@ -101,7 +110,6 @@ const SeedPage = () => {
 						})
 					).id;
 
-					// إضافة payment إذا الفاتورة مدفوعة
 					if (status === 'paid') {
 						const paymentDate = new Date(invoiceDate);
 						paymentDate.setDate(
@@ -110,7 +118,7 @@ const SeedPage = () => {
 						);
 
 						await addDoc(collection(db, 'payments'), {
-							userId: adminUser.uid,
+							userId: adminUid,
 							invoiceId,
 							amount: total,
 							method: faker.helpers.arrayElement([
@@ -125,14 +133,13 @@ const SeedPage = () => {
 				}
 			}
 		} catch (err) {
-			console.error('❌ Error creating admin (maybe exists):', err);
+			console.error('❌ Error creating admin:', err);
 		}
 
 		// --------- 2️⃣ إنشاء المستخدمين العاديين ---------
 		for (let i = 0; i < usersCount; i++) {
 			const email = faker.internet.email();
 			const password = faker.internet.password({ length: 10 });
-			const avatar = faker.image.avatar();
 
 			try {
 				const userCredential = await createUserWithEmailAndPassword(
@@ -148,7 +155,7 @@ const SeedPage = () => {
 					lastName: faker.person.lastName(),
 					email: firebaseUser.email,
 					password, // ⚠️ للـ DEV فقط
-					avatar,
+					avatar: faker.image.avatar(),
 					role: 'user',
 					phone: faker.phone.number('+9665########'),
 					companyName: faker.company.name(),
@@ -162,7 +169,7 @@ const SeedPage = () => {
 				console.log(`✅ User ${i + 1} created:`);
 				console.table(userData);
 
-				// --------- إضافة العملاء والفواتير ---------
+				// إضافة العملاء والفواتير لكل user
 				const clientsCount = faker.number.int({ min: 1, max: 3 });
 				for (let j = 0; j < clientsCount; j++) {
 					const clientId = (
@@ -240,7 +247,6 @@ const SeedPage = () => {
 								paymentDate.getDate() +
 									faker.number.int({ min: 1, max: 10 }),
 							);
-
 							await addDoc(collection(db, 'payments'), {
 								userId: firebaseUser.uid,
 								invoiceId,

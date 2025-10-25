@@ -1,15 +1,16 @@
+import { logoutUser } from '@/features/user/userSlice';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronRightIcon, LogOut, User } from 'lucide-react';
-import { use, useState } from 'react';
-import { DropdownItem } from '../../shared/DropdownItem';
-import { useAppDispatch } from '@/store/hooks';
-import { logoutUser } from '@/features/user/userSlice';
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { DropdownItem } from '../../shared/DropdownItem';
 
 export const UserDropdown = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const currentUser = useAppSelector((state) => state.user.currentUser);
 
 	const handleLogout = () => {
 		dispatch(logoutUser()); // استخدم الإجراء لتسجيل الخروج
@@ -24,16 +25,18 @@ export const UserDropdown = () => {
 			>
 				<div className='flex items-center gap-3'>
 					<img
-						src='/assets/user.jpg'
+						src={currentUser?.avatar || '/assets/user.jpg'}
 						alt='User'
 						className='w-10 h-10 rounded-md object-cover'
 					/>
 					<div className='flex flex-col text-left'>
 						<span className='text-sm font-semibold text-text-dark'>
-							Eren Yeager
+							{currentUser?.firstName +
+								' ' +
+								currentUser?.lastName || 'User Name'}
 						</span>
 						<span className='text-xs text-muted-foreground'>
-							Super Admin
+							{currentUser?.role || 'User Role'}
 						</span>
 					</div>
 				</div>
