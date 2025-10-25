@@ -1,11 +1,11 @@
 import { db } from '@/firebaseConfigs/firebase';
-import type { ReactNode } from 'react';
 import {
 	createAsyncThunk,
 	createSlice,
 	type PayloadAction,
 } from '@reduxjs/toolkit';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import type { ReactNode } from 'react';
 export interface Invoice {
 	invoiceNumber: ReactNode | Iterable<ReactNode>;
 	clientId: string;
@@ -17,8 +17,6 @@ export interface Invoice {
 	amount: number;
 	status: 'paid' | 'unpaid';
 	userId: string;
-	
-}
 }
 
 interface InvoicesState {
@@ -93,6 +91,6 @@ const invoiceSlice = createSlice({
 	},
 });
 
-export const { setInvoices,addInvoice, removeInvoice, clearInvoices } =
+export const { setInvoices, addInvoice, removeInvoice, clearInvoices } =
 	invoiceSlice.actions;
 export default invoiceSlice.reducer;
