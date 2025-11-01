@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import type { InvoiceData } from './InvoiceForm';
 import InvoiceForm from './InvoiceForm';
+import { m } from 'framer-motion';
 
 interface InvoiceModalProps {
 	isOpen: boolean;
@@ -37,13 +38,13 @@ const EditInvoiceModal: React.FC<InvoiceModalProps> = ({
 		>
 			<div
 				className='bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative'
-				onClick={(e) => e.stopPropagation()} // stop closing when clicking inside
+				onClick={(e) => e.stopPropagation()} 
 			>
 				<InvoiceForm
 					onClose={onClose}
 					onSave={handleSave}
 					editData={editData}
-					mode='modal' // always modal for edit
+					
 				/>
 			</div>
 		</div>

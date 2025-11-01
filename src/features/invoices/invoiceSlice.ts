@@ -57,6 +57,7 @@ export const fetchInvoicesByUser = createAsyncThunk<
 	}
 });
 
+
 const invoiceSlice = createSlice({
 	name: 'invoices',
 	initialState,
@@ -73,6 +74,14 @@ const invoiceSlice = createSlice({
 		clearInvoices: (state) => {
 			state.list = [];
 		},
+		editInvoice: (state, action: PayloadAction<Invoice>) => {
+			const index = state.list.findIndex(
+				(inv) => inv.id === action.payload.id,
+			);
+			if (index !== -1) {
+				state.list[index] = action.payload;
+			}
+		},	
 	},
 	extraReducers: (builder) => {
 		builder

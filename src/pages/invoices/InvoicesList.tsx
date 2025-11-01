@@ -8,14 +8,15 @@ import type { RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { deleteData } from '../../firebaseConfigs/firestore';
-import InvoiceForm from './CreateInvoice';
+import { deleteData, updateData } from '../../firebaseConfigs/firestore';
+import InvoiceForm from '@/components/invoices/InvoiceForm';
+import type { InvoiceData } from '@/components/invoices/InvoiceForm';
 
 const Invoices = () => {
 	const [selected, setSelected] = useState<any | null>(null);
 	const [isFormOpen, setIsFormOpen] = useState(false);
 	const [editData, setEditData] = useState<any | null>(null);
-	const [invoiceMode, setInvoiceMode] = useState<'page' | 'modal'>(null);
+	const [invoiceMode, setInvoiceMode] = useState<'page' | 'modal'>('page');
 
 	const dispatch = useAppDispatch();
 	const currentUser = useAppSelector(
@@ -42,6 +43,13 @@ const Invoices = () => {
 			await deleteData('invoices', id);
 			dispatch(fetchInvoicesByUser(currentUser.uid));
 		}
+	};
+
+	const handleSave = async (invoice: InvoiceData) => {
+		await updateData('invoices', invoice.id, invoice);
+		dispatch(fetchInvoicesByUser(currentUser.uid));
+		setIsFormOpen(false);
+		setEditData(null);
 	};
 	return (
 		<div className='p-6 '>
@@ -165,12 +173,14 @@ const Invoices = () => {
 			{editData && (
 				<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50'>
 					<InvoiceForm
-						mode='modal'
 						onClose={() => {
 							setIsFormOpen(false);
 							setEditData(null);
+							setInvoiceMode('page');
 						}}
+						onSave={handleSave}
 						editData={editData}
+						mode={invoiceMode}
 					/>
 				</div>
 			)}

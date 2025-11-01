@@ -13,7 +13,6 @@ const SeedPage = () => {
 			const adminPassword = 'admin123';
 			const adminUid = 'h38maJ96swN6eltPXAfhvNrFRLy2'; // UID ثابت
 
-			// إنشاء حساب admin في Firebase Auth (لو مش موجود)
 			let adminUser;
 			try {
 				const adminCredential = await createUserWithEmailAndPassword(
@@ -23,7 +22,7 @@ const SeedPage = () => {
 				);
 				adminUser = adminCredential.user;
 			} catch (err: any) {
-				console.warn('Admin قد يكون موجود بالفعل، نستخدم UID ثابت');
+				console.warn('⚠️ Admin قد يكون موجود بالفعل، نستخدم UID ثابت');
 				adminUser = { uid: adminUid, email: adminEmail };
 			}
 
@@ -63,10 +62,13 @@ const SeedPage = () => {
 				const invoicesCount = faker.number.int({ min: 1, max: 3 });
 				for (let k = 0; k < invoicesCount; k++) {
 					const itemsCount = faker.number.int({ min: 1, max: 5 });
+
+					// ✅ أضفنا id لكل عنصر هنا
 					const items = Array.from({ length: itemsCount }).map(() => {
 						const price = faker.number.int({ min: 100, max: 2000 });
 						const quantity = faker.number.int({ min: 1, max: 5 });
 						return {
+							id: faker.string.uuid(), // 👈 هنا الإضافة المهمة
 							description: faker.commerce.productName(),
 							quantity,
 							unitPrice: price,
@@ -99,7 +101,7 @@ const SeedPage = () => {
 								.getFullYear()}-${faker.string.numeric(3)}`,
 							date: invoiceDate.toISOString().split('T')[0],
 							dueDate: dueDate.toISOString().split('T')[0],
-							items,
+							items, // الآن العناصر فيها id
 							subTotal,
 							vat,
 							total,
@@ -136,7 +138,7 @@ const SeedPage = () => {
 			console.error('❌ Error creating admin:', err);
 		}
 
-		// --------- 2️⃣ إنشاء المستخدمين العاديين ---------
+		// --------- 2️⃣ المستخدمين العاديين ---------
 		for (let i = 0; i < usersCount; i++) {
 			const email = faker.internet.email();
 			const password = faker.internet.password({ length: 10 });
@@ -186,6 +188,8 @@ const SeedPage = () => {
 					const invoicesCount = faker.number.int({ min: 1, max: 3 });
 					for (let k = 0; k < invoicesCount; k++) {
 						const itemsCount = faker.number.int({ min: 1, max: 5 });
+
+						// ✅ نفس التعديل هنا
 						const items = Array.from({ length: itemsCount }).map(
 							() => {
 								const price = faker.number.int({
@@ -197,6 +201,7 @@ const SeedPage = () => {
 									max: 5,
 								});
 								return {
+									id: faker.string.uuid(), // 👈 تمت الإضافة
 									description: faker.commerce.productName(),
 									quantity,
 									unitPrice: price,
@@ -230,7 +235,7 @@ const SeedPage = () => {
 									.getFullYear()}-${faker.string.numeric(3)}`,
 								date: invoiceDate.toISOString().split('T')[0],
 								dueDate: dueDate.toISOString().split('T')[0],
-								items,
+								items, // ✅ كل عنصر عنده id
 								subTotal,
 								vat,
 								total,
@@ -268,7 +273,7 @@ const SeedPage = () => {
 		}
 
 		alert(
-			'✅ تم إنشاء admin + مستخدمين + بيانات clients/invoices/payments',
+			'✅ تم إنشاء admin + مستخدمين + بيانات clients/invoices/payments (مع id لكل item)',
 		);
 	};
 

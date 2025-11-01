@@ -28,39 +28,38 @@ interface InvoiceFormProps {
 	onClose?: () => void;
 	onSave?: (invoice: InvoiceData) => void;
 	editData?: InvoiceData | null;
-	mode: 'page' | 'modal';
+	mode?: 'page' | 'modal';
 }
 
 const InvoiceForm: React.FC<InvoiceFormProps> = ({
 	onClose,
 	onSave,
 	editData = null,
-	mode = 'page',
+	mode,
 }) => {
-	const [invoiceData, setInvoiceData] = useState<InvoiceData>({
+	const [ invoiceData, setInvoiceData ] = useState<InvoiceData>({
 		id: `INV-${Date.now()}`,
-		date: new Date().toISOString().split('T')[0],
+		date: new Date().toISOString().split('T')[ 0 ],
 		dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
 			.toISOString()
-			.split('T')[0],
+			.split('T')[ 0 ],
 		clientName: '',
 		clientEmail: '',
 		clientPhone: '',
 		clientAddress: '',
 		paymentTerms: 'Net 30',
-		items: [{ id: '1', description: '', quantity: 1, price: 0, total: 0 }],
+		items: [ { id: '1', description: '', quantity: 1, price: 0, total: 0 } ],
 		discount: 0,
 		taxRate: 0,
 		note: 'Thank you for your business!',
 		status: 'draft',
 	});
 
-	const [isLoading, setIsLoading] = useState(false);
-	
+	const [ isLoading, setIsLoading ] = useState(false);
+
 	useEffect(() => {
 		if (editData) setInvoiceData(editData);
-	}, [editData]);
-	console.log(mode);
+	}, [ editData ]);
 	const handleInputChange = (
 		e: React.ChangeEvent<
 			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
@@ -69,7 +68,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 		const { name, value, type } = e.target;
 		setInvoiceData((prev) => ({
 			...prev,
-			[name]:
+			[ name ]:
 				type === 'number' || name === 'discount' || name === 'taxRate'
 					? Number(value)
 					: value,
@@ -87,7 +86,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 				if (item.id === id) {
 					const updatedItem = {
 						...item,
-						[field]:
+						[ field ]:
 							field === 'description'
 								? String(value)
 								: Number(value),
@@ -130,19 +129,19 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 
 	const subtotal = useMemo(
 		() => invoiceData.items.reduce((sum, item) => sum + item.total, 0),
-		[invoiceData.items],
+		[ invoiceData.items ],
 	);
 	const discountAmount = useMemo(
 		() => (subtotal * invoiceData.discount) / 100,
-		[subtotal, invoiceData.discount],
+		[ subtotal, invoiceData.discount ],
 	);
 	const taxAmount = useMemo(
 		() => ((subtotal - discountAmount) * invoiceData.taxRate) / 100,
-		[subtotal, discountAmount, invoiceData.taxRate],
+		[ subtotal, discountAmount, invoiceData.taxRate ],
 	);
 	const grandTotal = useMemo(
 		() => subtotal - discountAmount + taxAmount,
-		[subtotal, discountAmount, taxAmount],
+		[ subtotal, discountAmount, taxAmount ],
 	);
 
 	const handleSubmit = (e: React.FormEvent) => {
@@ -164,8 +163,8 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 		mode === 'modal'
 			? 'Save Changes'
 			: editData
-			? 'Update Invoice'
-			: 'Create Invoice';
+				? 'Update Invoice'
+				: 'Create Invoice';
 
 	// Modal close button only in modal mode
 	const showCloseButton = mode === 'modal' && onClose;
@@ -180,7 +179,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 				<button
 					type='button'
 					onClick={onClose}
-					className='absolute top-2 right-2 text-2xl font-bold text-gray-600 hover:text-gray-900'
+					className='absolute top-2 right-2 text-2xl font-bold text-primary hover:text-gray-900'
 				>
 					×
 				</button>
@@ -285,7 +284,7 @@ const InvoiceForm: React.FC<InvoiceFormProps> = ({
 				</button>
 			</div>
 
-			<div className='mt-4 space-y-1'>
+			<div className='mt-4 space-y-1 flex items-center justify-between'>
 				<p>Subtotal: {subtotal.toFixed(2)}</p>
 				<p>Discount: {discountAmount.toFixed(2)}</p>
 				<p>Tax: {taxAmount.toFixed(2)}</p>

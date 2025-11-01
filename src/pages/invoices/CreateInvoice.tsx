@@ -1,5 +1,7 @@
+import InvoiceForm, {
+	type InvoiceData,
+} from '@/components/invoices/InvoiceForm';
 import React from 'react';
-import InvoiceForm, { type InvoiceData } from '@/components/invoices/InvoiceForm';
 
 const CreateInvoice: React.FC = () => {
 	const handleSave = async (invoice: InvoiceData) => {
@@ -8,12 +10,7 @@ const CreateInvoice: React.FC = () => {
 		// Here you can save to database or global state
 	};
 
-	return (
-		<InvoiceForm
-			onSave={handleSave}
-			mode='page'
-		/>
-	);
+	return <InvoiceForm onSave={handleSave} />;
 };
 
 export default CreateInvoice;
