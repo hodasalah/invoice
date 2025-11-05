@@ -22,7 +22,7 @@ const SeedPage = () => {
 				);
 				adminUser = adminCredential.user;
 			} catch (err: any) {
-				console.warn('⚠️ Admin قد يكون موجود بالفعل، نستخدم UID ثابت');
+				console.warn('⚠️ Admin موجود بالفعل، نستخدم UID ثابت');
 				adminUser = { uid: adminUid, email: adminEmail };
 			}
 
@@ -31,7 +31,7 @@ const SeedPage = () => {
 				firstName: 'Hoda',
 				lastName: 'Salah',
 				email: adminEmail,
-				password: adminPassword, // ⚠️ للـ DEV فقط
+				password: adminPassword, // DEV فقط
 				avatar: faker.image.avatar(),
 				role: 'admin',
 				phone: faker.phone.number('+9665########'),
@@ -43,18 +43,20 @@ const SeedPage = () => {
 			};
 
 			await setDoc(doc(db, 'users', adminUid), adminData);
-			console.log('✅ Admin created:');
-			console.table(adminData);
 
-			// إنشاء بعض العملاء والفواتير للـ admin
+			// ✅ إنشاء عملاء للـ admin
 			for (let j = 0; j < 3; j++) {
 				const clientId = (
 					await addDoc(collection(db, 'clients'), {
 						userId: adminUid,
 						name: faker.person.fullName(),
+						companyName: faker.company.name(), // ✅ جديد
 						email: faker.internet.email(),
 						phone: faker.phone.number('+9665########'),
 						address: `${faker.location.city()}, Saudi Arabia`,
+						currency: 'SAR', // ✅ جديد
+						notes: faker.lorem.sentence(), // ✅ جديد
+						archived: false, // ✅ جديد
 						createdAt: new Date().toISOString(),
 					})
 				).id;
@@ -63,12 +65,11 @@ const SeedPage = () => {
 				for (let k = 0; k < invoicesCount; k++) {
 					const itemsCount = faker.number.int({ min: 1, max: 5 });
 
-					// ✅ أضفنا id لكل عنصر هنا
 					const items = Array.from({ length: itemsCount }).map(() => {
 						const price = faker.number.int({ min: 100, max: 2000 });
 						const quantity = faker.number.int({ min: 1, max: 5 });
 						return {
-							id: faker.string.uuid(), // 👈 هنا الإضافة المهمة
+							id: faker.string.uuid(),
 							description: faker.commerce.productName(),
 							quantity,
 							unitPrice: price,
@@ -96,12 +97,12 @@ const SeedPage = () => {
 						await addDoc(collection(db, 'invoices'), {
 							userId: adminUid,
 							clientId,
-							invoiceNumber: `INV-${faker.date
-								.future()
-								.getFullYear()}-${faker.string.numeric(3)}`,
+							invoiceNumber: `INV-${invoiceDate.getFullYear()}-${faker.string.numeric(
+								3,
+							)}`,
 							date: invoiceDate.toISOString().split('T')[0],
 							dueDate: dueDate.toISOString().split('T')[0],
-							items, // الآن العناصر فيها id
+							items,
 							subTotal,
 							vat,
 							total,
@@ -156,7 +157,7 @@ const SeedPage = () => {
 					firstName: faker.person.firstName(),
 					lastName: faker.person.lastName(),
 					email: firebaseUser.email,
-					password, // ⚠️ للـ DEV فقط
+					password,
 					avatar: faker.image.avatar(),
 					role: 'user',
 					phone: faker.phone.number('+9665########'),
@@ -168,19 +169,20 @@ const SeedPage = () => {
 				};
 
 				await setDoc(doc(db, 'users', firebaseUser.uid), userData);
-				console.log(`✅ User ${i + 1} created:`);
-				console.table(userData);
 
-				// إضافة العملاء والفواتير لكل user
 				const clientsCount = faker.number.int({ min: 1, max: 3 });
 				for (let j = 0; j < clientsCount; j++) {
 					const clientId = (
 						await addDoc(collection(db, 'clients'), {
 							userId: firebaseUser.uid,
 							name: faker.person.fullName(),
+							companyName: faker.company.name(), // ✅ جديد
 							email: faker.internet.email(),
 							phone: faker.phone.number('+9665########'),
 							address: `${faker.location.city()}, Saudi Arabia`,
+							currency: 'SAR', // ✅ جديد
+							notes: faker.lorem.sentence(), // ✅ جديد
+							archived: false, // ✅ جديد
 							createdAt: new Date().toISOString(),
 						})
 					).id;
@@ -188,8 +190,6 @@ const SeedPage = () => {
 					const invoicesCount = faker.number.int({ min: 1, max: 3 });
 					for (let k = 0; k < invoicesCount; k++) {
 						const itemsCount = faker.number.int({ min: 1, max: 5 });
-
-						// ✅ نفس التعديل هنا
 						const items = Array.from({ length: itemsCount }).map(
 							() => {
 								const price = faker.number.int({
@@ -201,7 +201,7 @@ const SeedPage = () => {
 									max: 5,
 								});
 								return {
-									id: faker.string.uuid(), // 👈 تمت الإضافة
+									id: faker.string.uuid(),
 									description: faker.commerce.productName(),
 									quantity,
 									unitPrice: price,
@@ -230,12 +230,12 @@ const SeedPage = () => {
 							await addDoc(collection(db, 'invoices'), {
 								userId: firebaseUser.uid,
 								clientId,
-								invoiceNumber: `INV-${faker.date
-									.future()
-									.getFullYear()}-${faker.string.numeric(3)}`,
+								invoiceNumber: `INV-${invoiceDate.getFullYear()}-${faker.string.numeric(
+									3,
+								)}`,
 								date: invoiceDate.toISOString().split('T')[0],
 								dueDate: dueDate.toISOString().split('T')[0],
-								items, // ✅ كل عنصر عنده id
+								items,
 								subTotal,
 								vat,
 								total,
@@ -252,6 +252,7 @@ const SeedPage = () => {
 								paymentDate.getDate() +
 									faker.number.int({ min: 1, max: 10 }),
 							);
+
 							await addDoc(collection(db, 'payments'), {
 								userId: firebaseUser.uid,
 								invoiceId,
@@ -273,14 +274,14 @@ const SeedPage = () => {
 		}
 
 		alert(
-			'✅ تم إنشاء admin + مستخدمين + بيانات clients/invoices/payments (مع id لكل item)',
+			'✅ تم إنشاء admin + مستخدمين + بيانات clients/invoices/payments (مع الحقول الجديدة)',
 		);
 	};
 
 	return (
 		<div style={{ padding: 20 }}>
 			<h1>🚀 Seed Database</h1>
-			<p>اضغطي لتوليد admin ومستخدمين تجريبيين مع بياناتهم.</p>
+			<p>اضغطي لتوليد admin ومستخدمين تجريبيين مع بياناتهم كاملة.</p>
 			<button
 				onClick={handleSeed}
 				className='mt-4 px-4 py-2 bg-blue-600 text-white rounded'

@@ -4,7 +4,7 @@ const Landing = lazy(() => import('../pages/Landing'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const InvoicesList = lazy(() => import('../pages/invoices/InvoicesList'));
 const CreateInvoice = lazy(() => import('../pages/invoices/CreateInvoice'));
-
+const Clients = lazy(() => import('../pages/clients/Clients'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
 const NotFound = lazy(() => import('../pages/NotFound'));
@@ -39,6 +39,12 @@ export const appRoutes: Route[] = [
 				path: 'invoices/create',
 				element: <CreateInvoice />,
 				title: 'Create Invoice',
+				protected: true,
+			},
+			{
+				path: 'clients',
+				element: <Clients />,
+				title: 'Clients',
 				protected: true,
 			},
 		],
