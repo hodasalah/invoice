@@ -1,16 +1,16 @@
 import InvoiceViewModal from '@/components/invoices/InvoiceViewModal';
 
+import type { InvoiceData } from '@/components/invoices/InvoiceForm';
+import InvoiceForm from '@/components/invoices/InvoiceForm';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { fetchClientsByUser } from '@/features/clients/clientsSlice';
-import { fetchInvoicesByUser } from '@/features/invoices/invoiceSlice';
+import { fetchInvoicesByUser, setInvoices } from '@/features/invoices/invoiceSlice';
 import type { RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { deleteData, updateData } from '../../firebaseConfigs/firestore';
-import InvoiceForm from '@/components/invoices/InvoiceForm';
-import type { InvoiceData } from '@/components/invoices/InvoiceForm';
 
 const Invoices = () => {
 	const [selected, setSelected] = useState<any | null>(null);
@@ -146,13 +146,34 @@ const Invoices = () => {
 											size='icon'
 											variant='ghost'
 											onClick={() => {
-												setEditData(inv);
+												const clientData = clients.find(
+													(c) =>
+														c.id === inv.clientId,
+												);
+
+												// ندمج بيانات الفاتورة + العميل
+												const merged = {
+													...inv,
+													clientId: inv.clientId,
+													clientName:
+														clientData?.name || '',
+													clientEmail:
+														clientData?.email || '',
+													clientPhone:
+														clientData?.phone || '',
+													clientAddress:
+														clientData?.address ||
+														'',
+												};
+
+												setEditData(merged);
 												setIsFormOpen(true);
 												setInvoiceMode('modal');
 											}}
 										>
 											<Pencil className='w-4 h-4' />
 										</Button>
+
 										<Button
 											size='icon'
 											variant='ghost'
@@ -180,6 +201,7 @@ const Invoices = () => {
 						}}
 						onSave={handleSave}
 						editData={editData}
+						clients={clients}
 						mode={invoiceMode}
 					/>
 				</div>

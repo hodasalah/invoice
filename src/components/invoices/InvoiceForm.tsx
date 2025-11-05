@@ -1,306 +1,251 @@
-import React, { useEffect, useMemo, useState } from 'react';
-
-export interface InvoiceItem {
-	id: string;
-	description: string;
-	quantity: number;
-	price: number;
-	total: number;
-}
-
-export interface InvoiceData {
-	id: string;
-	date: string;
-	dueDate: string;
-	clientName: string;
-	clientEmail: string;
-	clientPhone: string;
-	clientAddress: string;
-	paymentTerms: string;
-	items: InvoiceItem[];
-	discount: number;
-	taxRate: number;
-	note: string;
-	status: 'draft' | 'sent' | 'paid' | 'overdue';
-}
-
+import { useEffect, useState } from 'react';
+import type { Client, InvoiceData, InvoiceItem } from '@/types/types';
 interface InvoiceFormProps {
-	onClose?: () => void;
-	onSave?: (invoice: InvoiceData) => void;
 	editData?: InvoiceData | null;
-	mode?: 'page' | 'modal';
+	onSave: (data: InvoiceData) => void;
+	onClose: () => void;
+	clients: Client[];
 }
 
-const InvoiceForm: React.FC<InvoiceFormProps> = ({
-	onClose,
-	onSave,
-	editData = null,
-	mode,
-}) => {
-	const [ invoiceData, setInvoiceData ] = useState<InvoiceData>({
-		id: `INV-${Date.now()}`,
-		date: new Date().toISOString().split('T')[ 0 ],
-		dueDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000)
-			.toISOString()
-			.split('T')[ 0 ],
+const InvoiceForm = ({ editData, onSave, clients = [], onClose }: InvoiceFormProps) => {
+	const [originalData, setOriginalData] = useState<InvoiceData | null>(null);
+
+	const [data, setData] = useState<InvoiceData>({
+		id: undefined,
+		invoiceNumber: '',
+		date: '',
+		dueDate: '',
+		currency: 'USD',
+
+		clientId: '',
 		clientName: '',
 		clientEmail: '',
 		clientPhone: '',
 		clientAddress: '',
-		paymentTerms: 'Net 30',
-		items: [ { id: '1', description: '', quantity: 1, price: 0, total: 0 } ],
-		discount: 0,
-		taxRate: 0,
-		note: 'Thank you for your business!',
-		status: 'draft',
+
+		items: [],
+		subTotal: 0,
+		vat: 0,
+		total: 0,
+		status: 'unpaid',
 	});
 
-	const [ isLoading, setIsLoading ] = useState(false);
-
 	useEffect(() => {
-		if (editData) setInvoiceData(editData);
-	}, [ editData ]);
-	const handleInputChange = (
-		e: React.ChangeEvent<
-			HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-		>,
-	) => {
-		const { name, value, type } = e.target;
-		setInvoiceData((prev) => ({
-			...prev,
-			[ name ]:
-				type === 'number' || name === 'discount' || name === 'taxRate'
-					? Number(value)
-					: value,
-		}));
-	};
+		if (editData) {
+			setData(editData);
+			setOriginalData(editData);
+		}
+	}, [editData]);
 
-	const handleItemChange = (
-		id: string,
-		field: keyof InvoiceItem,
-		value: string | number,
-	) => {
-		setInvoiceData((prev) => ({
+	const handleClientChange = (e) => {
+		const client = clients.find((c) => c.id === e.target.value);
+		if (!client) return;
+
+		setData((prev) => ({
 			...prev,
-			items: prev.items.map((item) => {
-				if (item.id === id) {
-					const updatedItem = {
-						...item,
-						[ field ]:
-							field === 'description'
-								? String(value)
-								: Number(value),
-					};
-					if (field === 'quantity' || field === 'price') {
-						updatedItem.total =
-							updatedItem.quantity * updatedItem.price;
-					}
-					return updatedItem;
-				}
-				return item;
-			}),
+			clientId: client.id,
+			clientName: client.name,
+			clientEmail: client.email,
+			clientPhone: client.phone,
+			clientAddress: client.address,
 		}));
 	};
 
 	const addItem = () => {
-		setInvoiceData((prev) => ({
+		const newItem: InvoiceItem = {
+			id: Date.now().toString(),
+			description: '',
+			quantity: 1,
+			price: 0,
+			total: 0,
+		};
+
+		setData((prev) => ({
 			...prev,
-			items: [
-				...prev.items,
-				{
-					id: `${Date.now()}-${Math.random()}`,
-					description: '',
-					quantity: 1,
-					price: 0,
-					total: 0,
-				},
-			],
+			items: [...prev.items, newItem],
 		}));
 	};
 
-	const removeItem = (id: string) => {
-		if (invoiceData.items.length > 1) {
-			setInvoiceData((prev) => ({
-				...prev,
-				items: prev.items.filter((item) => item.id !== id),
-			}));
+	const handleItemChange = (index: number, field: 'description' | 'quantity' | 'price', value: string | number) => {
+		const updated = [...data.items];
+		if (field === 'description') {
+			updated[index].description = value as string;
+		} else if (field === 'quantity') {
+			updated[index].quantity = value as number;
+		} else if (field === 'price') {
+			updated[index].price = value as number;
+		}
+		updated[index].total = updated[index].quantity * updated[index].price;
+		updateTotals(updated);
+	};
+
+	const updateTotals = (items: InvoiceItem[]) => {
+		const sub = items.reduce((sum, i) => sum + i.total, 0);
+		const vat = sub * 0.15;
+		const total = sub + vat;
+
+		setData((prev) => ({
+			...prev,
+			items,
+			subTotal: sub,
+			vat,
+			total,
+		}));
+	};
+
+	const handleReset = () => {
+		if (originalData) {
+			setData(originalData);
+			updateTotals(originalData.items);
 		}
 	};
 
-	const subtotal = useMemo(
-		() => invoiceData.items.reduce((sum, item) => sum + item.total, 0),
-		[ invoiceData.items ],
-	);
-	const discountAmount = useMemo(
-		() => (subtotal * invoiceData.discount) / 100,
-		[ subtotal, invoiceData.discount ],
-	);
-	const taxAmount = useMemo(
-		() => ((subtotal - discountAmount) * invoiceData.taxRate) / 100,
-		[ subtotal, discountAmount, invoiceData.taxRate ],
-	);
-	const grandTotal = useMemo(
-		() => subtotal - discountAmount + taxAmount,
-		[ subtotal, discountAmount, taxAmount ],
-	);
-
-	const handleSubmit = (e: React.FormEvent) => {
-		e.preventDefault();
-		setIsLoading(true);
-		setTimeout(() => {
-			if (onSave) onSave(invoiceData);
-			if (onClose && mode === 'modal') onClose();
-			setIsLoading(false);
-		}, 500);
-	};
-
-	const formWrapperClass =
-		mode === 'modal'
-			? 'relative max-h-[80vh] overflow-y-auto p-4'
-			: 'max-w-4xl mx-auto p-6';
-
-	const submitButtonText =
-		mode === 'modal'
-			? 'Save Changes'
-			: editData
-				? 'Update Invoice'
-				: 'Create Invoice';
-
-	// Modal close button only in modal mode
-	const showCloseButton = mode === 'modal' && onClose;
+	const handleSave = () => onSave(data);
+	if (!data) return null;
 
 	return (
-		<form
-			onSubmit={handleSubmit}
-			className={`${formWrapperClass} space-y-6 bg-white rounded-lg`}
-		>
-			{/* Close button for modal */}
-			{showCloseButton && (
-				<button
-					type='button'
-					onClick={onClose}
-					className='absolute top-2 right-2 text-2xl font-bold text-primary hover:text-gray-900'
-				>
-					×
-				</button>
-			)}
+		<div className='bg-white p-6 rounded-xl shadow-lg w-full max-w-2xl'>
+			<h2 className='text-xl font-bold mb-4'>
+				{editData ? 'Edit Invoice' : 'Create Invoice'}
+			</h2>
 
-			<h1 className='text-2xl font-bold'>
-				{editData ? 'Edit Invoice' : 'Create New Invoice'}
-			</h1>
-
-			<div className='flex flex-col gap-2'>
-				<input
-					name='clientName'
-					value={invoiceData.clientName}
-					onChange={handleInputChange}
-					placeholder='Client Name'
-					className='border p-2 rounded'
-				/>
-				<input
-					name='clientEmail'
-					value={invoiceData.clientEmail}
-					onChange={handleInputChange}
-					placeholder='Client Email'
-					className='border p-2 rounded'
-				/>
-				<input
-					name='clientPhone'
-					value={invoiceData.clientPhone}
-					onChange={handleInputChange}
-					placeholder='Client Phone'
-					className='border p-2 rounded'
-				/>
-				<textarea
-					name='clientAddress'
-					value={invoiceData.clientAddress}
-					onChange={handleInputChange}
-					placeholder='Client Address'
-					className='border p-2 rounded'
-				/>
-			</div>
-
-			<div>
-				<h2 className='text-xl font-semibold mt-4'>Items</h2>
-				{invoiceData.items.map((item) => (
-					<div
-						key={item.id}
-						className='flex gap-2 items-center mb-2'
+			{/* اختيار العميل */}
+			<label className='block mb-2 text-sm font-medium'>
+				Select Client
+			</label>
+			<select
+				name='clientId'
+				value={data.clientId}
+				onChange={handleClientChange}
+				className='border p-2 rounded w-full mb-3'
+			>
+				<option value=''>Select Client</option>
+				{clients?.map((c) => (
+					<option
+						key={c.id}
+						value={c.id}
 					>
-						<input
-							value={item.description}
-							onChange={(e) =>
-								handleItemChange(
-									item.id,
-									'description',
-									e.target.value,
-								)
-							}
-							placeholder='Description'
-							className='border p-2 rounded flex-1'
-						/>
-						<input
-							type='number'
-							value={item.quantity}
-							onChange={(e) =>
-								handleItemChange(
-									item.id,
-									'quantity',
-									Number(e.target.value),
-								)
-							}
-							className='border p-2 rounded w-20'
-						/>
-						<input
-							type='number'
-							value={item.price}
-							onChange={(e) =>
-								handleItemChange(
-									item.id,
-									'price',
-									Number(e.target.value),
-								)
-							}
-							className='border p-2 rounded w-28'
-						/>
-						<span className='w-24 text-right'>
-							{item.total.toFixed(2)}
-						</span>
-						<button
-							type='button'
-							onClick={() => removeItem(item.id)}
-							className='text-red-500 font-bold'
-						>
-							×
-						</button>
-					</div>
+						{c.name}
+					</option>
 				))}
-				<button
-					type='button'
-					onClick={addItem}
-					className='mt-2 px-3 py-1 bg-blue-500 text-white rounded'
-				>
-					Add Item
-				</button>
-			</div>
+			</select>
 
-			<div className='mt-4 space-y-1 flex items-center justify-between'>
-				<p>Subtotal: {subtotal.toFixed(2)}</p>
-				<p>Discount: {discountAmount.toFixed(2)}</p>
-				<p>Tax: {taxAmount.toFixed(2)}</p>
-				<p className='font-bold'>
-					Grand Total: {grandTotal.toFixed(2)}
+			{/* بيانات العميل */}
+			<input
+				className='border p-2 rounded w-full mb-2'
+				value={data.clientName}
+				placeholder='Client Name'
+				readOnly
+			/>
+			<input
+				className='border p-2 rounded w-full mb-2'
+				value={data.clientEmail}
+				placeholder='Email'
+				readOnly
+			/>
+			<input
+				className='border p-2 rounded w-full mb-2'
+				value={data.clientPhone}
+				placeholder='Phone'
+				readOnly
+			/>
+			<textarea
+				className='border p-2 rounded w-full mb-2'
+				value={data.clientAddress}
+				placeholder='Address'
+				readOnly
+			/>
+
+			{/* Items */}
+			<h3 className='font-semibold my-3 flex justify-between'>
+				Invoice Items
+				<button
+					className='bg-green-500 text-white px-2 py-1 rounded'
+					onClick={addItem}
+				>
+					+ Add Item
+				</button>
+			</h3>
+
+			{data.items?.map((item, i) => (
+				<div
+					key={item.id}
+					className='grid grid-cols-4 gap-2 mb-2 items-center'
+				>
+					<input
+						className='border p-2 rounded'
+						value={item.description}
+						onChange={(e) =>
+							handleItemChange(i, 'description', e.target.value)
+						}
+						placeholder='Description'
+					/>
+
+					<input
+						className='border p-2 rounded'
+						type='number'
+						value={item.quantity}
+						onChange={(e) =>
+							handleItemChange(
+								i,
+								'quantity',
+								Number(e.target.value),
+							)
+						}
+						placeholder='Qty'
+					/>
+
+					<input
+						className='border p-2 rounded'
+						type='number'
+						value={item.price}
+						onChange={(e) =>
+							handleItemChange(i, 'price', Number(e.target.value))
+						}
+						placeholder='Price'
+					/>
+
+					<span className='font-medium text-right'>
+						{item.total.toFixed(2)}
+					</span>
+				</div>
+			))}
+
+			{/* totals */}
+			<div className='mt-4 border-t pt-3 text-right'>
+				<p>Subtotal: {data.subTotal.toFixed(2)}</p>
+				<p>VAT (15%): {data.vat.toFixed(2)}</p>
+				<p className='font-bold text-lg'>
+					Total: {data.total.toFixed(2)}
 				</p>
 			</div>
 
-			<button
-				type='submit'
-				disabled={isLoading}
-				className='mt-4 px-4 py-2 bg-green-500 text-white rounded'
-			>
-				{isLoading ? 'Saving...' : submitButtonText}
-			</button>
-		</form>
+			{/* Action buttons */}
+			<div className='flex justify-end gap-3 mt-5'>
+				<button
+					className='bg-gray-300 px-4 py-2 rounded'
+					onClick={onClose}
+				>
+					Cancel
+				</button>
+
+				{editData && (
+					<button
+						className='bg-yellow-500 text-white px-4 py-2 rounded'
+						onClick={handleReset}
+					>
+						Reset
+					</button>
+				)}
+
+				<button
+					className='bg-blue-600 text-white px-4 py-2 rounded'
+					onClick={handleSave}
+				>
+					Save
+				</button>
+			</div>
+		</div>
 	);
 };
 

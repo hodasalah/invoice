@@ -2,6 +2,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { db } from '@/firebaseConfigs/firebase';
 import { collection, getDocs, query, where } from 'firebase/firestore';
+import type { Client } from '@/types/types';
 
 export const fetchClientsByUser = createAsyncThunk<Client[], string>(
 	'clients/fetchClientsByUser',
@@ -19,7 +20,6 @@ export const fetchClientsByUser = createAsyncThunk<Client[], string>(
 	},
 );
 
-type Client = { id: string; [key: string]: any };
 
 const clientsSlice = createSlice({
 	name: 'clients',

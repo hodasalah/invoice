@@ -1,52 +1,74 @@
-import React, { useEffect } from 'react';
-import type { InvoiceData } from './InvoiceForm';
+import { editInvoice } from '@/features/invoices/invoiceSlice';
+import { auth } from '@/firebaseConfigs/firebase';
+import { updateData } from '@/firebaseConfigs/firestore';
+import { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import InvoiceForm from './InvoiceForm';
-import { m } from 'framer-motion';
 
-interface InvoiceModalProps {
-	isOpen: boolean;
-	onClose: () => void;
-	editData?: InvoiceData | null;
-}
+const EditInvoiceModal = ({ isOpen, onClose, editData }) => {
+	const clients = useSelector((s) => s.clients.clients);
 
-const EditInvoiceModal: React.FC<InvoiceModalProps> = ({
-	isOpen,
-	onClose,
-	editData,
-}) => {
-	const handleSave = async (invoice: InvoiceData) => {
-		console.log('Saving invoice:', invoice);
-		alert('Invoice saved!');
-	};
+	const [invoiceData, setInvoiceData] = useState(null);
 
-	// Close on Escape key
 	useEffect(() => {
-		const handleEsc = (e: KeyboardEvent) => {
-			if (e.key === 'Escape') onClose();
-		};
-		document.addEventListener('keydown', handleEsc);
-		return () => document.removeEventListener('keydown', handleEsc);
-	}, [onClose]);
+		if (editData) {
+			setInvoiceData({
+				id: editData.id,
+				invoiceNumber: editData.invoiceNumber,
+				date: editData.date,
+				dueDate: editData.dueDate,
+				currency: editData.currency,
+
+				// ✅ أهم شيء
+				clientId: editData.clientId,
+
+				items: editData.items,
+				notes: editData.notes,
+				subTotal: editData.subTotal,
+				vat: editData.vat,
+				total: editData.total,
+			});
+		}
+	}, [editData]);
+
+	const dispatch = useDispatch();
+
+	const handleSaveToFirebase = async () => {
+		const currentUser = auth.currentUser;
+		if (!invoiceData || !currentUser) return;
+
+		await updateData('invoices', invoiceData.id, {
+			invoiceNumber: invoiceData.invoiceNumber,
+			date: invoiceData.date,
+			dueDate: invoiceData.dueDate,
+			currency: invoiceData.currency,
+			clientId: invoiceData.clientId,
+			items: invoiceData.items,
+			notes: invoiceData.notes,
+			subTotal: invoiceData.subTotal,
+			vat: invoiceData.vat,
+			total: invoiceData.total,
+			userId: currentUser.uid,
+		});
+
+		dispatch(editInvoice(invoiceData));
+		onClose();
+	};
 
 	if (!isOpen) return null;
 
 	return (
-		<div
-			className='fixed inset-0 bg-black/50 flex items-center justify-center z-50
-			opacity-0 animate-fadeIn'
-			onClick={onClose} 
-		>
-			<div
-				className='bg-white rounded-lg shadow-lg w-full max-w-3xl p-6 relative'
-				onClick={(e) => e.stopPropagation()} 
-			>
-				<InvoiceForm
-					onClose={onClose}
-					onSave={handleSave}
-					editData={editData}
-					
-				/>
-			</div>
+		<div className='modal'>
+			<h2>Edit Invoice</h2>
+
+			<InvoiceForm
+				invoiceData={invoiceData}
+				setInvoiceData={setInvoiceData}
+				onSubmit={handleSaveToFirebase}
+				clients={clients} // ✅ مهم
+			/>
+
+			<button onClick={onClose}>Cancel</button>
 		</div>
 	);
 };

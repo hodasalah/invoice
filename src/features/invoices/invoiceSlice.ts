@@ -5,18 +5,17 @@ import {
 	type PayloadAction,
 } from '@reduxjs/toolkit';
 import { collection, getDocs, query, where } from 'firebase/firestore';
-import type { ReactNode } from 'react';
 export interface Invoice {
-	invoiceNumber: ReactNode | Iterable<ReactNode>;
-	clientId: string;
-	date: ReactNode | Iterable<ReactNode>;
-	total: ReactNode | Iterable<ReactNode>;
-	currency: ReactNode | Iterable<ReactNode>;
 	id: string;
+	userId: string;
+	invoiceNumber: string;
+	clientId: string;
+	date: string;
+	total: number;
+	currency: string;
 	customer: string;
 	amount: number;
 	status: 'paid' | 'unpaid';
-	userId: string;
 }
 
 interface InvoicesState {
@@ -57,7 +56,6 @@ export const fetchInvoicesByUser = createAsyncThunk<
 	}
 });
 
-
 const invoiceSlice = createSlice({
 	name: 'invoices',
 	initialState,
@@ -81,7 +79,7 @@ const invoiceSlice = createSlice({
 			if (index !== -1) {
 				state.list[index] = action.payload;
 			}
-		},	
+		},
 	},
 	extraReducers: (builder) => {
 		builder
@@ -100,6 +98,11 @@ const invoiceSlice = createSlice({
 	},
 });
 
-export const { setInvoices, addInvoice, removeInvoice, clearInvoices } =
-	invoiceSlice.actions;
+export const {
+	setInvoices,
+	addInvoice,
+	removeInvoice,
+	clearInvoices,
+	editInvoice,
+} = invoiceSlice.actions;
 export default invoiceSlice.reducer;
