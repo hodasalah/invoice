@@ -12,18 +12,18 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import {
-	deleteClient,
 	fetchClientsByUser,
 } from '@/features/clients/clientsSlice';
 import type { RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Pencil, Plus, Trash } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { deleteClientById } from '../../features/clients/clientsSlice';
 
 const Clients = () => {
 	const dispatch = useAppDispatch<any>();
 	const clients= useAppSelector(
-		(state: RootState) => state.clients.list,
+		(state: RootState) => state.clients.clients,
 	);
 
 	const [search, setSearch] = useState('');
@@ -114,7 +114,10 @@ const Clients = () => {
 												{client.phone}
 											</TableCell>
 											<TableCell>
-												{client.address}
+												{client.address.street},{' '}
+												{client.address.city},{' '}
+												{client.address.state},{' '}
+												{client.address.country}
 											</TableCell>
 
 											<TableCell className='text-right flex justify-end gap-2'>
@@ -133,7 +136,7 @@ const Clients = () => {
 													variant='destructive'
 													onClick={() =>
 														dispatch(
-															deleteClient(
+															deleteClientById(
 																client.id,
 															),
 														)
@@ -157,7 +160,6 @@ const Clients = () => {
 				onClose={() => setOpenAdd(false)}
 			/>
 
-			{/* EDIT CLIENT MODAL */}
 			{/* EDIT CLIENT MODAL */}
 			<EditClientModal
 				open={!!editData}

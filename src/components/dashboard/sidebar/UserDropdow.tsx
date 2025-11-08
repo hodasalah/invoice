@@ -5,6 +5,9 @@ import { ChevronRightIcon, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { DropdownItem } from '../../shared/DropdownItem';
+import { t } from 'i18next';
+
+
 
 export const UserDropdown = () => {
 	const [isOpen, setIsOpen] = useState(false);
@@ -63,12 +66,12 @@ export const UserDropdown = () => {
 					>
 						<DropdownItem
 							icon={User}
-							label='الملف الشخصي'
+							label={t('profile')}
 							onClick={() => navigate('/profile')}
 						/>
 						<DropdownItem
 							icon={LogOut}
-							label='تسجيل الخروج'
+							label={t('logout')}
 							onClick={() => handleLogout()}
 						/>
 					</motion.div>

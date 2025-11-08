@@ -21,7 +21,13 @@ const InvoiceForm = ({ editData, onSave, clients = [], onClose }: InvoiceFormPro
 		clientName: '',
 		clientEmail: '',
 		clientPhone: '',
-		clientAddress: '',
+		clientAddress: {
+			street: '',
+			city: '',
+			state: '',
+			zip: '',
+			country: '',
+		},
 
 		items: [],
 		subTotal: 0,
@@ -37,17 +43,23 @@ const InvoiceForm = ({ editData, onSave, clients = [], onClose }: InvoiceFormPro
 		}
 	}, [editData]);
 
-	const handleClientChange = (e) => {
+	const handleClientChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
 		const client = clients.find((c) => c.id === e.target.value);
 		if (!client) return;
 
 		setData((prev) => ({
 			...prev,
-			clientId: client.id,
+			clientId: client.id!,
 			clientName: client.name,
 			clientEmail: client.email,
 			clientPhone: client.phone,
-			clientAddress: client.address,
+			clientAddress: {
+				street: client.address.street,
+				city: client.address.city,
+				state: client.address.state,
+				zip: client.address.zip,
+				country: client.address.country,
+			},
 		}));
 	};
 
@@ -151,7 +163,7 @@ const InvoiceForm = ({ editData, onSave, clients = [], onClose }: InvoiceFormPro
 			/>
 			<textarea
 				className='border p-2 rounded w-full mb-2'
-				value={data.clientAddress}
+				value={`${data.clientAddress.street}, ${data.clientAddress.city}, ${data.clientAddress.state}, ${data.clientAddress.zip}, ${data.clientAddress.country}`}
 				placeholder='Address'
 				readOnly
 			/>

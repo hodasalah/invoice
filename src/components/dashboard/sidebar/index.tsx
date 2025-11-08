@@ -5,9 +5,11 @@ import { useLocation, useNavigate } from 'react-router';
 
 import Logo from '@/components/shared/logo';
 import MiniLogo from '@/components/shared/logo/MiniLogo';
+import SignoutButton from '@/components/shared/SignoutButton';
 import { sidebarLinks } from '@/constants/sidebar-links';
 import { cn } from '@/lib/utils';
 import { useAppSelector } from '@/store/hooks';
+import InvoiceCard from './InvoiceCard';
 import { SidebarItem } from './SidebarItem';
 import { UserDropdown } from './UserDropdow';
 
@@ -150,6 +152,17 @@ export function Sidebar({ collapsed }: SidebarProps) {
 					);
 				})}
 			</nav>
+			<div className='flex-1 ' />
+			{(!collapsed || isOpen) && (
+				<InvoiceCard
+					imageSrc='/assets/invoice.png'
+					title='Create invoice'
+					onCreate={() => {
+						navigate('/dashboard/invoices/create');
+					}}
+				/>
+			)}
+			<SignoutButton />
 		</aside>
 	);
 }

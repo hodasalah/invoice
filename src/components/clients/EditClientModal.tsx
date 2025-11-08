@@ -75,7 +75,7 @@ export default function EditClientModal({
 					/>
 					<Input
 						name='address'
-						defaultValue={formData?.address}
+						defaultValue={formData?.address.country + ', ' + formData?.address.city + ', ' + formData?.address.street}
 						onChange={handleChange}
 						placeholder='Address'
 					/>

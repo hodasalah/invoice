@@ -5,6 +5,7 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 const InvoicesList = lazy(() => import('../pages/invoices/InvoicesList'));
 const CreateInvoice = lazy(() => import('../pages/invoices/CreateInvoice'));
 const Clients = lazy(() => import('../pages/clients/Clients'));
+const AddClient = lazy(() => import('../pages/clients/AddClient'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
 const NotFound = lazy(() => import('../pages/NotFound'));
@@ -42,14 +43,20 @@ export const appRoutes: Route[] = [
 				protected: true,
 			},
 			{
-				path: 'clients',
+				path: 'clients/list',
 				element: <Clients />,
+				title: 'Clients',
+				protected: true,
+			},
+			{
+				path: 'clients/new',
+				element: <AddClient />,
 				title: 'Clients',
 				protected: true,
 			},
 		],
 	},
-	{ path: '/seed', element: <Seed />, title: 'Seed', protected: true },
+	{ path: '/seed', element: <Seed />, title: 'Seed', protected: false },
 	{
 		path: '*',
 		element: <NotFound />,

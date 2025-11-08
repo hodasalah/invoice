@@ -22,13 +22,13 @@ const Invoices = () => {
 	const currentUser = useAppSelector(
 		(state: RootState) => state.user.currentUser,
 	);
-	const clients = useAppSelector((state: RootState) => state.clients.list);
+	const clients = useAppSelector((state: RootState) => state.clients.clients);
 	const {
 		list: invoices,
 		loading,
 		error,
 	} = useAppSelector((state: RootState) => state.invoices);
-
+console.log(clients)
 	useEffect(() => {
 		if (currentUser?.uid) {
 			dispatch(fetchInvoicesByUser(currentUser.uid));
@@ -102,8 +102,8 @@ const Invoices = () => {
 									</td>
 									<td className='p-3'>
 										{' '}
-										{clients.find(
-											(c) => c.id === inv.clientId,
+										{clients?.find(
+											(c) => c?.id === inv.clientId,
 										)?.name || 'Unknown'}
 									</td>
 									<td className='p-3'>{inv?.date}</td>
@@ -162,7 +162,7 @@ const Invoices = () => {
 													clientPhone:
 														clientData?.phone || '',
 													clientAddress:
-														clientData?.address ||
+														clientData?.address.country + " " + clientData?.address.city ||
 														'',
 												};
 

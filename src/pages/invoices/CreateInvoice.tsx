@@ -14,7 +14,7 @@ import { toast } from 'sonner';
 const CreateInvoice = () => {
 	const dispatch = useAppDispatch();
 	const currentUser = useAppSelector((state) => state.user.currentUser);
-	const clients = useAppSelector((state) => state.clients.list) as Client[];
+	const clients = useAppSelector((state) => state.clients.clients) as Client[];
 	const navigate = useNavigate();
 	useEffect(() => {
 		if (currentUser?.uid) {

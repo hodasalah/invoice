@@ -33,8 +33,8 @@ export const sidebarLinks = [
 		icon: UsersIcon,
 		path: '/clients',
 		children: [
-			{ label: 'New Client', path: '/clients/new', icon: PlusIcon },
-			{ label: 'All Clients', path: '/clients/all', icon: ListIcon },
+			{ label: 'New Client', path: '/dashboard/clients/new', icon: PlusIcon },
+			{ label: 'All Clients', path: '/dashboard/clients/list', icon: ListIcon },
 		],
 	},
 	{

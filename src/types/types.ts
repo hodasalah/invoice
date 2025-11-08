@@ -19,7 +19,13 @@ export interface InvoiceData {
 	clientName: string;
 	clientEmail: string;
 	clientPhone: string;
-	clientAddress: string;
+	clientAddress: {
+		street: string;
+		city: string;
+		state: string;
+		country: string;
+		zip: string;
+	};
 
 	items: InvoiceItem[];
 	notes?: string;
@@ -31,9 +37,16 @@ export interface InvoiceData {
 	userId?: string;
 }
 export interface Client {
-	id: string;
+	id?: string;
+	userId: string;
 	name: string;
 	email: string;
 	phone: string;
-	address: string;
+	address: {
+		street: string;
+		city: string;
+		state: string;
+		country: string;
+		zip: string;
+	};
 }
