@@ -8,9 +8,11 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { addClient } from '@/features/clients/clientsSlice';
+import { useAppSelector } from '@/store/hooks';
 import { clsx } from 'clsx';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { toast } from 'sonner';
 
 const AddClientModal = ({ open, onClose }: any) => {
 	const dispatch = useDispatch<any>();
@@ -22,14 +24,27 @@ const AddClientModal = ({ open, onClose }: any) => {
 			country: '',
 			city: '',
 			street: '',
+			state: '',
 			building: '',
 			zip: '',
 		},
 	});
+const user = useAppSelector((state) => state.user.currentUser);
+	const handleSubmit = async () => {
+		try {
+			await dispatch(
+				addClient({
+					...data,
+					userId: user.uid,
+				}),
+			).unwrap();
 
-	const handleSubmit = () => {
-		dispatch(addClient(data));
-		onClose();
+			toast.success('تم إضافة العميل بنجاح ✅');
+			onClose();
+
+		} catch {
+			toast.error('حدث خطأ أثناء الإضافة ❌');
+		}
 	};
 
 	return (
@@ -112,7 +127,19 @@ const AddClientModal = ({ open, onClose }: any) => {
 							/>
 
 							<Input
-								placeholder='Building / Apartment'
+								placeholder='State'
+								onChange={(e) =>
+									setData({
+										...data,
+										address: {
+											...data.address,
+											state: e.target.value,
+										},
+									})
+								}
+							/>
+							<Input
+								placeholder='Building Number'
 								onChange={(e) =>
 									setData({
 										...data,
@@ -123,7 +150,6 @@ const AddClientModal = ({ open, onClose }: any) => {
 									})
 								}
 							/>
-
 							<Input
 								placeholder='ZIP / Postal Code'
 								onChange={(e) =>

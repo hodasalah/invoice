@@ -6,6 +6,7 @@ import { Bell, Inbox, Mail, Menu, Plus } from 'lucide-react';
 import { useEffect } from 'react';
 import { HeaderIcon } from './HeaderIcon';
 import { SidebarButton } from './SidebarButton';
+import { useNavigate } from 'react-router';
 
 type HeaderProps = {
 	collapsed: boolean;
@@ -23,6 +24,7 @@ export function Header({
 		useEffect(() => {
 			document.title = `${title} `;
 		}, [title]);
+	const navigate = useNavigate();
 	return (
 		<header className='flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900'>
 			<div className='flex items-center gap-3'>
@@ -69,7 +71,7 @@ export function Header({
 					type='button'
 					disabled={false}
 					icon={<Plus className='w-4 h-4' />}
-					onClick={() => console.log('Create Invoice')}
+					onClick={() => navigate('/dashboard/invoices/create')}
 				>
 					Create Invoice
 				</PrimaryBtn>

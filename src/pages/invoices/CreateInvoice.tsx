@@ -62,7 +62,7 @@ const CreateInvoice = () => {
 			dispatch(fetchInvoicesByUser(currentUser.uid));
 
 			toast.success('✅ Invoice Saved Successfully');
-			window.history.back();
+			navigate('/dashboard/invoices/list');
 		} catch (err) {
 			console.error(err);
 			toast.error('❌ Error saving invoice');

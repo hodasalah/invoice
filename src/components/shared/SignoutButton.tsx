@@ -1,12 +1,16 @@
-import { Button } from '@/components/ui/button';
 import { logoutUser } from '@/features/user/userSlice';
+import { cn } from '@/lib/utils';
 import { useAppDispatch } from '@/store/hooks';
 import { LogOut } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 
-const SignOutButton = () => {
+interface SignOutButtonProps {
+	miniSidebar?: boolean;
+}
+
+const SignOutButton = ({ miniSidebar }: SignOutButtonProps) => {
 	const { t, i18n } = useTranslation('auth');
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(false);
@@ -22,11 +26,17 @@ const SignOutButton = () => {
 		<button
 			onClick={onSignOut}
 			disabled={loading}
-			className='p-4 w-full'
+			className={cn('flex items-center w-full ', miniSidebar ? 'justify-center' : 'p-4')}
 		>
-			<span className='flex gap-2 items-center justify-center capitalize text-sm font-medium text-red-600 hover:text-red-800'>
-				<LogOut /> {loading ? '…' : t('logout')}
-			</span>
+			{miniSidebar ? (
+				<div className='w-full'>
+				<LogOut />
+				</div>
+			) : (
+				<div className='flex gap-2 items-center justify-center capitalize text-sm font-medium text-primary hover:text-green-800'>
+					<LogOut className='w-5 h-5 ' /> {loading ? '…' : t('logout')}
+				</div>
+			)}
 		</button>
 	);
 };

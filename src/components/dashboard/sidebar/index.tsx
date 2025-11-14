@@ -93,12 +93,12 @@ export function Sidebar({ collapsed }: SidebarProps) {
 										'flex items-center',
 										collapsed
 											? 'justify-center w-full'
-											: 'gap-3',
+											: 'gap-2',
 									)}
 								>
-									<Icon className='w-5 h-5' />
+									<Icon className='w-6 h-6 min-w-6 min-h-6' /> 
 									{!collapsed && (
-										<span className='text-sm font-medium'>
+										<span className=' font-medium'>
 											{label}
 										</span>
 									)}
@@ -162,7 +162,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 					}}
 				/>
 			)}
-			<SignoutButton />
+			<SignoutButton miniSidebar={collapsed} />
 		</aside>
 	);
 }

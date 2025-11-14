@@ -29,10 +29,10 @@ export function SidebarItem({
 			className={cn(
 				'flex items-center px-4 py-2 rounded-md cursor-pointer select-none transition-colors',
 				isActive ? 'bg-muted text-primary' : 'hover:bg-muted',
-				collapsed ? 'justify-center' : 'gap-3 justify-start',
+				collapsed ? 'justify-center' : 'gap-2 justify-start',
 			)}
 		>
-			<Icon className='w-5 h-5' />
+			<Icon className='w-6 h-6 ' />
 			{!collapsed && <span className='text-sm font-medium'>{label}</span>}
 		</div>
 	);

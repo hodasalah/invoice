@@ -5,7 +5,7 @@ import InvoiceForm from '@/components/invoices/InvoiceForm';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { fetchClientsByUser } from '@/features/clients/clientsSlice';
-import { fetchInvoicesByUser, setInvoices } from '@/features/invoices/invoiceSlice';
+import { fetchInvoicesByUser } from '@/features/invoices/invoiceSlice';
 import type { RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
@@ -28,7 +28,7 @@ const Invoices = () => {
 		loading,
 		error,
 	} = useAppSelector((state: RootState) => state.invoices);
-console.log(clients)
+	console.log(clients);
 	useEffect(() => {
 		if (currentUser?.uid) {
 			dispatch(fetchInvoicesByUser(currentUser.uid));
@@ -162,8 +162,11 @@ console.log(clients)
 													clientPhone:
 														clientData?.phone || '',
 													clientAddress:
-														clientData?.address.country + " " + clientData?.address.city ||
-														'',
+														clientData?.address
+															.country +
+															' ' +
+															clientData?.address
+																.city || '',
 												};
 
 												setEditData(merged);
@@ -192,7 +195,7 @@ console.log(clients)
 
 			{/* Add/Edit Invoice Modal */}
 			{editData && (
-				<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50'>
+				<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 h-screen p-8'>
 					<InvoiceForm
 						onClose={() => {
 							setIsFormOpen(false);

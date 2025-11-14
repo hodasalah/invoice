@@ -79,7 +79,8 @@ export const deleteClientById = createAsyncThunk(
 const clientsSlice = createSlice({
 	name: 'clients',
 	initialState,
-	reducers: {},
+	reducers: {
+	},
 	extraReducers: (builder) => {
 		// Fetch
 		builder.addCase(fetchClientsByUser.pending, (state) => {

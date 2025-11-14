@@ -1,11 +1,13 @@
 // constants/sidebar-links.ts
 import {
-	FileTextIcon,
-	UsersIcon,
-	SettingsIcon,
+	BadgeDollarSign,
 	BarChartIcon,
-	PlusIcon,
+	CreditCardIcon,
+	FileTextIcon,
 	ListIcon,
+	PlusIcon,
+	SettingsIcon,
+	UsersIcon,
 } from 'lucide-react';
 
 export const sidebarLinks = [
@@ -25,7 +27,11 @@ export const sidebarLinks = [
 				path: '/dashboard/invoices/create',
 				icon: PlusIcon,
 			},
-			{ label: 'List Invoices', path: '/dashboard/invoices/list', icon: ListIcon },
+			{
+				label: 'List Invoices',
+				path: '/dashboard/invoices/list',
+				icon: ListIcon,
+			},
 		],
 	},
 	{
@@ -33,9 +39,29 @@ export const sidebarLinks = [
 		icon: UsersIcon,
 		path: '/clients',
 		children: [
-			{ label: 'New Client', path: '/dashboard/clients/new', icon: PlusIcon },
-			{ label: 'All Clients', path: '/dashboard/clients/list', icon: ListIcon },
+			{
+				label: 'New Client',
+				path: '/dashboard/clients/new',
+				icon: PlusIcon,
+			},
+			{
+				label: 'All Clients',
+				path: '/dashboard/clients/list',
+				icon: ListIcon,
+			},
 		],
+	},
+	{
+		label: 'Wallets',
+		icon: CreditCardIcon,
+		path: '/dashboard/wallets',
+		children: [],
+	},
+	{
+		label: 'Payments',
+		icon: BadgeDollarSign,
+		path: '/dashboard/payments',
+		children: [],
 	},
 	{
 		label: 'Settings',
