@@ -15,7 +15,7 @@ const StepBusinessInfo = () => {
 			<h2 className='text-xl font-bold'>{t('business_info_title')}</h2>
 
 			<div>
-				<Label>{t('full_business_name')}</Label>
+				<Label>{t('full_business_name')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('businessName', {
 						required: t('full_business_name_required'),
@@ -32,7 +32,7 @@ const StepBusinessInfo = () => {
 			</div>
 
 			<div>
-				<Label>{t('address')}</Label>
+				<Label>{t('address')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('address', {
 						required: t('address_required'),
@@ -49,7 +49,7 @@ const StepBusinessInfo = () => {
 			</div>
 
 			<div>
-				<Label>{t('city')}</Label>
+				<Label>{t('city')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('city', {
 						required: t('city_required'),
@@ -66,7 +66,7 @@ const StepBusinessInfo = () => {
 			</div>
 
 			<div>
-				<Label>{t('postal_code')}</Label>
+				<Label>{t('postal_code')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('postalCode', {
 						required: t('postal_code_required'),

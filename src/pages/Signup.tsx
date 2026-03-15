@@ -10,7 +10,7 @@ import { doc, setDoc } from 'firebase/firestore';
 import { useState } from 'react';
 import { FormProvider, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { Link } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 type FormData = {
@@ -37,10 +37,16 @@ const stepFields: Record<number, (keyof FormData)[]> = {
 	3: ['businessName', 'address', 'city', 'postalCode', 'crNumber'],
 };
 
+const requiredFields: Record<number, (keyof FormData)[]> = {
+	1: ['email', 'password', 'confirmPassword'],
+	2: ['firstName', 'lastName', 'phone'],
+	3: ['businessName', 'address', 'city', 'postalCode'],
+};
+
 const Signup = () => {
 	const [step, setStep] = useState(1);
-	const [isStepValid, setIsStepValid] = useState(true);
 	const { t } = useTranslation('auth');
+	const navigate = useNavigate();
 
 	const methods = useForm<SignupSchema>({
 		resolver: zodResolver(signupSchema(t)),
@@ -49,8 +55,29 @@ const Signup = () => {
 
 	const {
 		trigger,
-		formState: { isValid },
+		watch,
+		formState: { isValid, errors },
 	} = methods;
+
+	const watchAll = watch();
+
+	const isNextDisabled = () => {
+		const stepError = stepFields[step].some((field) => errors[field]);
+		if (stepError) return true;
+
+		const hasRequiredValues = requiredFields[step].every((field) => {
+			const val = watchAll[field];
+			return val && String(val).trim().length > 0;
+		});
+
+		if (!hasRequiredValues) return true;
+
+		if (step === 1 && watchAll.password !== watchAll.confirmPassword) {
+			return true;
+		}
+
+		return false;
+	};
 
 	const onSubmit = async (data: FormData) => {
 		try {
@@ -80,6 +107,7 @@ const Signup = () => {
 					error: (err) => err?.message || t('signup_error'),
 				},
 			);
+			navigate('/login');
 		} catch (err) {
 			console.error('❌ Signup failed:', err);
 		}
@@ -88,7 +116,6 @@ const Signup = () => {
 
 	const handleNext = async () => {
 		const valid = await trigger(stepFields[step]);
-		setIsStepValid(valid);
 
 		if (valid) setStep(step + 1);
 		else toast.error(t('please_fix_errors'));
@@ -124,7 +151,7 @@ const Signup = () => {
 								<Button
 									type='button'
 									onClick={handleNext}
-									disabled={!isStepValid}
+									disabled={isNextDisabled()}
 								>
 									{t('next')}
 								</Button>

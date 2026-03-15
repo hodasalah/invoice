@@ -4,6 +4,7 @@ import { SidebarItem } from './SidebarItem';
 import { sidebarLinks } from '@/constants/sidebar-links';
 import { cn } from '@/lib/utils';
 import { LucideSidebarClose } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface MobileSidebarProps {
 	open: boolean;
@@ -11,11 +12,12 @@ interface MobileSidebarProps {
 }
 
 export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
+	const { t } = useTranslation('common');
 	return (
 		<aside
 			className={cn(
-				'fixed inset-y-0 left-0 w-64 bg-white z-50 p-4 shadow-lg transition-transform duration-300 md:hidden',
-				open ? 'translate-x-0' : '-translate-x-full',
+				'fixed inset-y-0 ltr:left-0 rtl:right-0 w-64 bg-white z-50 p-4 shadow-lg transition-transform duration-300 md:hidden',
+				open ? 'translate-x-0' : 'ltr:-translate-x-full rtl:translate-x-full',
 			)}
 		>
 			<div className='flex justify-end mb-4'>
@@ -32,7 +34,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 					<div key={label}>
 						<SidebarItem
 							icon={icon}
-							label={label}
+							label={t(label)}
 							path={path}
 							collapsed={false}
 							onClick={onClose}
@@ -43,7 +45,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 									<SidebarItem
 										key={label}
 										icon={icon}
-										label={label}
+										label={t(label)}
 										path={path}
 										collapsed={false}
 										onClick={onClose}

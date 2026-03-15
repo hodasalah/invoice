@@ -2,6 +2,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronDownIcon, ChevronRightIcon } from 'lucide-react';
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
+import { useTranslation } from 'react-i18next';
 
 import Logo from '@/components/shared/logo';
 import MiniLogo from '@/components/shared/logo/MiniLogo';
@@ -19,10 +20,11 @@ interface SidebarProps {
 
 export function Sidebar({ collapsed }: SidebarProps) {
 	const [expandedSection, setExpandedSection] = useState<string | null>(null);
-	const [isOpen, setIsOpen] = useState(false);
+	const [isOpen] = useState(false);
 	const location = useLocation();
 	const navigate = useNavigate();
 	const currentUser = useAppSelector((state) => state.user.currentUser);
+	const { t } = useTranslation('common'); // or whatever namespace is appropriate
 	const handleParentClick = (
 		path: string,
 		hasChildren: boolean,
@@ -99,7 +101,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 									<Icon className='w-6 h-6 min-w-6 min-h-6' /> 
 									{!collapsed && (
 										<span className=' font-medium'>
-											{label}
+											{t(label)}
 										</span>
 									)}
 								</div>
@@ -121,7 +123,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 										animate={{ height: 'auto', opacity: 1 }}
 										exit={{ height: 0, opacity: 0 }}
 										transition={{ duration: 0.2 }}
-										className='flex flex-col ml-8 overflow-hidden gap-1'
+										className='flex flex-col ml-8  gap-1'
 									>
 										{children.map(
 											({
@@ -132,7 +134,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 												<SidebarItem
 													key={subLabel}
 													icon={SubIcon}
-													label={subLabel}
+													label={t(subLabel)}
 													path={subPath}
 													collapsed={false}
 													isActive={

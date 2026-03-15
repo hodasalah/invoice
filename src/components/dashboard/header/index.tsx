@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import { HeaderIcon } from './HeaderIcon';
 import { SidebarButton } from './SidebarButton';
 import { useNavigate } from 'react-router';
+import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 
 type HeaderProps = {
 	collapsed: boolean;
@@ -47,6 +48,7 @@ export function Header({
 			</div>
 			<SearchBar />
 			<div className='flex items-center gap-4'>
+				<LanguageSwitcher />
 				<div className='flex gap-4 items-center'>
 					<HeaderIcon
 						icon={<Bell size={20} />}

@@ -2,18 +2,21 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 
 const StepAccount = () => {
 	const { t } = useTranslation('auth');
 	const {
 		register,
-		trigger,
 		watch,
 		setError,
 		clearErrors,
 		formState: { errors },
 	} = useFormContext();
+
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
 	const password = watch('password');
 	const confirmPassword = watch('confirmPassword');
@@ -51,7 +54,7 @@ const StepAccount = () => {
 					{...register('email')}
 					type='email'
 				/>
-				<Label htmlFor='signup_email'>{t('email')}</Label>
+				<Label htmlFor='signup_email'>{t('email')} <span className='text-red-500'>*</span></Label>
 
 				{errors.email && (
 					<p className='text-red-500 text-sm'>
@@ -67,9 +70,17 @@ const StepAccount = () => {
 					id='signup_password'
 					placeholder=' '
 					{...register('password')}
-					type='password'
+					type={showPassword ? 'text' : 'password'}
+					className="ltr:pr-10 rtl:pl-10"
 				/>
-				<Label htmlFor='signup_password'>{t('password')}</Label>
+				<button
+					type="button"
+					onClick={() => setShowPassword(!showPassword)}
+					className="absolute top-2.5 right-3 rtl:right-auto rtl:left-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+				>
+					{showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+				</button>
+				<Label htmlFor='signup_password'>{t('password')} <span className='text-red-500'>*</span></Label>
 				{errors.password && (
 					<p className='text-red-500 text-sm'>
 						{typeof errors.password?.message === 'string'
@@ -83,15 +94,25 @@ const StepAccount = () => {
 				<Input
 					id='signup_confirm_password'
 					{...register('confirmPassword')}
-					type='password'
+					type={showConfirmPassword ? 'text' : 'password'}
 					placeholder=' '
+					className="ltr:pr-10 rtl:pl-10"
 				/>
+				<button
+					type="button"
+					onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+					className="absolute top-2.5 right-3 rtl:right-auto rtl:left-3 text-gray-400 hover:text-gray-600 focus:outline-none"
+				>
+					{showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+				</button>
 				<Label htmlFor='signup_confirm_password'>
-					{t('confirm_password')}
+					{t('confirm_password')} <span className='text-red-500'>*</span>
 				</Label>
 				{errors.confirmPassword?.message && (
 					<p className='text-red-500 text-sm'>
-						{errors.confirmPassword.message}
+						{typeof errors.confirmPassword.message === 'string' 
+							? errors.confirmPassword.message 
+							: ''}
 					</p>
 				)}
 			</div>

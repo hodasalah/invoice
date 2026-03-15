@@ -59,7 +59,9 @@ export const signupSchema = (t: TFunction) =>
 
 			crNumber: z
 				.string()
-				.regex(/^[0-9]{5,15}$/, { message: t('cr_invalid') })
+				.refine((val) => !val || /^[0-9]{5,15}$/.test(val), {
+					message: t('cr_invalid'),
+				})
 				.optional(),
 
 			postalCode: z

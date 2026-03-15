@@ -1,10 +1,10 @@
-// components/sidebar/sidebar-item.tsx
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { TooltipArrow } from '@radix-ui/react-tooltip';
 import type { LucideIcon } from 'lucide-react';
 
 interface SidebarItemProps {
@@ -19,11 +19,11 @@ interface SidebarItemProps {
 export function SidebarItem({
 	icon: Icon,
 	label,
-	collapsed,
+	collapsed=true,
 	isActive,
 	onClick,
 }: SidebarItemProps) {
-	const item = (
+	const content = (
 		<div
 			onClick={onClick}
 			className={cn(
@@ -32,24 +32,25 @@ export function SidebarItem({
 				collapsed ? 'justify-center' : 'gap-2 justify-start',
 			)}
 		>
-			<Icon className='w-6 h-6 ' />
+			<Icon className='w-6 h-6' />
 			{!collapsed && <span className='text-sm font-medium'>{label}</span>}
 		</div>
 	);
 
-	return collapsed ? (
-		<Tooltip>
-			<TooltipTrigger asChild>
-				<button>{item}</button>
-			</TooltipTrigger>
-			<TooltipContent
-				side='left'
-				arrow
-			>
-				{label}
-			</TooltipContent>
-		</Tooltip>
-	) : (
-		item
-	);
+	if (collapsed) {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>{content}</TooltipTrigger>
+				<TooltipContent
+					side='bottom'
+					arrow
+				>
+					{label}
+					<TooltipArrow />
+				</TooltipContent>
+			</Tooltip>
+		);
+	}
+
+	return content;
 }

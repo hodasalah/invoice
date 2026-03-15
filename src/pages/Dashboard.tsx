@@ -18,7 +18,7 @@ export default function DashboardPage() {
 	}, [collapsed]);
 
 	return (
-		<div className='flex h-screen overflow-hidden'>
+		<div className='flex h-screen '>
 			{/* Desktop Sidebar */}
 			<TooltipProvider>
 				<Sidebar collapsed={collapsed} />

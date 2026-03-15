@@ -15,7 +15,7 @@ const StepUserInfo = () => {
 			<h2 className='text-xl font-bold'>{t('user_info_title')}</h2>
 
 			<div>
-				<Label>{t('first_name')}</Label>
+				<Label>{t('first_name')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('firstName', {
 						required: t('first_name_required'),
@@ -30,7 +30,7 @@ const StepUserInfo = () => {
 			</div>
 
 			<div>
-				<Label>{t('last_name')}</Label>
+				<Label>{t('last_name')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('lastName', {
 						required: t('last_name_required'),
@@ -45,7 +45,7 @@ const StepUserInfo = () => {
 			</div>
 
 			<div>
-				<Label>{t('phone')}</Label>
+				<Label>{t('phone')} <span className='text-red-500'>*</span></Label>
 				<Input
 					{...register('phone', { required: t('phone_required') })}
 					placeholder={t('phone_placeholder')}
