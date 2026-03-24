@@ -16,7 +16,7 @@ export function MobileSidebar({ open, onClose }: MobileSidebarProps) {
 	return (
 		<aside
 			className={cn(
-				'fixed inset-y-0 ltr:left-0 rtl:right-0 w-64 bg-white z-50 p-4 shadow-lg transition-transform duration-300 md:hidden',
+				'fixed inset-y-0 ltr:left-0 rtl:right-0 w-64 bg-white dark:bg-gray-900 dark:border-r dark:border-gray-800 z-50 p-4 shadow-lg transition-transform duration-300 md:hidden',
 				open ? 'translate-x-0' : 'ltr:-translate-x-full rtl:translate-x-full',
 			)}
 		>

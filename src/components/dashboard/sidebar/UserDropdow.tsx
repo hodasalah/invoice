@@ -24,7 +24,7 @@ export const UserDropdown = () => {
 		<div className='w-full'>
 			<button
 				onClick={() => setIsOpen((prev) => !prev)}
-				className='flex items-center justify-between w-full px-3 py-2 rounded-md hover:bg-muted transition-colors'
+				className='flex items-center justify-between w-full px-3 py-2 rounded-md hover:bg-muted dark:hover:bg-gray-800/50 transition-colors'
 			>
 				<div className='flex items-center gap-3'>
 					<img
@@ -33,7 +33,7 @@ export const UserDropdown = () => {
 						className='w-10 h-10 rounded-md object-cover'
 					/>
 					<div className='flex flex-col text-left'>
-						<span className='text-sm font-semibold text-text-dark'>
+						<span className='text-sm font-semibold text-text-dark dark:text-gray-100'>
 							{currentUser?.firstName +
 								' ' +
 								currentUser?.lastName || 'User Name'}
@@ -62,7 +62,7 @@ export const UserDropdown = () => {
 						animate={{ opacity: 1, y: 0 }}
 						exit={{ opacity: 0, y: -5 }}
 						transition={{ duration: 0.2 }}
-						className='flex flex-col gap-1 mt-2 bg-white border rounded-md shadow-md py-2'
+						className='flex flex-col gap-1 mt-2 bg-white dark:bg-gray-900 border dark:border-gray-800 rounded-md shadow-md py-2'
 					>
 						<DropdownItem
 							icon={User}

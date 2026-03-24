@@ -33,7 +33,7 @@ const SignOutButton = ({ miniSidebar }: SignOutButtonProps) => {
 				<LogOut />
 				</div>
 			) : (
-				<div className='flex gap-2 items-center justify-center capitalize text-sm font-medium text-primary hover:text-green-800'>
+				<div className='flex gap-2 items-center justify-center capitalize text-sm font-medium text-primary hover:text-green-800 dark:hover:text-green-400'>
 					<LogOut className='w-5 h-5 ' /> {loading ? '…' : t('logout')}
 				</div>
 			)}

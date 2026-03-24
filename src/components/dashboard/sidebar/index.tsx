@@ -40,7 +40,7 @@ export function Sidebar({ collapsed }: SidebarProps) {
 	return (
 		<aside
 			className={cn(
-				'hidden md:flex flex-col border-r bg-white h-screen transition-all duration-300 ease-in-out px-4 py-2',
+				'hidden md:flex flex-col border-r bg-white dark:bg-gray-900 dark:border-gray-800 h-screen transition-all duration-300 ease-in-out px-4 py-2',
 				collapsed ? 'w-16' : 'w-64',
 			)}
 		>
@@ -83,8 +83,8 @@ export function Sidebar({ collapsed }: SidebarProps) {
 								className={cn(
 									'flex items-center px-4 py-2 rounded-md cursor-pointer transition-colors',
 									isActive
-										? 'bg-muted text-primary'
-										: 'hover:bg-muted',
+										? 'bg-muted dark:bg-gray-800/50 text-primary'
+										: 'hover:bg-muted dark:hover:bg-gray-800/50',
 									collapsed
 										? 'justify-center'
 										: 'justify-between',

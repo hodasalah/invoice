@@ -28,7 +28,7 @@ export function SidebarItem({
 			onClick={onClick}
 			className={cn(
 				'flex items-center px-4 py-2 rounded-md cursor-pointer select-none transition-colors',
-				isActive ? 'bg-muted text-primary' : 'hover:bg-muted',
+				isActive ? 'bg-muted dark:bg-gray-800/50 text-primary' : 'hover:bg-muted dark:hover:bg-gray-800/50',
 				collapsed ? 'justify-center' : 'gap-2 justify-start',
 			)}
 		>
