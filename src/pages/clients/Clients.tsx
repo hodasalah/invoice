@@ -21,7 +21,7 @@ import { useEffect, useState } from 'react';
 import { deleteClientById } from '../../features/clients/clientsSlice';
 
 const Clients = () => {
-	const dispatch = useAppDispatch<any>();
+	const dispatch = useAppDispatch();
 	const clients= useAppSelector(
 		(state: RootState) => state.clients.clients,
 	);

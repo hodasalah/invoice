@@ -5,14 +5,14 @@ import { ChevronRightIcon, LogOut, User } from 'lucide-react';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { DropdownItem } from '../../shared/DropdownItem';
-import { t } from 'i18next';
-
+import { useTranslation } from 'react-i18next';
 
 
 export const UserDropdown = () => {
 	const [isOpen, setIsOpen] = useState(false);
 	const dispatch = useAppDispatch();
 	const navigate = useNavigate();
+	const { t } = useTranslation('common');
 	const currentUser = useAppSelector((state) => state.user.currentUser);
 
 	const handleLogout = () => {

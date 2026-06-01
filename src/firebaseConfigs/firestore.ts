@@ -1,4 +1,3 @@
-// src/firebase/firestore.ts
 import {
 	addDoc,
 	collection,
@@ -11,8 +10,10 @@ import {
 } from 'firebase/firestore';
 import { db } from './firebase';
 
+import type { DocumentData } from 'firebase/firestore';
+
 // ✅ إضافة مستند جديد وإرجاع البيانات مع id
-export const addData = async <T>(collectionName: string, data: T) => {
+export const addData = async <T extends DocumentData>(collectionName: string, data: T) => {
 	const colRef = collection(db, collectionName);
 	const docRef = await addDoc(colRef, data);
 	return { id: docRef.id, ...data };
@@ -33,13 +34,13 @@ export const getDocById = async (collectionName: string, id: string) => {
 };
 
 // ✅ تحديث مستند
-export const updateData = async <T>(
+export const updateData = async <T extends DocumentData>(
 	collectionName: string,
 	id: string,
 	data: Partial<T>,
 ) => {
 	const docRef = doc(db, collectionName, id);
-	await updateDoc(docRef, data);
+	await updateDoc(docRef, data as { [x: string]: any });
 };
 
 // ✅ حذف مستند
@@ -49,7 +50,7 @@ export const deleteData = async (collectionName: string, id: string) => {
 };
 
 // ✅ تخزين مستخدم باستخدام uid
-export const setUserData = async <T>(uid: string, data: T) => {
+export const setUserData = async <T extends DocumentData>(uid: string, data: T) => {
 	const docRef = doc(db, 'users', uid);
 	await setDoc(docRef, data);
 };

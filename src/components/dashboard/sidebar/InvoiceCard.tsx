@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { useTranslation } from 'react-i18next';
 
 /**
  * InvoiceCard
@@ -14,9 +15,10 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export default function InvoiceCard({
 	imageSrc = '/images/invoice-illustration.png',
-	title = 'Create invoice',
+	title,
 	onCreate = () => {},
-}) {
+}: { imageSrc?: string; title?: string; onCreate?: () => void }) {
+	const { t } = useTranslation('common');
 	return (
 		<div className='max-w-xs mx-auto'>
 			{/* Outer rounded green card matching the image */}
@@ -45,7 +47,7 @@ export default function InvoiceCard({
 							onClick={onCreate}
 							className='w-full rounded-xl bg-amber-200 text-emerald-800 font-medium shadow-inner py-3'
 						>
-							{title}
+							{title || t('Create Invoice')}
 						</Button>
 					</div>
 				</CardContent>

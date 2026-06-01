@@ -16,6 +16,15 @@ const CreateInvoice = () => {
 	const currentUser = useAppSelector((state) => state.user.currentUser);
 	const clients = useAppSelector((state) => state.clients.clients) as Client[];
 	const navigate = useNavigate();
+
+	// Check authorization
+	useEffect(() => {
+		if (currentUser?.role === 'client') {
+			toast.error('❌ You are not authorized to create invoices.');
+			navigate('/dashboard/invoices/list');
+		}
+	}, [currentUser, navigate]);
+
 	useEffect(() => {
 		if (currentUser?.uid) {
 			dispatch(fetchClientsByUser(currentUser.uid));
@@ -36,11 +45,9 @@ const CreateInvoice = () => {
 
 			const { id, ...dataWithoutId } = invoice;
 
-			// ✅ لو مفيش invoiceNumber أنشئي واحد تلقائي
 			const invoiceNumber =
 				dataWithoutId.invoiceNumber || generateInvoiceNumber();
 
-			// ✅ لو مفيش date استخدمي تاريخ اليوم
 			const date =
 				dataWithoutId.date || new Date().toISOString().split('T')[0];
 
@@ -56,9 +63,11 @@ const CreateInvoice = () => {
 			const savedInvoice = {
 				id: savedRef.id,
 				...invoiceToSave,
+				customer: invoiceToSave.clientName || '',
+				amount: invoiceToSave.total || 0,
 			};
 
-			dispatch(addInvoice(savedInvoice));
+			dispatch(addInvoice(savedInvoice as any));
 			dispatch(fetchInvoicesByUser(currentUser.uid));
 
 			toast.success('✅ Invoice Saved Successfully');
@@ -75,13 +84,11 @@ const CreateInvoice = () => {
 	};
 
 	return (
-		<div className='w-full flex justify-center p-6'>
-			<InvoiceForm
-				onSave={handleSave}
-				onClose={handleClose}
-				clients={clients}
-			/>
-		</div>
+		<InvoiceForm
+			onSave={handleSave}
+			onClose={handleClose}
+			clients={clients}
+		/>
 	);
 };
 

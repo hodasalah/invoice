@@ -158,7 +158,6 @@ export function Sidebar({ collapsed }: SidebarProps) {
 			{(!collapsed || isOpen) && (
 				<InvoiceCard
 					imageSrc='/assets/invoice.png'
-					title='Create invoice'
 					onCreate={() => {
 						navigate('/dashboard/invoices/create');
 					}}

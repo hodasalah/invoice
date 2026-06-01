@@ -11,7 +11,7 @@ interface SignOutButtonProps {
 }
 
 const SignOutButton = ({ miniSidebar }: SignOutButtonProps) => {
-	const { t, i18n } = useTranslation('auth');
+	const { t } = useTranslation('common');
 	const navigate = useNavigate();
 	const [loading, setLoading] = useState(false);
 	const dispatch = useAppDispatch();

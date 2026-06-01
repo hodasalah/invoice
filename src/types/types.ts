@@ -35,6 +35,14 @@ export interface InvoiceData {
 
 	status?: 'paid' | 'unpaid';
 	userId?: string;
+
+	// Custom branding/design fields
+	senderName?: string;
+	senderAddress?: string;
+	senderPhone?: string;
+	senderEmail?: string;
+	senderWebsite?: string;
+	paymentDetails?: string;
 }
 export interface Client {
 	id?: string;

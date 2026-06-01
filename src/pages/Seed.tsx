@@ -1,56 +1,53 @@
 import { faker } from '@faker-js/faker';
-import {
-	createUserWithEmailAndPassword,
-	fetchSignInMethodsForEmail,
-} from 'firebase/auth';
 import { auth, db } from '../firebaseConfigs/firebase';
-import { doc, setDoc, collection, addDoc } from 'firebase/firestore';
+import { doc, setDoc, collection, addDoc, updateDoc } from 'firebase/firestore';
+import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import { setUser } from '@/features/user/userSlice';
 
 const SeedPage = () => {
-	const handleSeed = async () => {
-		const usersCount = 2;
+	const dispatch = useAppDispatch();
+	const currentUser = useAppSelector((state) => state.user.currentUser);
 
-		// -------- ✅ 1) إنشاء Admin ومعالجة مشكلة UID --------
+	const handleMakeMeAdmin = async () => {
+		const firebaseUser = auth.currentUser;
+		if (!firebaseUser) {
+			alert('⚠️ Please login first.');
+			return;
+		}
 		try {
-			const adminEmail = 'hoda@gmail.com';
-			const adminPassword = 'admin123';
-			let adminUid: string;
-
-			// ✅ هل البريد مسجّل مسبقًا؟
-			const methods = await fetchSignInMethodsForEmail(auth, adminEmail);
-
-			if (methods.length === 0) {
-				// ✅ غير موجود → نعمل إنشاء مستخدم
-				const adminCredential = await createUserWithEmailAndPassword(
-					auth,
-					adminEmail,
-					adminPassword,
-				);
-				adminUid = adminCredential.user.uid;
-				console.log('✅ Admin created with Firebase UID:', adminUid);
-			} else {
-				// ✅ موجود مسبقًا → نجيب UID الحقيقي من Authentication
-				const existingUser = auth.currentUser;
-				if (existingUser && existingUser.email === adminEmail) {
-					adminUid = existingUser.uid;
-				} else {
-					throw new Error(
-						'⚠️ Admin exists but not signed in. سجّلي دخول admin أولاً.',
-					);
-				}
+			await updateDoc(doc(db, 'users', firebaseUser.uid), { role: 'admin' });
+			// Update local redux state so change takes effect immediately without re-login
+			if (currentUser) {
+				const updated = { ...currentUser, role: 'admin' };
+				dispatch(setUser(updated));
 			}
+			alert('✅ Your role has been updated to admin! You can now delete invoices.');
+		} catch (err) {
+			console.error('Error updating role:', err);
+			alert('❌ Failed to update role. Check console.');
+		}
+	};
 
-			// ✅ حفظ بيانات admin بنفس UID الحقيقي
+	const handleSeed = async () => {
+		const firebaseUser = auth.currentUser;
+		if (!firebaseUser) {
+			alert('⚠️ الرجاء تسجيل الدخول أولاً لتوليد البيانات لحسابك الحالي.');
+			return;
+		}
+
+		try {
+			const adminUid = firebaseUser.uid;
+			const adminEmail = firebaseUser.email || 'user@example.com';
+
 			await setDoc(doc(db, 'users', adminUid), {
 				uid: adminUid,
-				firstName: 'Hoda',
-				lastName: 'Salah',
+				firstName: 'Admin',
+				lastName: 'User',
 				email: adminEmail,
-				password: adminPassword,
 				avatar: faker.image.avatar(),
 				role: 'admin',
-				phone: faker.phone.number('+9665########'),
-				companyName: 'Hoda Co.',
+				phone: faker.phone.number({ style: 'national' }),
+				companyName: 'My Awesome Co.',
 				address: {
 					street: faker.location.streetAddress(),
 					city: faker.location.city(),
@@ -63,28 +60,26 @@ const SeedPage = () => {
 				createdAt: new Date().toISOString(),
 			});
 
-			// ✅ إنشاء عملاء وفواتير للـ admin
 			for (let j = 0; j < 3; j++) {
-				const clientId = (
-					await addDoc(collection(db, 'clients'), {
-						userId: adminUid,
-						name: faker.person.fullName(),
-						companyName: faker.company.name(),
-						email: faker.internet.email(),
-						phone: faker.phone.number('+9665########'),
-						address: {
-							street: faker.location.streetAddress(),
-							city: faker.location.city(),
-							state: faker.location.state(),
-							country: 'Saudi Arabia',
-							zip: faker.location.zipCode(),
-						},
-						currency: 'SAR',
-						notes: faker.lorem.sentence(),
-						archived: false,
-						createdAt: new Date().toISOString(),
-					})
-				).id;
+				const clientData = {
+					userId: adminUid,
+					name: faker.person.fullName(),
+					companyName: faker.company.name(),
+					email: faker.internet.email(),
+					phone: faker.phone.number({ style: 'national' }),
+					address: {
+						street: faker.location.streetAddress(),
+						city: faker.location.city(),
+						state: faker.location.state(),
+						country: 'Saudi Arabia',
+						zip: faker.location.zipCode(),
+					},
+					currency: 'SAR',
+					notes: faker.lorem.sentence(),
+					archived: false,
+					createdAt: new Date().toISOString(),
+				};
+				const clientId = (await addDoc(collection(db, 'clients'), clientData)).id;
 
 				const invoicesCount = faker.number.int({ min: 1, max: 3 });
 				for (let k = 0; k < invoicesCount; k++) {
@@ -96,7 +91,7 @@ const SeedPage = () => {
 							id: faker.string.uuid(),
 							description: faker.commerce.productName(),
 							quantity,
-							unitPrice: price,
+							price,
 							total: price * quantity,
 						};
 					});
@@ -104,11 +99,7 @@ const SeedPage = () => {
 					const subTotal = items.reduce((s, it) => s + it.total, 0);
 					const vat = Math.round(subTotal * 0.15);
 					const total = subTotal + vat;
-					const status = faker.helpers.arrayElement([
-						'paid',
-						'unpaid',
-						'overdue',
-					]);
+					const status = faker.helpers.arrayElement(['paid', 'unpaid']);
 
 					const invoiceDate = faker.date.recent({ days: 30 });
 					const dueDate = new Date(invoiceDate);
@@ -118,9 +109,11 @@ const SeedPage = () => {
 						await addDoc(collection(db, 'invoices'), {
 							userId: adminUid,
 							clientId,
-							invoiceNumber: `INV-${invoiceDate.getFullYear()}-${faker.string.numeric(
-								3,
-							)}`,
+							clientName: clientData.name,
+							clientEmail: clientData.email,
+							clientPhone: clientData.phone,
+							clientAddress: clientData.address,
+							invoiceNumber: `INV-${invoiceDate.getFullYear()}-${faker.string.numeric(3)}`,
 							date: invoiceDate.toISOString().split('T')[0],
 							dueDate: dueDate.toISOString().split('T')[0],
 							items,
@@ -128,7 +121,7 @@ const SeedPage = () => {
 							vat,
 							total,
 							status,
-							currency: 'SAR',
+							currency: 'USD',
 							notes: 'Thank you for your business',
 							createdAt: new Date().toISOString(),
 						})
@@ -136,19 +129,12 @@ const SeedPage = () => {
 
 					if (status === 'paid') {
 						const paymentDate = new Date(invoiceDate);
-						paymentDate.setDate(
-							paymentDate.getDate() +
-								faker.number.int({ min: 1, max: 10 }),
-						);
+						paymentDate.setDate(paymentDate.getDate() + faker.number.int({ min: 1, max: 10 }));
 						await addDoc(collection(db, 'payments'), {
 							userId: adminUid,
 							invoiceId,
 							amount: total,
-							method: faker.helpers.arrayElement([
-								'cash',
-								'credit_card',
-								'bank_transfer',
-							]),
+							method: faker.helpers.arrayElement(['cash', 'credit_card', 'bank_transfer']),
 							transactionId: `TX-${faker.string.numeric(6)}`,
 							date: paymentDate.toISOString(),
 						});
@@ -159,16 +145,37 @@ const SeedPage = () => {
 			console.error('❌ Error creating admin:', err);
 		}
 
-		// ------- ✅ 2) المستخدمين العاديين (بدون تغيير) -------
-		// (هنا نترك الكود كما كان لضمان أن كل شيء يعمل)
-		// ✅ … نفس بقية الكود تبعك بدون تعديل …
-
 		alert('✅ تم حل مشكلة UID وتوليد البيانات كاملة');
 	};
 
 	return (
 		<div style={{ padding: 20 }}>
 			<h1>🚀 Seed Database</h1>
+
+			{/* ✅ Make Me Admin */}
+			<div style={{ marginBottom: 24, padding: 16, border: '2px solid #16a34a', borderRadius: 8, background: '#f0fdf4' }}>
+				<h2 style={{ color: '#15803d', marginBottom: 8 }}>👑 Make Me Admin</h2>
+				<p style={{ color: '#166534', marginBottom: 12, fontSize: 14 }}>
+					Click below to instantly set your account role to <strong>admin</strong>.
+					This will allow you to delete invoices. Takes effect immediately without re-login.
+				</p>
+				<button
+					onClick={handleMakeMeAdmin}
+					style={{
+						padding: '10px 24px',
+						background: '#16a34a',
+						color: 'white',
+						border: 'none',
+						borderRadius: 6,
+						cursor: 'pointer',
+						fontWeight: 'bold',
+						fontSize: 16,
+					}}
+				>
+					👑 Make Me Admin Now
+				</button>
+			</div>
+
 			<p>اضغطي لتوليد admin ومستخدمين تجريبيين مع بيانات كاملة.</p>
 			<button
 				onClick={handleSeed}

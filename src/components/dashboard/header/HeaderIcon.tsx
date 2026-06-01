@@ -27,15 +27,14 @@ export  const HeaderIcon: FC<HeaderIconProps> = ({
 						gradientClass,
 					)}
 				>
-					{/* تأكد إن الأيقونة دايمًا بتظهر */}
 					<div className='z-10'>{icon}</div>
 
-					{/* الرقم يظهر فقط لو موجود */}
 					{typeof count === 'number' && count > 0 && (
 						<span className='absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full shadow z-20'>
 							{count}
 						</span>
 					)}
+
 				</motion.div>
 			</Tooltip.Trigger>
 

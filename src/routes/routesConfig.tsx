@@ -4,12 +4,15 @@ const Landing = lazy(() => import('../pages/Landing'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const InvoicesList = lazy(() => import('../pages/invoices/InvoicesList'));
 const CreateInvoice = lazy(() => import('../pages/invoices/CreateInvoice'));
+const ViewInvoice = lazy(() => import('../pages/invoices/ViewInvoice'));
+const EditInvoice = lazy(() => import('../pages/invoices/EditInvoice'));
 const Clients = lazy(() => import('../pages/clients/Clients'));
 const AddClient = lazy(() => import('../pages/clients/AddClient'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const Seed = lazy(() => import('../pages/Seed'));
+const Wallet = lazy(() => import('../pages/Wallet'));
 
 export type Route = {
 	path: string;
@@ -43,6 +46,18 @@ export const appRoutes: Route[] = [
 				protected: true,
 			},
 			{
+				path: 'invoices/:id',
+				element: <ViewInvoice />,
+				title: 'View Invoice',
+				protected: true,
+			},
+			{
+				path: 'invoices/edit/:id',
+				element: <EditInvoice />,
+				title: 'Edit Invoice',
+				protected: true,
+			},
+			{
 				path: 'clients/list',
 				element: <Clients />,
 				title: 'Clients',
@@ -52,6 +67,12 @@ export const appRoutes: Route[] = [
 				path: 'clients/new',
 				element: <AddClient />,
 				title: 'Clients',
+				protected: true,
+			},
+			{
+				path: 'wallets',
+				element: <Wallet />,
+				title: 'Wallets',
 				protected: true,
 			},
 		],

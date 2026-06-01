@@ -8,6 +8,8 @@ import { HeaderIcon } from './HeaderIcon';
 import { SidebarButton } from './SidebarButton';
 import { useNavigate } from 'react-router';
 import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
+import ThemeToggle from '@/components/shared/ThemeToggle';
+import { useTranslation } from 'react-i18next';
 
 type HeaderProps = {
 	collapsed: boolean;
@@ -26,6 +28,7 @@ export function Header({
 			document.title = `${title} `;
 		}, [title]);
 	const navigate = useNavigate();
+	const { t } = useTranslation('common');
 	return (
 		<header className='flex items-center justify-between p-4 border-b bg-white dark:bg-gray-900'>
 			<div className='flex items-center gap-3'>
@@ -68,14 +71,15 @@ export function Header({
 						tooltip='New Invoice'
 						count={10}
 					/>
-				</div>
+					<ThemeToggle />
+			</div>
 				<PrimaryBtn
 					type='button'
 					disabled={false}
 					icon={<Plus className='w-4 h-4' />}
 					onClick={() => navigate('/dashboard/invoices/create')}
 				>
-					Create Invoice
+					{t("Create Invoice")}
 				</PrimaryBtn>
 			</div>
 		</header>

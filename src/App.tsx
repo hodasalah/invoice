@@ -1,12 +1,12 @@
-import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
+import { useAppSelector } from './store/hooks';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import AppRoutes from './routes';
 
 function App() {
-	const theme = useSelector((state) => state.theme.theme); // light | dark
-	const lang = useSelector((state) => state.language.lang); // en | ar
+	const theme = useAppSelector((state) => state.theme); // light | dark
+	const lang = useAppSelector((state) => state.language); // en | ar
 
 	// تحديث i18n و DOM attributes
 	useEffect(() => {

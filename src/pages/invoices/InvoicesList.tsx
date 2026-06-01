@@ -1,7 +1,5 @@
 import InvoiceViewModal from '@/components/invoices/InvoiceViewModal';
-
-import type { InvoiceData } from '@/components/invoices/InvoiceForm';
-import InvoiceForm from '@/components/invoices/InvoiceForm';
+import type { InvoiceData } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { fetchClientsByUser } from '@/features/clients/clientsSlice';
@@ -10,13 +8,14 @@ import type { RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { deleteData, updateData } from '../../firebaseConfigs/firestore';
+import { useNavigate } from 'react-router';
+import { deleteData } from '../../firebaseConfigs/firestore';
+import { useTranslation } from 'react-i18next';
 
 const Invoices = () => {
-	const [selected, setSelected] = useState<any | null>(null);
-	const [isFormOpen, setIsFormOpen] = useState(false);
-	const [editData, setEditData] = useState<any | null>(null);
-	const [invoiceMode, setInvoiceMode] = useState<'page' | 'modal'>('page');
+	const { t } = useTranslation('common');
+	const [selected, setSelected] = useState<InvoiceData | null>(null);
+	const navigate = useNavigate();
 
 	const dispatch = useAppDispatch();
 	const currentUser = useAppSelector(
@@ -28,7 +27,7 @@ const Invoices = () => {
 		loading,
 		error,
 	} = useAppSelector((state: RootState) => state.invoices);
-	console.log(clients);
+
 	useEffect(() => {
 		if (currentUser?.uid) {
 			dispatch(fetchInvoicesByUser(currentUser.uid));
@@ -36,49 +35,43 @@ const Invoices = () => {
 		}
 	}, [currentUser?.uid, dispatch]);
 
-	if (!currentUser) return <div>Loading user...</div>;
+	if (!currentUser) return <div>{t('loading_invoice')}</div>;
 
 	const handleDelete = async (id: string) => {
-		if (confirm('Are you sure you want to delete this invoice?')) {
+		if (confirm(t('confirm_delete_invoice'))) {
 			await deleteData('invoices', id);
 			dispatch(fetchInvoicesByUser(currentUser.uid));
 		}
 	};
 
-	const handleSave = async (invoice: InvoiceData) => {
-		await updateData('invoices', invoice.id, invoice);
-		dispatch(fetchInvoicesByUser(currentUser.uid));
-		setIsFormOpen(false);
-		setEditData(null);
-	};
 	return (
-		<div className='p-6 '>
+		<div className='p-6'>
 			<div className='flex justify-between items-center'>
-				<h1 className='text-2xl font-semibold'>Invoices</h1>
-				<Button
-					onClick={() => {
-						setIsFormOpen(true);
-						setEditData(null);
-					}}
-				>
-					<Plus className='w-4 h-4 mr-2' /> New Invoice
-				</Button>
+				<h1 className='text-2xl font-semibold'>{t('Invoices')}</h1>
+				{currentUser?.role !== 'client' && (
+					<Button
+						onClick={() => {
+							navigate('/dashboard/invoices/create');
+						}}
+					>
+						<Plus className='w-4 h-4 mr-2' /> {t('new_invoice')}
+					</Button>
+				)}
 			</div>
 
-			{/* حالة التحميل أو الخطأ */}
-			{loading && <p>Loading invoices...</p>}
+			{loading && <p>{t('loading_invoices')}</p>}
 			{error && <p className='text-red-600'>{error}</p>}
 
 			<Card className='overflow-x-auto p-4 mt-6'>
-				<table className='min-w-full text-sm '>
+				<table className='min-w-full text-sm'>
 					<thead className='border-b bg-gray-50 text-left font-medium text-gray-600'>
 						<tr>
-							<th className='p-3'>Invoice #</th>
-							<th className='p-3'>Client</th>
-							<th className='p-3'>Date</th>
-							<th className='p-3'>Total</th>
-							<th className='p-3'>Status</th>
-							<th className='p-3 text-right'>Actions</th>
+							<th className='p-3'>{t('invoice_number')}</th>
+							<th className='p-3'>{t('client')}</th>
+							<th className='p-3'>{t('date')}</th>
+							<th className='p-3'>{t('total')}</th>
+							<th className='p-3'>{t('status')}</th>
+							<th className='p-3 text-right'>{t('actions')}</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -88,20 +81,19 @@ const Invoices = () => {
 									colSpan={6}
 									className='text-center p-4 text-gray-500'
 								>
-									No invoices found
+									{t('no_invoices_found')}
 								</td>
 							</tr>
 						) : (
 							invoices.map((inv) => (
 								<tr
 									key={inv.id}
-									className='border-b hover:bg-gray-50'
+									className='border-b dark:hover:bg-gray-200 hover:bg-primary dark:hover:text-black hover:text-white'
 								>
 									<td className='p-3 font-medium'>
 										{inv?.invoiceNumber}
 									</td>
 									<td className='p-3'>
-										{' '}
 										{clients?.find(
 											(c) => c?.id === inv.clientId,
 										)?.name || 'Unknown'}
@@ -120,71 +112,41 @@ const Invoices = () => {
 													: 'bg-red-100 text-red-700'
 											}`}
 										>
-											{inv.status}
+											{t(inv.status)}
 										</span>
 									</td>
 									<td className='p-3 text-right space-x-2'>
+										{/* View */}
 										<Button
 											size='icon'
 											variant='ghost'
-											onClick={() => {
-												const data = {
-													inv,
-													clientName:
-														clients.find(
-															(c) =>
-																c.id ===
-																inv.clientId,
-														)?.name || 'Unknown',
-												};
-												setSelected(data);
-											}}
+											onClick={() => navigate(`/dashboard/invoices/${inv.id}`)}
 										>
 											<Eye className='w-4 h-4' />
 										</Button>
-										<Button
-											size='icon'
-											variant='ghost'
-											onClick={() => {
-												const clientData = clients.find(
-													(c) =>
-														c.id === inv.clientId,
-												);
 
-												// ندمج بيانات الفاتورة + العميل
-												const merged = {
-													...inv,
-													clientId: inv.clientId,
-													clientName:
-														clientData?.name || '',
-													clientEmail:
-														clientData?.email || '',
-													clientPhone:
-														clientData?.phone || '',
-													clientAddress:
-														clientData?.address
-															.country +
-															' ' +
-															clientData?.address
-																.city || '',
-												};
+										{/* Edit — navigates to the dedicated edit page */}
+										{currentUser?.role !== 'client' && (
+											<Button
+												size='icon'
+												variant='ghost'
+												onClick={() => navigate(`/dashboard/invoices/edit/${inv.id}`)}
+											>
+												<Pencil className='w-4 h-4' />
+											</Button>
+										)}
 
-												setEditData(merged);
-												setIsFormOpen(true);
-												setInvoiceMode('modal');
-											}}
-										>
-											<Pencil className='w-4 h-4' />
-										</Button>
-
-										<Button
-											size='icon'
-											variant='ghost'
-											className='text-red-600'
-											onClick={() => handleDelete(inv.id)}
-										>
-											<Trash2 className='w-4 h-4' />
-										</Button>
+										{/* Delete — admin only */}
+										{currentUser?.role === 'admin' && (
+											<Button
+												size='icon'
+												variant='ghost'
+												className='text-red-600'
+												onClick={() => handleDelete(inv.id)}
+											>
+												<Trash2 className='w-4 h-4' />
+											</Button>
+										)}
 									</td>
 								</tr>
 							))
@@ -193,27 +155,13 @@ const Invoices = () => {
 				</table>
 			</Card>
 
-			{/* Add/Edit Invoice Modal */}
-			{editData && (
-				<div className='fixed inset-0 bg-black/70 flex items-center justify-center z-50 h-screen p-8'>
-					<InvoiceForm
-						onClose={() => {
-							setIsFormOpen(false);
-							setEditData(null);
-							setInvoiceMode('page');
-						}}
-						onSave={handleSave}
-						editData={editData}
-						clients={clients}
-						mode={invoiceMode}
-					/>
-				</div>
-			)}
-
 			{/* View Invoice Modal */}
 			{selected && (
 				<InvoiceViewModal
-					invoice={selected}
+					invoice={{
+						inv: selected,
+						clientName: clients?.find((c) => c?.id === selected.clientId)?.name || 'Unknown'
+					}}
 					onClose={() => setSelected(null)}
 				/>
 			)}

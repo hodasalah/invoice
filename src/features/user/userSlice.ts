@@ -59,7 +59,7 @@ export const loginUser = createAsyncThunk(
 				avatar: userData.avatar,
 				phone: userData.phone,
 				createdAt: userData.createdAt,
-				accessToken: user.accessToken,
+				accessToken: (user as any).accessToken,
 			};
 
 			// ✅ حفظ المستخدم في localStorage

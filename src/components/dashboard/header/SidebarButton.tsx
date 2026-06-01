@@ -1,6 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { ChevronsLeft, ChevronsRight } from 'lucide-react';
-import { useState } from 'react';
+
 
 interface CollapseButtonProps {
 	collapsed: boolean;
@@ -11,13 +11,9 @@ export const SidebarButton = ({
 	collapsed,
 	toggleCollapse,
 }: CollapseButtonProps) => {
-	const [hovered, setHovered] = useState(false);
-
 	return (
 		<div
 			className='relative hidden md:block'
-			onMouseEnter={() => setHovered(true)}
-			onMouseLeave={() => setHovered(false)}
 		>
 			<AnimatePresence>
 				<motion.button

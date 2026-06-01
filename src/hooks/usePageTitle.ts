@@ -1,8 +1,10 @@
 import { useLocation, matchPath } from 'react-router';
 import { appRoutes } from '../routes/routesConfig';
+import { useTranslation } from 'react-i18next';
 
 export const usePageTitle = (): string => {
 	const location = useLocation();
+	const { t } = useTranslation('common');
 
 	const findTitle = (
 		routes: typeof appRoutes,
@@ -25,5 +27,6 @@ export const usePageTitle = (): string => {
 		return undefined;
 	};
 
-	return findTitle(appRoutes) || 'MyApp';
+	const rawTitle = findTitle(appRoutes) || 'MyApp';
+	return rawTitle !== 'MyApp' ? t(rawTitle) : rawTitle;
 };
