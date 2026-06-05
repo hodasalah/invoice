@@ -1,6 +1,14 @@
 import InvoiceViewModal from '@/components/invoices/InvoiceViewModal';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
 import { fetchClientsByUser } from '@/features/clients/clientsSlice';
 import { fetchInvoicesByUser } from '@/features/invoices/invoiceSlice';
 import type { RootState } from '@/store';
@@ -10,11 +18,13 @@ import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
+import { toast } from 'sonner';
 import { deleteData } from '../../../firebaseConfigs/firestore';
 
 const Invoices = () => {
 	const { t } = useTranslation('common');
 	const [ selected, setSelected ] = useState<InvoiceData | null>(null);
+	const [ invoiceToDelete, setInvoiceToDelete ] = useState<string | null>(null);
 	const navigate = useNavigate();
 
 	const dispatch = useAppDispatch();
@@ -36,13 +46,6 @@ const Invoices = () => {
 	}, [ currentUser?.uid, dispatch ]);
 
 	if (!currentUser) return <div>{t('loading_invoice')}</div>;
-
-	const handleDelete = async (id: string) => {
-		if (confirm(t('confirm_delete_invoice'))) {
-			await deleteData('invoices', id);
-			dispatch(fetchInvoicesByUser(currentUser.uid));
-		}
-	};
 
 	return (
 		<div className='p-6'>
@@ -96,7 +99,7 @@ const Invoices = () => {
 									<td className='p-3'>
 										{clients?.find(
 											(c) => c?.id === inv.clientId,
-										)?.name || 'Unknown'}
+										)?.name || inv.clientName || 'عميل محذوف'}
 									</td>
 									<td className='p-3'>{inv?.date}</td>
 									<td className='p-3'>
@@ -141,7 +144,7 @@ const Invoices = () => {
 												size='icon'
 												variant='ghost'
 												className='text-red-600'
-												onClick={() => handleDelete(inv.id)}
+												onClick={() => setInvoiceToDelete(inv.id)}
 											>
 												<Trash2 className='w-4 h-4' />
 											</Button>
@@ -153,6 +156,41 @@ const Invoices = () => {
 					</tbody>
 				</table>
 			</Card>
+
+			{/* DELETE CONFIRMATION MODAL */}
+			<Dialog open={!!invoiceToDelete} onOpenChange={(open) => !open && setInvoiceToDelete(null)}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>{t('confirm_delete') || 'تأكيد الحذف'}</DialogTitle>
+						<DialogDescription>
+							{t('confirm_delete_invoice_desc') || 'هل أنت متأكد أنك تريد حذف هذه الفاتورة؟ لا يمكن التراجع عن هذا الإجراء.'}
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter className="gap-2 sm:gap-0">
+						<Button variant="outline" onClick={() => setInvoiceToDelete(null)}>
+							{t('cancel') || 'إلغاء'}
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={async () => {
+								if (!invoiceToDelete) return;
+								try {
+									await deleteData('invoices', invoiceToDelete);
+									dispatch(fetchInvoicesByUser(currentUser.uid));
+									toast.success(t('invoice_deleted') || 'تم حذف الفاتورة بنجاح', {
+										className: 'bg-green-500 text-white border-green-600',
+									});
+								} catch (error) {
+									toast.error(t('delete_error') || 'حدث خطأ أثناء الحذف');
+								}
+								setInvoiceToDelete(null);
+							}}
+						>
+							{t('confirm') || 'تأكيد الحذف'}
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			{/* View Invoice Modal */}
 			{selected && (

@@ -13,6 +13,14 @@ import {
 	TableRow,
 } from '@/components/ui/table';
 import {
+	Dialog,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogHeader,
+	DialogTitle,
+} from '@/components/ui/dialog';
+import {
 	fetchClientsByUser,
 } from '@/features/clients/clientsSlice';
 import type { RootState } from '@/store';
@@ -28,6 +36,7 @@ const Clients = () => {
     const [search, setSearch] = useState('');
     const [openAdd, setOpenAdd] = useState(false);
     const [editData, setEditData] = useState<any>(null);
+    const [clientToDelete, setClientToDelete] = useState<any>(null);
     const currentUser = useAppSelector((state: RootState) => state.user.currentUser);
 
     useEffect(() => {
@@ -95,19 +104,12 @@ const Clients = () => {
                         <TableCell className='font-medium'>{client.name}</TableCell>
                         <TableCell>{client.email}</TableCell>
                         <TableCell>{client.phone}</TableCell>
-                        <TableCell>{client.address.street}, {client.address.city}, {client.address.state}, {client.address.country}</TableCell>
+                        <TableCell>{client.address?.street || ''}, {client.address?.city || ''}, {client.address?.state || ''}, {client.address?.country || ''}</TableCell>
                         <TableCell className='text-right flex justify-end gap-2'>
                             <Button size='sm' variant='outline' onClick={() => setEditData(client)}>
                                 <Pencil className='w-4 h-4' />
                             </Button>
-                            <Button size='sm' variant='destructive' onClick={async () => {
-                                try {
-                                    await dispatch(deleteClientById(client.id)).unwrap();
-                                    toast.success('Client and related invoices deleted');
-                                } catch (error) {
-                                    toast.error('Failed to delete client');
-                                }
-                            }}>
+                            <Button size='sm' variant='destructive' onClick={() => setClientToDelete(client)}>
                                 <Trash className='w-4 h-4' />
                             </Button>
                         </TableCell>
@@ -119,6 +121,40 @@ const Clients = () => {
 					</div>
 				</CardContent>
 			</Card>
+
+			{/* DELETE CONFIRMATION MODAL */}
+			<Dialog open={!!clientToDelete} onOpenChange={(open) => !open && setClientToDelete(null)}>
+				<DialogContent>
+					<DialogHeader>
+						<DialogTitle>تأكيد الحذف</DialogTitle>
+						<DialogDescription>
+							هل أنت متأكد أنك تريد حذف هذا العميل؟ لن يتم حذف الفواتير المتعلقة به لضمان بقاء رصيد المحفظة دون تغيير.
+						</DialogDescription>
+					</DialogHeader>
+					<DialogFooter className="gap-2 sm:gap-0">
+						<Button variant="outline" onClick={() => setClientToDelete(null)}>
+							إلغاء
+						</Button>
+						<Button
+							variant="destructive"
+							onClick={async () => {
+								if (!clientToDelete) return;
+								try {
+									await dispatch(deleteClientById(clientToDelete.id)).unwrap();
+									toast.success('تم حذف العميل بنجاح', {
+										className: 'bg-green-500 text-white border-green-600',
+									});
+								} catch (error) {
+									toast.error('حدث خطأ أثناء الحذف');
+								}
+								setClientToDelete(null);
+							}}
+						>
+							تأكيد الحذف
+						</Button>
+					</DialogFooter>
+				</DialogContent>
+			</Dialog>
 
 			{/* ADD CLIENT MODAL */}
 			<AddClientModal

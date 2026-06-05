@@ -69,10 +69,17 @@ export const deleteClientById = createAsyncThunk(
 	async (id: string, { rejectWithValue }) => {
 		try {
 			await deleteData('clients', id);
-			// Also delete all invoices that reference this client
+			// Update related invoices to mark the client as deleted
 			const allInvoices = (await getData('invoices')) as any[];
 			const relatedInvoices = allInvoices.filter((inv) => inv.clientId === id);
-			await Promise.all(relatedInvoices.map((inv) => deleteData('invoices', inv.id)));
+			await Promise.all(
+				relatedInvoices.map((inv) =>
+					updateData('invoices', inv.id, {
+						clientName: inv.clientName ? `${inv.clientName} (عميل محذوف)` : 'عميل محذوف',
+						clientDeleted: true,
+					})
+				)
+			);
 			return id;
 		} catch (err) {
 			return rejectWithValue('Error deleting client');
