@@ -5,7 +5,7 @@ import {
 	type PayloadAction,
 } from '@reduxjs/toolkit';
 import { signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import {
 	saveUserToLocalStorage,
 	getUserFromLocalStorage,
@@ -79,6 +79,22 @@ export const logoutUser = createAsyncThunk('user/logoutUser', async () => {
 	return null;
 });
 
+// تحديث بروفايل المستخدم
+export const updateUserProfile = createAsyncThunk(
+	'user/updateUserProfile',
+	async (
+		{ uid, data }: { uid: string; data: Record<string, any> },
+		thunkAPI,
+	) => {
+		try {
+			await updateDoc(doc(db, 'users', uid), data);
+			return data;
+		} catch (error: any) {
+			return thunkAPI.rejectWithValue(error.message);
+		}
+	},
+);
+
 const userSlice = createSlice({
 	name: 'user',
 	initialState,
@@ -108,6 +124,12 @@ const userSlice = createSlice({
 			})
 			.addCase(logoutUser.fulfilled, (state) => {
 				state.currentUser = null;
+			})
+			.addCase(updateUserProfile.fulfilled, (state, action) => {
+				if (state.currentUser) {
+					state.currentUser = { ...state.currentUser, ...action.payload };
+					saveUserToLocalStorage(state.currentUser);
+				}
 			});
 	},
 });

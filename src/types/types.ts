@@ -58,3 +58,19 @@ export interface Client {
 		zip: string;
 	};
 }
+export interface DashboardStats {
+  revenue: number;
+  outstanding: number;
+  clients: number;
+  payments: number;
+}
+
+export interface RevenuePoint {
+  month: string;
+  revenue: number;
+}
+
+export interface InvoiceStatus {
+  paid: number;
+  unpaid: number;
+}

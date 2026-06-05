@@ -8,9 +8,11 @@ import { appRoutes } from './routesConfig';
 const AppRoutes = () => (
 	<Suspense fallback={<div>Loading...</div>}>
 		<Toaster position='top-right' />
+
 		<Routes>
 			{appRoutes.map((route) => {
 				let element = route.element;
+
 				if (route.protected) {
 					element = <ProtectedRoute>{element}</ProtectedRoute>;
 				} else if (route.publicOnly) {
@@ -19,7 +21,7 @@ const AppRoutes = () => (
 
 				return (
 					<Route
-						key={route.path}
+						key={route.path ?? 'root'}
 						path={route.path}
 						element={element}
 						handle={{ title: route.title }}
@@ -35,16 +37,29 @@ const AppRoutes = () => (
 								);
 							} else if (child.publicOnly) {
 								childElement = (
-									<PublicRoute>{childElement}</PublicRoute>
+									<PublicRoute>
+										{childElement}
+									</PublicRoute>
 								);
 							}
 
 							return (
 								<Route
-									key={child.path}
-									path={child.path}
+									key={
+										child.index
+											? `${route.path}-index`
+											: child.path
+									}
+									index={child.index}
+									path={
+										child.index
+											? undefined
+											: child.path
+									}
 									element={childElement}
-									handle={{ title: child.title }}
+									handle={{
+										title: child.title,
+									}}
 								/>
 							);
 						})}

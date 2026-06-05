@@ -67,7 +67,7 @@ export const UserDropdown = () => {
 						<DropdownItem
 							icon={User}
 							label={t('profile')}
-							onClick={() => navigate('/profile')}
+							onClick={() => navigate('/dashboard/profile')}
 						/>
 						<DropdownItem
 							icon={LogOut}

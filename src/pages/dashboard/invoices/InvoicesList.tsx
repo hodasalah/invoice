@@ -1,20 +1,20 @@
 import InvoiceViewModal from '@/components/invoices/InvoiceViewModal';
-import type { InvoiceData } from '@/types/types';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { fetchClientsByUser } from '@/features/clients/clientsSlice';
 import { fetchInvoicesByUser } from '@/features/invoices/invoiceSlice';
 import type { RootState } from '@/store';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
+import type { InvoiceData } from '@/types/types';
 import { Eye, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
-import { deleteData } from '../../firebaseConfigs/firestore';
 import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router';
+import { deleteData } from '../../../firebaseConfigs/firestore';
 
 const Invoices = () => {
 	const { t } = useTranslation('common');
-	const [selected, setSelected] = useState<InvoiceData | null>(null);
+	const [ selected, setSelected ] = useState<InvoiceData | null>(null);
 	const navigate = useNavigate();
 
 	const dispatch = useAppDispatch();
@@ -33,7 +33,7 @@ const Invoices = () => {
 			dispatch(fetchInvoicesByUser(currentUser.uid));
 			dispatch(fetchClientsByUser(currentUser.uid));
 		}
-	}, [currentUser?.uid, dispatch]);
+	}, [ currentUser?.uid, dispatch ]);
 
 	if (!currentUser) return <div>{t('loading_invoice')}</div>;
 
@@ -104,13 +104,12 @@ const Invoices = () => {
 									</td>
 									<td className='p-3'>
 										<span
-											className={`px-2 py-1 rounded-full text-xs font-medium ${
-												inv.status === 'paid'
+											className={`px-2 py-1 rounded-full text-xs font-medium ${inv.status === 'paid'
 													? 'bg-green-100 text-green-700'
 													: inv.status === 'unpaid'
-													? 'bg-yellow-100 text-yellow-700'
-													: 'bg-red-100 text-red-700'
-											}`}
+														? 'bg-yellow-100 text-yellow-700'
+														: 'bg-red-100 text-red-700'
+												}`}
 										>
 											{t(inv.status)}
 										</span>

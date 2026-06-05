@@ -1,5 +1,70 @@
 {
   "Dashboard": "Dashboard",
+    "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "overview": "Business Overview",
+
+    "revenue": "Revenue",
+    "outstanding": "Outstanding",
+    "clients": "Clients",
+    "Invoices": "Invoices",
+    "Payments": "Payments",
+    "Clients":"Clients",
+"collection_rate":"Collection Rate",
+    "totalRevenue": "Total Revenue",
+    "outstandingAmount": "Outstanding Amount",
+    "totalClients": "Total Clients",
+    "totalInvoices": "Total Invoices",
+
+    "revenueTrend": "Revenue Trend",
+    "invoiceStatus": "Invoice Status",
+
+    "recentInvoices": "Recent Invoices",
+    "recentPayments": "Recent Payments",
+
+    "topClients": "Top Clients",
+
+    "smartInsights": "Smart Insights",
+
+    "paidInvoices": "Paid Invoices",
+    "unpaidInvoices": "Unpaid Invoices",
+
+    "paymentMethod": "Payment Method",
+
+    "amount": "Amount",
+
+    "viewAll": "View All",
+
+    "loading": "Loading dashboard...",
+
+    "noData": "No data available",
+
+    "thisMonth": "This Month",
+    "thisYear": "This Year",
+
+    "income": "Income",
+    "expenses": "Expenses",
+
+    "cashFlow": "Cash Flow",
+
+    "walletOverview": "Wallet Overview",
+
+    "balance": "Balance",
+
+    "transactions": "Transactions",
+    "wallet_balance":"Wallet Balance",
+    "activity": "Recent Activity",
+      "average_invoice": "Average Invoice"
+
+  },
+  "revenue": "Revenue",
+  "revenueOverview": "Revenue Overview",
+  "monthlyPaidInvoicesRevenue":"Monthly paid invoices revenue",
+  "outstanding": "Outstanding",
+  "wallet_balance": "Wallet Balance",
+  "average_invoice": "Average Invoice",
+  "collection_rate": "Collection Rate",
   "Invoices": "Invoices",
   "Create Invoice": "Create Invoice",
   "List Invoices": "List Invoices",
@@ -56,5 +121,78 @@
   "vat": "VAT (15%)",
   "total_due": "Total Due",
   "profile": "Profile",
-  "logout": "Logout"
+  "logout": "Logout",
+  "profilePage": {
+    "title": "My Profile",
+    "subtitle": "Manage your personal information and account settings",
+    "memberSince": "Member since",
+    "personalInfo": "Personal Information",
+    "companyInfo": "Company & Business",
+    "addressInfo": "Address",
+    "accountStats": "Account Overview",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "companyName": "Company Name",
+    "vatNumber": "VAT Number",
+    "crNumber": "CR Number",
+    "street": "Street",
+    "city": "City",
+    "state": "State",
+    "country": "Country",
+    "zip": "ZIP Code",
+    "role": "Role",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "uploadAvatar": "Change Photo",
+    "uploading": "Uploading...",
+    "saving": "Saving...",
+    "saveSuccess": "Profile updated successfully",
+    "saveError": "Failed to update profile",
+    "uploadSuccess": "Photo updated successfully",
+    "uploadError": "Failed to upload photo",
+    "totalInvoices": "Total Invoices",
+    "totalClients": "Total Clients",
+    "accountAge": "Account Age",
+    "days": "days",
+    "noData": "—",
+    "dangerZone": "Account",
+    "accountId": "Account ID",
+    "activityInvoiceCreated": "Invoice Created",
+    "activityPaymentReceived": "Payment Received",
+    "activityTopClient": "Top Client Activity",
+    "recentActivity": "Recent Activity",
+    "noActivity": "No recent activity",
+    "scoreExcellent": "Excellent",
+    "scoreGood": "Good",
+    "scoreFair": "Fair",
+    "scoreNeedsWork": "Needs Work",
+    "collected": "collected",
+    "paidLabel": "paid",
+    "unpaidInvoices": "unpaid invoices",
+    "totalPayments": "total payments",
+    "completionAvatar": "Upload profile photo",
+    "completionName": "Add full name",
+    "completionEmail": "Verify email address",
+    "completionPhone": "Add phone number",
+    "completionCompany": "Add company name",
+    "completionAddress": "Complete address details",
+    "completionVat": "Add VAT number",
+    "completionCr": "Add CR number",
+    "businessScore": "Business Score",
+    "profileCompletion": "Profile Completion",
+    "collectionRate": "Collection Rate",
+    "activityScore": "Activity Score"
+  },
+  "footer": {
+    "systemsOperational": "All systems operational",
+    "madeBy": "Made with ❤️ by",
+    "hodaSalah": "Hoda Salah",
+    "rightsReserved": "All rights reserved.",
+    "quickLinks": "Quick Links",
+    "language": "Language",
+    "theme": "Theme"
+  }
 }

@@ -1,8 +1,10 @@
+import { Toaster } from 'sonner';
 import { useEffect } from 'react';
 import { useAppSelector } from './store/hooks';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import AppRoutes from './routes';
+
 
 function App() {
 	const theme = useAppSelector((state) => state.theme); // light | dark
@@ -18,6 +20,7 @@ function App() {
 	return (
 		<I18nextProvider i18n={i18n}>
 			<AppRoutes />
+			<Toaster position="bottom-right" />
 		</I18nextProvider>
 	);
 }

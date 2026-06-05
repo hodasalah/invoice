@@ -1,26 +1,30 @@
 import { lazy } from 'react';
 
 const Landing = lazy(() => import('../pages/Landing'));
-const Dashboard = lazy(() => import('../pages/Dashboard'));
-const InvoicesList = lazy(() => import('../pages/invoices/InvoicesList'));
-const CreateInvoice = lazy(() => import('../pages/invoices/CreateInvoice'));
-const ViewInvoice = lazy(() => import('../pages/invoices/ViewInvoice'));
-const EditInvoice = lazy(() => import('../pages/invoices/EditInvoice'));
-const Clients = lazy(() => import('../pages/clients/Clients'));
-const AddClient = lazy(() => import('../pages/clients/AddClient'));
+const Dashboard = lazy(() => import('../pages/dashboard/DashboardPage'));
+const HomePage = lazy(() => import('../pages/dashboard/HomePage'));
+const InvoicesList = lazy(() => import('../pages/dashboard/invoices/InvoicesList'));
+const CreateInvoice = lazy(() => import('../pages/dashboard/invoices/CreateInvoice'));
+const ViewInvoice = lazy(() => import('../pages/dashboard/invoices/ViewInvoice'));
+const EditInvoice = lazy(() => import('../pages/dashboard/invoices/EditInvoice'));
+const Clients = lazy(() => import('../pages/dashboard/clients/Clients'));
+const AddClient = lazy(() => import('../pages/dashboard/clients/AddClient'));
 const Login = lazy(() => import('../pages/Login'));
 const Signup = lazy(() => import('../pages/Signup'));
 const NotFound = lazy(() => import('../pages/NotFound'));
 const Seed = lazy(() => import('../pages/Seed'));
-const Wallet = lazy(() => import('../pages/Wallet'));
+const Wallet = lazy(() => import('../pages/dashboard/Wallet'));
+const Payments = lazy(() => import('../pages/dashboard/Payments'));
+const ProfilePage = lazy(() => import('../pages/dashboard/ProfilePage'));
 
 export type Route = {
-	path: string;
+	path?: string;
+	index?: boolean;
 	element: React.ReactNode;
 	title?: string;
 	children?: Route[];
-	protected?: boolean; // ✅ جديد: هل الصفحة محمية
-	publicOnly?: boolean; // ✅ جديد: هل الصفحة عامة فقط للمستخدمين غير مسجلين
+	protected?: boolean;
+	publicOnly?: boolean;
 };
 
 export const appRoutes: Route[] = [
@@ -33,6 +37,12 @@ export const appRoutes: Route[] = [
 		title: 'Dashboard',
 		protected: true, // ✅ الصفحة محمية
 		children: [
+			{
+				index: true,
+				element: <HomePage />,
+				title: 'Dashboard',
+				protected: true
+			},
 			{
 				path: 'invoices/list',
 				element: <InvoicesList />,
@@ -73,6 +83,18 @@ export const appRoutes: Route[] = [
 				path: 'wallets',
 				element: <Wallet />,
 				title: 'Wallets',
+				protected: true,
+			},
+			{
+				path: 'payments',
+				element: <Payments />,
+				title: 'Payments',
+				protected: true,
+			},
+			{
+				path: 'profile',
+				element: <ProfilePage />,
+				title: 'Profile',
 				protected: true,
 			},
 		],
