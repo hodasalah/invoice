@@ -108,3 +108,12 @@ body {
   opacity: 1;
   transition: 0s;
 }
+
+/* Hide scrollbar for Chrome, Safari, Opera and Firefox/IE/Edge */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}

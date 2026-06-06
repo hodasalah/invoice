@@ -7,7 +7,7 @@ import Logo from '../shared/logo';
 import ThemeToggle from '../shared/ThemeToggle';
 
 const Nav = () => {
-	const { i18n, t } = useTranslation('landing');
+	const { i18n } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
 
 	return (
@@ -43,8 +43,8 @@ const Nav = () => {
 					</li>
 					<li>
 						<Link
-							to='/register'
-							className='flex gap-2 items-center text-white hover:text-gray-300 transition bg-primary px-4 py-2 rounded-md ripple'
+							to='/signup'
+							className='flex gap-2 items-center text-white hover:text-gray-300 transition bg-primary px-4 py-2 rounded-md ripple shadow-lg shadow-primary/30 hover:shadow-primary/50'
 						>
 							{isArabic ? 'ابــــدأ الآن' : 'Get Started'}
 							<ArrowRight
