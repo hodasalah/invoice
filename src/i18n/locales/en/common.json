@@ -59,6 +59,11 @@
 
   },
   "revenue": "Revenue",
+  "invoice_number": "Invoice Number",
+  "status": "Status",
+  "date": "Date",
+  "paid": "Paid",
+  "unpaid": "Unpaid",
   "revenueOverview": "Revenue Overview",
   "monthlyPaidInvoicesRevenue":"Monthly paid invoices revenue",
   "outstanding": "Outstanding",

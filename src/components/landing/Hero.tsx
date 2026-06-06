@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import { PrimaryBtn, SecondaryBtn } from '../shared/button';
 import Nav from './Nav';
 
-// src/components/landing/Hero.tsx
 const Hero = () => {
 	const { i18n, t } = useTranslation('landing');
 	const isArabic = i18n.language === 'ar';
@@ -13,7 +12,6 @@ const Hero = () => {
 
 	return (
 		<section className='relative px-6 text-center w-full overflow-hidden'>
-			{/* Decorative background elements */}
 			<div className="absolute top-0 left-1/2 w-[800px] h-[400px] -translate-x-1/2 bg-primary/20 blur-[100px] rounded-full pointer-events-none -z-10 dark:bg-primary/10"></div>
 			
 			<Nav />
@@ -87,7 +85,6 @@ const Hero = () => {
 					transition={{ duration: 0.7, delay: 0.3, ease: 'easeOut' }}
 					className="relative mx-auto max-w-3xl mt-12 rounded-2xl border border-gray-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-[0_20px_50px_-12px_rgba(0,0,0,0.15)] dark:shadow-[0_20px_50px_-12px_rgba(0,0,0,0.5)] overflow-hidden"
 				>
-					{/* Browser mockup header */}
 					<div className="flex items-center gap-1.5 px-4 py-3 border-b border-gray-200/80 dark:border-slate-800 bg-gray-50/50 dark:bg-slate-950/50">
 						<div className="w-2.5 h-2.5 rounded-full bg-red-400"></div>
 						<div className="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>

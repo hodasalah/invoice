@@ -75,6 +75,11 @@
 
 },
 "revenue": "الإيرادات",
+"invoice_number": "رقم الفاتورة",
+  "status": "الحالة",
+  "date": "التاريخ",
+  "paid": "مدفوعة",
+  "unpaid": "غير مدفوعة",
   "revenueOverview":"نظرة علي إجمالي الإيرادات",
   "monthlyPaidInvoicesRevenue":"الإيرادات الشهرية",
   "outstanding": "المستحقات",

@@ -113,7 +113,8 @@ export function Header({
 				</div>
 			</div>
 			<div className='px-4 py-2.5 text-center border-t border-gray-100 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-900/30 rounded-b-2xl'>
-				<button className='text-xs text-primary hover:underline font-semibold w-full'>
+				<button className='text-xs text-primary hover:underline font-semibold w-full'
+					onClick={() => navigate('/dashboard/notifications')}>
 					{isArabic ? 'عرض جميع الإشعارات' : 'View all notifications'}
 				</button>
 			</div>
@@ -127,7 +128,8 @@ export function Header({
 				<span className='font-semibold text-gray-900 dark:text-white text-sm'>
 					{isArabic ? 'الرسائل' : 'Messages'}
 				</span>
-				<button className='text-xs text-primary hover:underline font-medium'>
+				<button className='text-xs text-primary hover:underline font-medium'
+					onClick={() => navigate('/dashboard/messages')}>
 					{isArabic ? 'كتابة رسالة' : 'New Message'}
 				</button>
 			</div>

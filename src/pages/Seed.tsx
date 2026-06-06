@@ -1,12 +1,14 @@
 import { setUser } from '@/features/user/userSlice';
 import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { faker } from '@faker-js/faker';
-import { addDoc, collection, doc, setDoc, updateDoc } from 'firebase/firestore';
+import { collection, doc, updateDoc, writeBatch } from 'firebase/firestore';
+import { useState } from 'react';
 import { auth, db } from '../firebaseConfigs/firebase';
 
 const SeedPage = () => {
 	const dispatch = useAppDispatch();
 	const currentUser = useAppSelector((state) => state.user.currentUser);
+	const [isSeeding, setIsSeeding] = useState(false);
 
 	const handleMakeMeAdmin = async () => {
 		const firebaseUser = auth.currentUser;
@@ -15,12 +17,16 @@ const SeedPage = () => {
 			return;
 		}
 		try {
-			await updateDoc(doc(db, 'users', firebaseUser.uid), { role: 'admin' });
+			await updateDoc(doc(db, 'users', firebaseUser.uid), {
+				role: 'admin',
+			});
 			if (currentUser) {
 				const updated = { ...currentUser, role: 'admin' };
 				dispatch(setUser(updated));
 			}
-			alert('✅ Your role has been updated to admin! You can now delete invoices.');
+			alert(
+				'✅ Your role has been updated to admin! You can now delete invoices.',
+			);
 		} catch (err) {
 			console.error('Error updating role:', err);
 			alert('❌ Failed to update role. Check console.');
@@ -30,20 +36,29 @@ const SeedPage = () => {
 	const handleSeed = async () => {
 		const firebaseUser = auth.currentUser;
 		if (!firebaseUser) {
-			alert('⚠️ الرجاء تسجيل الدخول أولاً لتوليد البيانات لحسابك الحالي.');
+			alert(
+				'⚠️ الرجاء تسجيل الدخول أولاً لتوليد البيانات لحسابك الحالي.',
+			);
 			return;
 		}
 
+		setIsSeeding(true);
+
 		try {
+			// تهيئة الـ Write Batch لضمان السرعة والاتساق الذري في الطلبات
+			const batch = writeBatch(db);
+
 			const adminUid = firebaseUser.uid;
 			const adminEmail = firebaseUser.email || 'user@example.com';
 
 			let totalPaidInvoices = 0;
 			let totalUnpaidInvoices = 0;
 			const generatedInvoices = [];
-			const generatedPayments = [];
 
-			for (let j = 0; j < 3; j++) {
+			// 1. حلقة التوليد المسبق للعملاء والفواتير
+			for (let j = 0; j < 4; j++) {
+				const clientRef = doc(collection(db, 'clients'));
+
 				const clientData = {
 					userId: adminUid,
 					name: faker.person.fullName(),
@@ -63,14 +78,14 @@ const SeedPage = () => {
 					createdAt: new Date().toISOString(),
 				};
 
-				const invoicesCount = faker.number.int({ min: 1, max: 3 });
+				const invoicesCount = faker.number.int({ min: 2, max: 4 });
 				const clientInvoices = [];
 
 				for (let k = 0; k < invoicesCount; k++) {
-					const itemsCount = faker.number.int({ min: 1, max: 5 });
+					const itemsCount = faker.number.int({ min: 1, max: 4 });
 					const items = Array.from({ length: itemsCount }).map(() => {
-						const price = faker.number.int({ min: 100, max: 2000 });
-						const quantity = faker.number.int({ min: 1, max: 5 });
+						const price = faker.number.int({ min: 100, max: 1500 });
+						const quantity = faker.number.int({ min: 1, max: 4 });
 						return {
 							id: faker.string.uuid(),
 							description: faker.commerce.productName(),
@@ -83,7 +98,12 @@ const SeedPage = () => {
 					const subTotal = items.reduce((s, it) => s + it.total, 0);
 					const vat = Math.round(subTotal * 0.15);
 					const total = subTotal + vat;
-					const status = faker.helpers.arrayElement([ 'paid', 'unpaid' ]);
+
+					let status = faker.helpers.arrayElement([
+						'paid',
+						'unpaid',
+						'overdue',
+					]);
 
 					if (status === 'paid') {
 						totalPaidInvoices += total;
@@ -91,38 +111,53 @@ const SeedPage = () => {
 						totalUnpaidInvoices += total;
 					}
 
-					const invoiceDate = faker.date.recent({ days: 30 });
+					const invoiceDate = faker.date.recent({ days: 45 });
 					const dueDate = new Date(invoiceDate);
 					dueDate.setDate(dueDate.getDate() + 15);
 
+					if (status === 'unpaid' && dueDate < new Date()) {
+						status = 'overdue';
+					}
+
+					const invoiceRef = doc(collection(db, 'invoices'));
+
 					clientInvoices.push({
+						invoiceRef,
 						invoiceData: {
 							userId: adminUid,
+							clientId: clientRef.id,
 							clientName: clientData.name,
 							clientEmail: clientData.email,
 							clientPhone: clientData.phone,
 							clientAddress: clientData.address,
-							invoiceNumber: `INV-${invoiceDate.getFullYear()}-${faker.string.numeric(3)}`,
-							date: invoiceDate.toISOString().split('T')[ 0 ],
-							dueDate: dueDate.toISOString().split('T')[ 0 ],
+							invoiceNumber: `INV-${invoiceDate.getFullYear()}-${faker.string.numeric(4)}`,
+							date: invoiceDate.toISOString().split('T')[0],
+							dueDate: dueDate.toISOString().split('T')[0],
 							items,
 							subTotal,
 							vat,
 							total,
 							status,
 							currency: 'USD',
-							notes: 'Thank you for your business',
+							notes: 'Thank you for your valued business.',
 							createdAt: new Date().toISOString(),
 						},
 						status,
-						invoiceDate
+						invoiceDate,
+						total,
 					});
 				}
 
-				generatedInvoices.push({ clientData, clientInvoices });
+				generatedInvoices.push({
+					clientRef,
+					clientData,
+					clientInvoices,
+				});
 			}
 
-			await setDoc(doc(db, 'users', adminUid), {
+			// تحديث بيانات المستخدم الحالي كـ Admin
+			const userRef = doc(db, 'users', adminUid);
+			batch.set(userRef, {
 				uid: adminUid,
 				firstName: 'Admin',
 				lastName: 'User',
@@ -138,135 +173,208 @@ const SeedPage = () => {
 					country: 'Saudi Arabia',
 					zip: faker.location.zipCode(),
 				},
-				vatNumber: faker.string.numeric(10),
-				crNumber: `CR-${faker.string.numeric(5)}`,
+				vatNumber: faker.string.numeric(15),
+				crNumber: `CR-${faker.string.numeric(7)}`,
 				createdAt: new Date().toISOString(),
 			});
 
-			await setDoc(doc(db, 'wallets', adminUid), {
+			// إعداد بيانات المحفظة المالية والعملات
+			const walletRef = doc(db, 'wallets', adminUid);
+			batch.set(walletRef, {
 				total_balance: totalPaidInvoices,
 				currency: 'USD',
-				last_updated: '11 April 2025',
+				last_updated: new Date().toLocaleDateString('en-US', {
+					day: 'numeric',
+					month: 'long',
+					year: 'numeric',
+				}),
 				monthly_income: {
 					amount: totalPaidInvoices,
-					change_percentage: 2.5
+					change_percentage: 4.8,
 				},
 				monthly_expense: {
 					amount: totalUnpaidInvoices,
-					change_percentage: -8.0
+					change_percentage: -2.1,
 				},
 				monthly_savings: {
-					amount: Math.round(totalPaidInvoices * 0.35),
-					change_percentage: 8.5
+					amount: Math.round(totalPaidInvoices * 0.3),
+					change_percentage: 5.2,
 				},
-				total_savings: Math.round(totalPaidInvoices * 1.5),
+				total_savings: Math.round(totalPaidInvoices * 1.2),
 				targets: [
 					{
 						target_id: 'target_married',
-						title: 'Married',
-						current_amount: 6560.11,
-						achieved_percentage: 11
+						title: 'Married Asset Pool',
+						current_amount: 8400.0,
+						achieved_percentage: 15,
 					},
 					{
 						target_id: 'target_home',
-						title: 'Home',
-						current_amount: 33159.15,
-						achieved_percentage: 25
-					}
+						title: 'Commercial HQ Fund',
+						current_amount: 45000.0,
+						achieved_percentage: 30,
+					},
 				],
 				currencies: [
-					{ code: 'USD', value: 56476.00 },
-					{ code: 'EUR', value: 49973.67 },
-					{ code: 'GBP', value: 45098.56 }
-				]
+					{ code: 'USD', value: totalPaidInvoices },
+					{
+						code: 'EUR',
+						value: Math.round(totalPaidInvoices * 0.92),
+					},
+					{
+						code: 'SAR',
+						value: Math.round(totalPaidInvoices * 3.75),
+					},
+				],
 			});
 
-			await setDoc(doc(db, 'wallets', adminUid, 'cards', 'card_01'), {
+			// إعداد بطاقات الـ Visa والمحفظة
+			const card1Ref = doc(db, 'wallets', adminUid, 'cards', 'card_01');
+			batch.set(card1Ref, {
 				card_id: 'card_01',
 				type: 'VISA',
 				card_number: '5294 2436 4780 9568',
-				balance: Math.round(totalPaidInvoices * 0.6),
-				expiry_date: '12/26',
-				theme: 'green'
+				balance: Math.round(totalPaidInvoices * 0.65),
+				expiry_date: '08/29',
+				theme: 'green',
 			});
 
-			await setDoc(doc(db, 'wallets', adminUid, 'cards', 'card_02'), {
+			const card2Ref = doc(db, 'wallets', adminUid, 'cards', 'card_02');
+			batch.set(card2Ref, {
 				card_id: 'card_02',
-				type: 'VISA',
+				type: 'MASTERCARD',
 				card_number: '6391 1827 3340 7712',
-				balance: Math.round(totalPaidInvoices * 0.4),
-				expiry_date: '09/27',
-				theme: 'dark_blue'
+				balance: Math.round(totalPaidInvoices * 0.35),
+				expiry_date: '11/30',
+				theme: 'dark_blue',
 			});
 
+			// 2. إدخال العملاء، الفواتير، المدفوعات، وتوليد كوليكشن الـ Notifications بشكل فوري
 			for (const group of generatedInvoices) {
-				const clientId = (await addDoc(collection(db, 'clients'), group.clientData)).id;
+				batch.set(group.clientRef, group.clientData);
 
-				for (const invoiceWrapper of group.clientInvoices) {
-					const completeInvoiceData = {
-						...invoiceWrapper.invoiceData,
-						clientId: clientId
-					};
+				for (const inv of group.clientInvoices) {
+					batch.set(inv.invoiceRef, inv.invoiceData);
 
-					const invoiceId = (await addDoc(collection(db, 'invoices'), completeInvoiceData)).id;
+					// تحديد تواريخ مخصصة للإشعارات والمدفوعات
+					const eventDate = new Date(inv.invoiceDate);
 
-					if (invoiceWrapper.status === 'paid') {
-						const paymentDate = new Date(invoiceWrapper.invoiceDate);
-						paymentDate.setDate(paymentDate.getDate() + faker.number.int({ min: 1, max: 10 }));
+					// إشعار إنشاء الفاتورة الافتراضي
+					let notiTitleEn = `New invoice ${inv.invoiceData.invoiceNumber} created for ${group.clientData.companyName}`;
+					let notiTitleAr = `تم إنشاء فاتورة جديدة رقم ${inv.invoiceData.invoiceNumber} لصالح شركة ${group.clientData.companyName}`;
+					let currentType = 'unpaid';
 
-						await addDoc(collection(db, 'payments'), {
+					if (inv.status === 'paid') {
+						currentType = 'paid';
+						eventDate.setDate(
+							eventDate.getDate() +
+								faker.number.int({ min: 1, max: 7 }),
+						);
+
+						notiTitleEn = `Payment received successfully from ${group.clientData.companyName}`;
+						notiTitleAr = `تم استلام الدفعة المالية بنجاح من شركة ${group.clientData.companyName}`;
+
+						const paymentRef = doc(collection(db, 'payments'));
+						batch.set(paymentRef, {
 							userId: adminUid,
-							invoiceId: invoiceId,
-							amount: completeInvoiceData.total,
-							method: faker.helpers.arrayElement([ 'cash', 'credit_card', 'bank_transfer' ]),
-							transactionId: `TX-${faker.string.numeric(6)}`,
-							date: paymentDate.toISOString(),
+							invoiceId: inv.invoiceRef.id,
+							amount: inv.total,
+							method: faker.helpers.arrayElement([
+								'cash',
+								'credit_card',
+								'bank_transfer',
+							]),
+							transactionId: `TX-${faker.string.numeric(7)}`,
+							date: eventDate.toISOString(),
 						});
+					} else if (inv.status === 'overdue') {
+						currentType = 'overdue';
+						eventDate.setDate(eventDate.getDate() + 15); // حدث بعد انتهاء تاريخ الاستحقاق
+
+						notiTitleEn = `Invoice ${inv.invoiceData.invoiceNumber} for ${group.clientData.companyName} is now overdue!`;
+						notiTitleAr = `الفاتورة رقم ${inv.invoiceData.invoiceNumber} لشركة ${group.clientData.companyName} متأخرة عن السداد!`;
 					}
+
+					// 🔔 إضافة إشعار ديناميكي مرتبط بالفاتورة الحالية داخل الكوليكشن الجديد
+					const notificationRef = doc(
+						collection(db, 'notifications'),
+					);
+					batch.set(notificationRef, {
+						userId: adminUid,
+						invoiceId: inv.invoiceRef.id,
+						invoiceNumber: inv.invoiceData.invoiceNumber,
+						clientName: group.clientData.name,
+						companyName: group.clientData.companyName,
+						amount: inv.total,
+						currency: 'USD',
+						type: currentType, // paid | unpaid | overdue
+						titleEn: notiTitleEn,
+						titleAr: notiTitleAr,
+						isRead: faker.helpers.arrayElement([true, false]), // عشوائي لاختبار فلاتر المقروء وغير المقروء
+						createdAt: eventDate.toISOString(),
+					});
 				}
 			}
 
-			alert('✅ تم توليد البيانات كاملة ومطابقتها لقواعد البيزنس بنجاح!');
+			// تنفيذ جميع العمليات معاً دفعة واحدة كطلب شبكة مفرد
+			await batch.commit();
+			alert(
+				'✅ تم توليد البيانات كاملة وإنشاء كوليكشن الإشعارات بنجاح مالي تام!',
+			);
 		} catch (err) {
-			console.error('❌ Error creating admin data:', err);
-			alert('❌ فشل توليد البيانات، تفحص الـ Console لمشاهدة الخطأ.');
+			console.error('❌ Error creating seeded database structures:', err);
+			alert(
+				'❌ فشل توليد البيانات، تفحص الـ Console لمشاهدة تفاصيل الخطأ.',
+			);
+		} finally {
+			setIsSeeding(false);
 		}
 	};
 
 	return (
-		<div style={{ padding: 20 }}>
-			<h1>🚀 Seed Database</h1>
+		<div className='p-8 max-w-2xl mx-auto space-y-6'>
+			<h1 className='text-3xl font-bold tracking-tight text-slate-900'>
+				🚀 Seed Database
+			</h1>
 
-			<div style={{ marginBottom: 24, padding: 16, border: '2px solid #16a34a', borderRadius: 8, background: '#f0fdf4' }}>
-				<h2 style={{ color: '#15803d', marginBottom: 8 }}>👑 Make Me Admin</h2>
-				<p style={{ color: '#166534', marginBottom: 12, fontSize: 14 }}>
-					Click below to instantly set your account role to <strong>admin</strong>.
-					This will allow you to delete invoices. Takes effect immediately without re-login.
+			<div className='p-5 border-2 border-emerald-500 rounded-xl bg-emerald-50/50 space-y-3'>
+				<h2 className='text-lg font-bold text-emerald-800 flex items-center gap-2'>
+					👑 Make Me Admin
+				</h2>
+				<p className='text-sm text-emerald-700 leading-relaxed'>
+					Click below to instantly set your account role to{' '}
+					<strong>admin</strong>. This updates your profile
+					permissions to delete invoices dynamically without logging
+					out.
 				</p>
 				<button
 					onClick={handleMakeMeAdmin}
-					style={{
-						padding: '10px 24px',
-						background: '#16a34a',
-						color: 'white',
-						border: 'none',
-						borderRadius: 6,
-						cursor: 'pointer',
-						fontWeight: 'bold',
-						fontSize: 16,
-					}}
+					className='px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg font-semibold text-sm transition-colors shadow-sm'
 				>
 					👑 Make Me Admin Now
 				</button>
 			</div>
 
-			<p>اضغطي لتوليد admin ومستخدمين تجريبيين مع بيانات كاملة متناسقة ماليًا.</p>
-			<button
-				onClick={handleSeed}
-				className='mt-4 px-4 py-2 bg-blue-600 text-white rounded'
-			>
-				توليد البيانات
-			</button>
+			<div className='p-5 border border-slate-200 rounded-xl bg-white space-y-4 shadow-sm'>
+				<p className='text-sm text-slate-600'>
+					اضغط هنا لتوليد بيانات مستخدمين تجريبيين كاملة ومتناسقة
+					ماليًا وإنشاء كوليكشن التنبيهات المرتبط بها (Clients,
+					Invoices, Cards, Payments, Notifications).
+				</p>
+				<button
+					onClick={handleSeed}
+					disabled={isSeeding}
+					className={`w-full sm:w-auto px-5 py-2.5 text-white font-semibold rounded-lg text-sm transition-colors shadow-sm ${
+						isSeeding
+							? 'bg-slate-400 cursor-not-allowed'
+							: 'bg-blue-600 hover:bg-blue-700'
+					}`}
+				>
+					{isSeeding
+						? 'جاري توليد البيانات والرسائل...'
+						: 'توليد البيانات'}
+				</button>
+			</div>
 		</div>
 	);
 };

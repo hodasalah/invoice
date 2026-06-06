@@ -3,10 +3,18 @@ import { lazy } from 'react';
 const Landing = lazy(() => import('../pages/Landing'));
 const Dashboard = lazy(() => import('../pages/dashboard/DashboardPage'));
 const HomePage = lazy(() => import('../pages/dashboard/HomePage'));
-const InvoicesList = lazy(() => import('../pages/dashboard/invoices/InvoicesList'));
-const CreateInvoice = lazy(() => import('../pages/dashboard/invoices/CreateInvoice'));
-const ViewInvoice = lazy(() => import('../pages/dashboard/invoices/ViewInvoice'));
-const EditInvoice = lazy(() => import('../pages/dashboard/invoices/EditInvoice'));
+const InvoicesList = lazy(
+	() => import('../pages/dashboard/invoices/InvoicesList'),
+);
+const CreateInvoice = lazy(
+	() => import('../pages/dashboard/invoices/CreateInvoice'),
+);
+const ViewInvoice = lazy(
+	() => import('../pages/dashboard/invoices/ViewInvoice'),
+);
+const EditInvoice = lazy(
+	() => import('../pages/dashboard/invoices/EditInvoice'),
+);
 const Clients = lazy(() => import('../pages/dashboard/clients/Clients'));
 const AddClient = lazy(() => import('../pages/dashboard/clients/AddClient'));
 const Login = lazy(() => import('../pages/Login'));
@@ -16,6 +24,7 @@ const Seed = lazy(() => import('../pages/Seed'));
 const Wallet = lazy(() => import('../pages/dashboard/Wallet'));
 const Payments = lazy(() => import('../pages/dashboard/Payments'));
 const ProfilePage = lazy(() => import('../pages/dashboard/ProfilePage'));
+const NotificationPage = lazy(() => import('../pages/dashboard/NotificationPage'));
 
 export type Route = {
 	path?: string;
@@ -35,13 +44,13 @@ export const appRoutes: Route[] = [
 		path: '/dashboard',
 		element: <Dashboard />,
 		title: 'Dashboard',
-		protected: true, // ✅ الصفحة محمية
+		protected: true,
 		children: [
 			{
 				index: true,
 				element: <HomePage />,
 				title: 'Dashboard',
-				protected: true
+				protected: true,
 			},
 			{
 				path: 'invoices/list',
@@ -77,6 +86,12 @@ export const appRoutes: Route[] = [
 				path: 'clients/new',
 				element: <AddClient />,
 				title: 'Clients',
+				protected: true,
+			},
+			{
+				path: 'notifications',
+				element: <NotificationPage />,
+				title: 'Notifications',
 				protected: true,
 			},
 			{
