@@ -118,7 +118,6 @@ const Invoices = () => {
 										</span>
 									</td>
 									<td className='p-3 text-right space-x-2'>
-										{/* View */}
 										<Button
 											size='icon'
 											variant='ghost'
@@ -127,7 +126,6 @@ const Invoices = () => {
 											<Eye className='w-4 h-4' />
 										</Button>
 
-										{/* Edit — navigates to the dedicated edit page */}
 										{currentUser?.role !== 'client' && (
 											<Button
 												size='icon'
@@ -138,7 +136,6 @@ const Invoices = () => {
 											</Button>
 										)}
 
-										{/* Delete — admin only */}
 										{currentUser?.role === 'admin' && (
 											<Button
 												size='icon'
@@ -157,7 +154,6 @@ const Invoices = () => {
 				</table>
 			</Card>
 
-			{/* DELETE CONFIRMATION MODAL */}
 			<Dialog open={!!invoiceToDelete} onOpenChange={(open) => !open && setInvoiceToDelete(null)}>
 				<DialogContent>
 					<DialogHeader>
@@ -192,7 +188,6 @@ const Invoices = () => {
 				</DialogContent>
 			</Dialog>
 
-			{/* View Invoice Modal */}
 			{selected && (
 				<InvoiceViewModal
 					invoice={{

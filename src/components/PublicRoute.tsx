@@ -1,4 +1,3 @@
-// components/PublicRoute.tsx
 import { type RootState } from '@/store';
 import { type ReactNode } from 'react';
 import { useSelector } from 'react-redux';

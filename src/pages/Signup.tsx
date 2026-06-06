@@ -2,7 +2,7 @@ import StepAccount from '@/components/signup/StepAccount';
 import StepBusinessInfo from '@/components/signup/StepBusinessInfo';
 import StepUserInfo from '@/components/signup/StepUserInfo';
 import { Button } from '@/components/ui/button';
-import { auth, db } from '@/firebaseConfigs/firebase'; // تأكدي من مسار التصدير الصحيح
+import { auth, db } from '@/firebaseConfigs/firebase';
 import { signupSchema, type SignupSchema } from '@/validations/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
@@ -83,14 +83,12 @@ const Signup = () => {
 		try {
 			await toast.promise(
 				(async () => {
-					// إنشاء المستخدم
 					const { user } = await createUserWithEmailAndPassword(
 						auth,
 						data.email,
 						data.password,
 					);
 
-					// كتابة بيانات Firestore
 					await setDoc(doc(db, 'users', user.uid), {
 						...data,
 						position: data.position ?? '',

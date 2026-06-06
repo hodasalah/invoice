@@ -1,4 +1,3 @@
-// constants/sidebar-links.ts
 import {
 	BadgeDollarSign,
 	BarChartIcon,

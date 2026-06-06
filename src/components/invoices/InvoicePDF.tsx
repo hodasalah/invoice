@@ -1,18 +1,14 @@
 import React from 'react';
 import { Page, Text, View, Document, StyleSheet, Svg, Polygon, Rect, Path } from '@react-pdf/renderer';
 import type { InvoiceData } from '@/types/types';
-
-// Top Accent Banner for PDF
 const TopAccentPDF = () => (
 	<Svg height="16" width="595.28" viewBox="0 0 595.28 16" style={{ width: '100%' }}>
 		<Rect x="0" y="0" width="595.28" height="16" fill="#D1E2D5" />
-		{/* Left slanted white stripes */}
 		<Polygon points="20,0 26,0 16,16 10,16" fill="#ffffff" />
 		<Polygon points="35,0 45,0 35,16 25,16" fill="#ffffff" />
 		<Polygon points="55,0 75,0 65,16 45,16" fill="#ffffff" />
 		<Polygon points="80,0 86,0 76,16 70,16" fill="#ffffff" />
 		<Polygon points="95,0 135,0 125,16 85,16" fill="#ffffff" />
-		{/* Right slanted white stripes */}
 		<Polygon points="575,0 585,0 575,16 565,16" fill="#ffffff" />
 		<Polygon points="555,0 561,0 551,16 545,16" fill="#ffffff" />
 		<Polygon points="530,0 550,0 540,16 520,16" fill="#ffffff" />
@@ -21,17 +17,14 @@ const TopAccentPDF = () => (
 	</Svg>
 );
 
-// Bottom Accent Banner for PDF (exact clone but at bottom)
 const BottomAccentPDF = () => (
 	<Svg height="16" width="595.28" viewBox="0 0 595.28 16" style={{ width: '100%', marginTop: 'auto' }}>
 		<Rect x="0" y="0" width="595.28" height="16" fill="#D1E2D5" />
-		{/* Left slanted white stripes */}
 		<Polygon points="20,0 26,0 16,16 10,16" fill="#ffffff" />
 		<Polygon points="35,0 45,0 35,16 25,16" fill="#ffffff" />
 		<Polygon points="55,0 75,0 65,16 45,16" fill="#ffffff" />
 		<Polygon points="80,0 86,0 76,16 70,16" fill="#ffffff" />
 		<Polygon points="95,0 135,0 125,16 85,16" fill="#ffffff" />
-		{/* Right slanted white stripes */}
 		<Polygon points="575,0 585,0 575,16 565,16" fill="#ffffff" />
 		<Polygon points="555,0 561,0 551,16 545,16" fill="#ffffff" />
 		<Polygon points="530,0 550,0 540,16 520,16" fill="#ffffff" />
@@ -40,7 +33,6 @@ const BottomAccentPDF = () => (
 	</Svg>
 );
 
-// Custom bar logo matching Arowwai design
 const CompanyLogoPDF = ({ name }: { name: string }) => {
   const initials = name
     .split(/\s+/)
@@ -55,7 +47,6 @@ const CompanyLogoPDF = ({ name }: { name: string }) => {
   );
 };
 
-// Contact info icons
 const PinIcon = () => (
 	<Svg height="8" width="8" viewBox="0 0 24 24" style={{ marginRight: 4 }}>
 		<Path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" fill="#44814E" />
@@ -375,7 +366,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 		}).format(amount);
 	};
 
-	// Fallback branding fields
 	const senderName = invoice.senderName || userProfile?.companyName || 'Arowwai Industries';
 	const senderAddress = invoice.senderAddress || (userProfile?.address
 		? `${userProfile.address.street || ''}, ${userProfile.address.city || ''}`.trim().replace(/^,\s*|,\s*$/g, '')
@@ -390,13 +380,10 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 		<Document>
 			<Page size="A4" style={styles.page}>
 				
-				{/* Top Accent Strip */}
 				<TopAccentPDF />
 
-				{/* Invoice Core Content Body */}
 				<View style={styles.bodyContainer}>
 					
-					{/* Header Company and Contacts */}
 					<View style={styles.headerContainer}>
 						<View style={styles.logoSection}>
 							<CompanyLogoPDF name={senderName} />
@@ -426,12 +413,9 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 						</View>
 					</View>
 
-					{/* Center Invoice Divider Line */}
 					<HeaderLinePDF t={t} />
 
-					{/* Bill To and Meta Box */}
 					<View style={styles.billToSection}>
-						{/* Bill To Box */}
 						<View style={styles.billToColumn}>
 							<Text style={styles.billToTitle}>{t('bill_to')}</Text>
 							<View style={styles.clientCard}>
@@ -446,7 +430,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 							</View>
 						</View>
 
-						{/* Invoice details box */}
 						<View style={styles.infoBox}>
 							<View style={styles.infoRow}>
 								<Text style={styles.infoLabel}>{t('invoice_number')}:</Text>
@@ -463,11 +446,9 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 						</View>
 					</View>
 
-					{/* Items Table */}
 					<View style={styles.tableSection}>
 						<Text style={styles.tableSectionTitle}>{t('project_service_details')}</Text>
 						
-						{/* Table Header */}
 						<View style={styles.tableHeader}>
 							<Text style={styles.tableHeaderColNo}>{t('no')}</Text>
 							<Text style={styles.tableHeaderColDesc}>{t('project_service')}</Text>
@@ -476,7 +457,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 							<Text style={styles.tableHeaderColAmount}>{t('amount')}</Text>
 						</View>
 
-						{/* Items list */}
 						{invoice.items?.map((item, i) => (
 							<View style={styles.tableRow} key={item.id || i}>
 								<Text style={styles.tableColNo}>{String(i + 1).padStart(2, '0')}</Text>
@@ -487,7 +467,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 							</View>
 						))}
 
-						{/* Spacer rows */}
 						{invoice.items.length < 3 && Array.from({ length: 3 - invoice.items.length }).map((_, idx) => (
 							<View style={styles.tableRow} key={`spacer-${idx}`}>
 								<Text style={styles.tableColNo}>{String(invoice.items.length + idx + 1).padStart(2, '0')}</Text>
@@ -499,9 +478,7 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 						))}
 					</View>
 
-					{/* Bottom Details Section */}
 					<View style={styles.bottomContainer}>
-						{/* Payments details */}
 						<View style={styles.paymentBox}>
 							<Text style={styles.paymentTitle}>{t('payment_methods_accepted')}</Text>
 							<View style={styles.paymentDetailsCard}>
@@ -509,7 +486,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 							</View>
 						</View>
 
-						{/* Calculations */}
 						<View style={styles.calcBox}>
 							<View style={styles.calcRow}>
 								<Text style={styles.calcLabel}>{t('vat')}</Text>
@@ -522,7 +498,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 						</View>
 					</View>
 
-					{/* Notes section */}
 					<View style={styles.notesSection}>
 						<Text style={styles.notesTitle}>{t('notes')}</Text>
 						<View style={styles.notesCard}>
@@ -532,7 +507,6 @@ const InvoicePDF: React.FC<InvoicePDFProps> = ({ invoice, userProfile, t: parent
 
 				</View>
 
-				{/* Bottom Accent Strip */}
 				<BottomAccentPDF />
 
 			</Page>

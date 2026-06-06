@@ -8,7 +8,6 @@ import { toast } from 'sonner';
 import { Building2, MapPin, User, BadgeInfo, ShieldCheck } from 'lucide-react';
 import type { RootState } from '@/store';
 
-// Import our new SaaS components
 import ProfileHero from '@/components/profile/ProfileHero';
 import ProfileStats from '@/components/profile/ProfileStats';
 import ProfileCompletion from '@/components/profile/ProfileCompletion';
@@ -26,7 +25,6 @@ export default function ProfilePage() {
 
 	const p = (key: string) => t(`profilePage.${key}`);
 
-	/* ── Local form state ── */
 	const [personal, setPersonal] = useState({
 		firstName: currentUser?.firstName ?? '',
 		lastName: currentUser?.lastName ?? '',
@@ -46,17 +44,14 @@ export default function ProfilePage() {
 		zip: currentUser?.address?.zip ?? '',
 	});
 
-	/* ── Edit mode toggles ── */
 	const [editPersonal, setEditPersonal] = useState(false);
 	const [editCompany, setEditCompany] = useState(false);
 	const [editAddress, setEditAddress] = useState(false);
 
-	/* ── Saving flags ── */
 	const [savingPersonal, setSavingPersonal] = useState(false);
 	const [savingCompany, setSavingCompany] = useState(false);
 	const [savingAddress, setSavingAddress] = useState(false);
 
-	/* ── Avatar upload ── */
 	const [avatarUploading, setAvatarUploading] = useState(false);
 
 	const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -74,7 +69,6 @@ export default function ProfilePage() {
 		}
 	};
 
-	/* ── Save handlers ── */
 	const saveSection = async (
 		data: Record<string, any>,
 		setSaving: (v: boolean) => void,
@@ -121,7 +115,6 @@ export default function ProfilePage() {
 		setEditAddress(false);
 	};
 
-	/* ── Derived Stats ── */
 	const totalInvoices = invoices.length;
 	const paidInvoicesList = invoices.filter(i => i.status === 'paid');
 	const paidInvoices = paidInvoicesList.length;
@@ -131,11 +124,9 @@ export default function ProfilePage() {
 	const revenue = paidInvoicesList.reduce((acc, curr) => acc + (curr.total || 0), 0);
 	const outstanding = invoices.filter(i => i.status === 'unpaid').reduce((acc, curr) => acc + (curr.total || 0), 0);
 	
-	// Mock payments count for stats
 	const paymentsCount = paidInvoices; 
 	const collectionRate = totalInvoices > 0 ? (paidInvoices / totalInvoices) * 100 : 0;
 
-	// Calculate completion percentage for the score
 	const checks = [
 		!!currentUser?.avatar,
 		!!(currentUser?.firstName && currentUser?.lastName),
@@ -149,15 +140,12 @@ export default function ProfilePage() {
 	const completedChecks = checks.filter(Boolean).length;
 	const profilePercent = Math.round((completedChecks / checks.length) * 100);
 
-	// Mock recent activity arrays based on existing data
 	const recentInvoices = [...invoices].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).slice(0, 3);
-	// We don't have payments in redux here, so let's mock it using paid invoices
 	const recentPayments = [...paidInvoicesList].map(inv => ({ id: `pay-${inv.id}`, date: inv.date, method: 'Credit Card', amount: inv.total })).slice(0, 2);
 	const topClientsList = [...clients].map(c => ({ name: c.name, total: invoices.filter(i => i.clientId === c.id).reduce((a, b) => a + (b.total || 0), 0) })).sort((a, b) => b.total - a.total).slice(0, 3);
 
 	return (
 		<div className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8'>
-			{/* ──── Hero Banner ──── */}
 			<ProfileHero 
 				user={currentUser} 
 				uploading={avatarUploading} 
@@ -166,7 +154,6 @@ export default function ProfilePage() {
 				onFileSelect={handleAvatarChange} 
 			/>
 
-			{/* ──── KPIs ──── */}
 			<ProfileStats 
 				revenue={revenue}
 				outstanding={outstanding}
@@ -180,7 +167,6 @@ export default function ProfilePage() {
 			/>
 
 			<div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start'>
-				{/* ──── Left Column (Timeline & Editables) ──── */}
 				<div className='col-span-1 lg:col-span-2 space-y-8'>
 					
 					<ActivityTimeline 
@@ -248,7 +234,6 @@ export default function ProfilePage() {
 					</EditableInfoSection>
 				</div>
 
-				{/* ──── Right Column (Scores & Info) ──── */}
 				<div className='col-span-1 space-y-8'>
 					<BusinessScore 
 						collectionRate={collectionRate}
@@ -263,7 +248,6 @@ export default function ProfilePage() {
 						t={t}
 					/>
 
-					{/* ──── Account Info footer ──── */}
 					<motion.div
 						initial={{ opacity: 0, scale: 0.95 }}
 						animate={{ opacity: 1, scale: 1 }}

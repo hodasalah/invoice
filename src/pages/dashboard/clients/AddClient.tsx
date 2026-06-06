@@ -1,5 +1,3 @@
-// src/pages/clients/AddClientPage.tsx
-
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -40,7 +38,6 @@ const AddClient = () => {
 		zip: '',
 	});
 
-	// ✅ التحقق من صحة البيانات
 	const validate = () => {
 		let valid = true;
 		const newErrors: Record<string, string> = {};
@@ -89,7 +86,6 @@ const AddClient = () => {
 		return valid;
 	};
 
-	// ✅ حفظ البيانات
 	const handleSubmit = async () => {
 		if (!validate()) return;
 		try {
@@ -111,7 +107,6 @@ const AddClient = () => {
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const { name, value } = e.target;
 
-		// name could be "address.country"
 		if (name.startsWith('address.')) {
 			const key = name.split('.')[1];
 
@@ -130,7 +125,6 @@ const AddClient = () => {
 				<h2 className='text-xl font-bold mb-4'>إضافة عميل جديد</h2>
 
 				<div className='space-y-4'>
-					{/* الاسم */}
 					<div>
 						<Label>اسم العميل</Label>
 						<Input
@@ -145,7 +139,6 @@ const AddClient = () => {
 							</p>
 						)}
 					</div>
-					{/* البريد */}
 					<div>
 						<Label>البريد الإلكتروني</Label>
 						<Input
@@ -160,7 +153,6 @@ const AddClient = () => {
 							</p>
 						)}
 					</div>
-					{/* الهاتف */}
 					<div>
 						<Label>رقم الهاتف</Label>
 						<Input
@@ -175,7 +167,6 @@ const AddClient = () => {
 							</p>
 						)}
 					</div>
-					{/* العنوان */}
 					<div className='grid grid-cols-1 md:grid-cols-2 gap-4'>
 						<div>
 							<Label>البلد</Label>

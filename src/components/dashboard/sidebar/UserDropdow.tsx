@@ -16,7 +16,7 @@ export const UserDropdown = () => {
 	const currentUser = useAppSelector((state) => state.user.currentUser);
 
 	const handleLogout = () => {
-		dispatch(logoutUser()); // استخدم الإجراء لتسجيل الخروج
+		dispatch(logoutUser());
 		navigate('/login');
 	};
 
@@ -44,7 +44,6 @@ export const UserDropdown = () => {
 					</div>
 				</div>
 
-				{/* السهم المتحرك */}
 				<motion.div
 					initial={false}
 					animate={{ rotate: isOpen ? 90 : 0 }}
@@ -54,7 +53,6 @@ export const UserDropdown = () => {
 				</motion.div>
 			</button>
 
-			{/* القائمة المنسدلة */}
 			<AnimatePresence>
 				{isOpen && (
 					<motion.div

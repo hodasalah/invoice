@@ -38,13 +38,11 @@ const SeedPage = () => {
 			const adminUid = firebaseUser.uid;
 			const adminEmail = firebaseUser.email || 'user@example.com';
 
-			// كائنات لتجميع القيم وحسابها ديناميكياً بدلاً من الـ Hardcoding
 			let totalPaidInvoices = 0;
 			let totalUnpaidInvoices = 0;
 			const generatedInvoices = [];
 			const generatedPayments = [];
 
-			// 1. توليد بيانات العملاء والفواتير والمدفوعات أولاً في الـ Memory لحساب الإجماليات
 			for (let j = 0; j < 3; j++) {
 				const clientData = {
 					userId: adminUid,
@@ -59,7 +57,7 @@ const SeedPage = () => {
 						country: 'Saudi Arabia',
 						zip: faker.location.zipCode(),
 					},
-					currency: 'USD', // ✅ تم توحيد العملة مع الفاتورة لتصبح USD
+					currency: 'USD',
 					notes: faker.lorem.sentence(),
 					archived: false,
 					createdAt: new Date().toISOString(),
@@ -124,7 +122,6 @@ const SeedPage = () => {
 				generatedInvoices.push({ clientData, clientInvoices });
 			}
 
-			// 2. رفع بيانات الـ Admin User إلى Firestore
 			await setDoc(doc(db, 'users', adminUid), {
 				uid: adminUid,
 				firstName: 'Admin',
@@ -146,17 +143,16 @@ const SeedPage = () => {
 				createdAt: new Date().toISOString(),
 			});
 
-			// 3. رفع المحفظة والتحليلات بناءً على الحسابات الديناميكية للفواتير المدفوعة
 			await setDoc(doc(db, 'wallets', adminUid), {
-				total_balance: totalPaidInvoices, // ✅ الرصيد الحالي يساوي الفواتير المدفوعة فعلياً
+				total_balance: totalPaidInvoices,
 				currency: 'USD',
 				last_updated: '11 April 2025',
 				monthly_income: {
-					amount: totalPaidInvoices, // ✅ الإيرادات ديناميكية ومطابقة
+					amount: totalPaidInvoices,
 					change_percentage: 2.5
 				},
 				monthly_expense: {
-					amount: totalUnpaidInvoices, // ✅ الفواتير غير المدفوعة تمثل التزامات/مصاريف متوقعة
+					amount: totalUnpaidInvoices,
 					change_percentage: -8.0
 				},
 				monthly_savings: {
@@ -179,18 +175,17 @@ const SeedPage = () => {
 					}
 				],
 				currencies: [
-					{ code: 'USD', value: 56476.00 }, // ✅ تم تعديل الكود إلى صيغة قياسية ثلاثية 
+					{ code: 'USD', value: 56476.00 },
 					{ code: 'EUR', value: 49973.67 },
 					{ code: 'GBP', value: 45098.56 }
 				]
 			});
 
-			// 4. رفع بطاقات الفيزا الفرعية (Cards Subcollection)
 			await setDoc(doc(db, 'wallets', adminUid, 'cards', 'card_01'), {
 				card_id: 'card_01',
 				type: 'VISA',
 				card_number: '5294 2436 4780 9568',
-				balance: Math.round(totalPaidInvoices * 0.6), // ديناميكي بناءً على الرصيد الكلي
+				balance: Math.round(totalPaidInvoices * 0.6),
 				expiry_date: '12/26',
 				theme: 'green'
 			});
@@ -199,17 +194,15 @@ const SeedPage = () => {
 				card_id: 'card_02',
 				type: 'VISA',
 				card_number: '6391 1827 3340 7712',
-				balance: Math.round(totalPaidInvoices * 0.4), // ديناميكي بناءً على الرصيد الكلي
+				balance: Math.round(totalPaidInvoices * 0.4),
 				expiry_date: '09/27',
 				theme: 'dark_blue'
 			});
 
-			// 5. رفع العملاء وفواتيرهم ومدفوعاتهم بشكل متتابع لضمان الحصول على الـ IDs الصحيحة
 			for (const group of generatedInvoices) {
 				const clientId = (await addDoc(collection(db, 'clients'), group.clientData)).id;
 
 				for (const invoiceWrapper of group.clientInvoices) {
-					// إضافة الـ clientId للفاتورة قبل الرفع
 					const completeInvoiceData = {
 						...invoiceWrapper.invoiceData,
 						clientId: clientId
@@ -217,14 +210,13 @@ const SeedPage = () => {
 
 					const invoiceId = (await addDoc(collection(db, 'invoices'), completeInvoiceData)).id;
 
-					// إذا كانت الفاتورة مدفوعة، نقوم بإنشاء عملية الدفع وربطها بالـ invoiceId
 					if (invoiceWrapper.status === 'paid') {
 						const paymentDate = new Date(invoiceWrapper.invoiceDate);
 						paymentDate.setDate(paymentDate.getDate() + faker.number.int({ min: 1, max: 10 }));
 
 						await addDoc(collection(db, 'payments'), {
 							userId: adminUid,
-							invoiceId: invoiceId, // ✅ الربط الصحيح بالفاتورة
+							invoiceId: invoiceId,
 							amount: completeInvoiceData.total,
 							method: faker.helpers.arrayElement([ 'cash', 'credit_card', 'bank_transfer' ]),
 							transactionId: `TX-${faker.string.numeric(6)}`,

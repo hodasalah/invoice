@@ -1,4 +1,3 @@
-// components/ProtectedRoute.tsx
 import {type ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate } from 'react-router';
@@ -14,7 +13,6 @@ const ProtectedRoute = ({ children }: Props) => {
 	);
 
 	if (!currentUser) {
-		// إذا المستخدم غير مسجل دخول، تحويله للصفحة Login
 		return (
 			<Navigate
 				to='/login'

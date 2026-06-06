@@ -21,12 +21,9 @@ export default function InvoiceCard({
 	const { t } = useTranslation('common');
 	return (
 		<div className='max-w-xs mx-auto'>
-			{/* Outer rounded green card matching the image */}
 			<Card className='bg-emerald-700 text-emerald-50 rounded-2xl overflow-hidden shadow-[0_4px_12px_rgba(16,185,129,0.4)]'>
 				<CardContent className='flex flex-col items-center gap-6 p-6'>
-					{/* Illustration container */}
 					<div className='w-full flex justify-center'>
-						{/* If you use Next.js Image, keep Image. Otherwise replace with <img /> */}
 						<div className='w-full h-full relative'>
 							<img
 								src={imageSrc}
@@ -37,10 +34,8 @@ export default function InvoiceCard({
 						</div>
 					</div>
 
-					{/* Spacer to mimic the large empty space above button in the image */}
 					<div className='flex-1 w-full' />
 
-					{/* Beige rounded button area */}
 					<div className='w-full'>
 						<Button
 							variant='ghost'

@@ -72,7 +72,6 @@ const Clients = () => {
 						/>
 					</div>
 
-					{/* TABLE */}
 					<div className='overflow-x-auto'>
 						<Table>
 							<TableHeader>
@@ -122,7 +121,6 @@ const Clients = () => {
 				</CardContent>
 			</Card>
 
-			{/* DELETE CONFIRMATION MODAL */}
 			<Dialog open={!!clientToDelete} onOpenChange={(open) => !open && setClientToDelete(null)}>
 				<DialogContent>
 					<DialogHeader>
@@ -156,13 +154,11 @@ const Clients = () => {
 				</DialogContent>
 			</Dialog>
 
-			{/* ADD CLIENT MODAL */}
 			<AddClientModal
 				open={openAdd}
 				onClose={() => setOpenAdd(false)}
 			/>
 
-			{/* EDIT CLIENT MODAL */}
 			<EditClientModal
 				open={!!editData}
 				client={editData}

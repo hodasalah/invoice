@@ -23,7 +23,6 @@ const EditInvoice = () => {
   const [invoice, setInvoice] = useState<InvoiceData | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // Check authorization
   useEffect(() => {
     if (currentUser?.role === 'client') {
       toast.error('❌ You are not authorized to edit invoices.');
@@ -31,7 +30,6 @@ const EditInvoice = () => {
     }
   }, [currentUser, navigate]);
 
-  // Fetch invoice data
   useEffect(() => {
     const fetchInvoice = async () => {
       if (!id) return;
@@ -48,7 +46,6 @@ const EditInvoice = () => {
     fetchInvoice();
   }, [id]);
 
-  // Fetch clients for the form dropdown
   useEffect(() => {
     if (currentUser?.uid) {
       dispatch(fetchClientsByUser(currentUser.uid) as any);
@@ -82,7 +79,6 @@ const EditInvoice = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col p-4 md:p-8">
-      {/* Toolbar */}
       <div className="max-w-4xl w-full mx-auto flex flex-col sm:flex-row items-center gap-4 mb-6">
         <button
           onClick={handleClose}

@@ -1,4 +1,3 @@
-// pages/DashboardPage.tsx
 import { Header } from '@/components/dashboard/header';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { MobileSidebar } from '@/components/dashboard/sidebar/MobileSidebar';
@@ -33,17 +32,14 @@ export default function DashboardPage() {
 
   return (
     <div className='flex h-screen '>
-      {/* Desktop Sidebar */}
       <TooltipProvider>
         <Sidebar collapsed={collapsed} />
 
-        {/* Mobile Sidebar */}
         <MobileSidebar
           open={mobileOpen}
           onClose={() => setMobileOpen(false)}
         />
 
-        {/* المحتوى الرئيسي + الهيدر */}
         <div className='flex-1 flex flex-col overflow-auto bg-gray-50 dark:bg-gray-950 transition-colors duration-300'>
           <Header
             collapsed={collapsed}

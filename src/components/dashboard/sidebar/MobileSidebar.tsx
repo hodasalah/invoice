@@ -1,4 +1,3 @@
-// components/sidebar/mobile-sidebar.tsx
 import { PrimaryBtn } from '@/components/shared/button';
 import { SidebarItem } from './SidebarItem';
 import { sidebarLinks } from '@/constants/sidebar-links';

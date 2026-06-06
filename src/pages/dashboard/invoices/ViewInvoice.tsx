@@ -62,7 +62,6 @@ const ViewInvoice = () => {
 
 	return (
 		<div className="min-h-screen bg-gray-50 flex flex-col p-4 md:p-8">
-			{/* Action Bar */}
 			<div className="max-w-4xl w-full mx-auto flex flex-col sm:flex-row justify-between items-center mb-8 gap-4">
 				<button 
 					onClick={() => navigate('/dashboard/invoices/list')}
@@ -95,7 +94,6 @@ const ViewInvoice = () => {
 				</PDFDownloadLink>
 			</div>
 
-			{/* Invoice Preview Container */}
 			<div className="max-w-4xl w-full mx-auto bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden mb-12">
 				<div className="p-8 md:p-16">
 					<InvoiceMorganMaxwellLayout invoice={invoice} userProfile={userProfile} />

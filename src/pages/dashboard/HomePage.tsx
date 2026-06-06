@@ -37,7 +37,6 @@ export default function HomePage() {
 	const hasClients = stats.clients > 0;
 	const hasInvoices = stats.invoices > 0;
 
-	// Show onboarding until BOTH a client AND an invoice have been created
 	const isNewUser = !loading && !(hasClients && hasInvoices);
 
 	if (loading) {
@@ -131,4 +130,4 @@ export default function HomePage() {
 			</div>
 		</div>
 	);
-}
+}

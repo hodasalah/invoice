@@ -53,7 +53,6 @@ const onSubmit = async (data: LoginFormInputs) => {
     dispatch(loginUser({ email: data.email, password: data.password }));
 		toast.success(t('login_success'));
 
-		// Cast userData to a type that may include an optional role, or use a safe assertion
 		const role = (userData as { role?: string } & Record<string, any>)?.role;
 		if (role === 'admin') {
 			navigate('/dashboard');
@@ -71,10 +70,8 @@ const onSubmit = async (data: LoginFormInputs) => {
 
 	return (
 		<div className='bg-[url("/assets/login-bg.jpg")] bg-center bg-cover h-screen md:p-[100px] p-[50px]'>
-			{/* login-wrapper */}
 			{loading && (<h1>loading...</h1>)}
 			<div className='flex flex-col md:flex-row bg-white  overflow-hidden max-w-6xl  mx-auto'>
-				{/* Left side */}
 				<div className='hidden md:block  p-[50px] l-bg-gradient bg-bottom max-w-[60%] flex-grow-0 flex-shrink-0 basis-[60%] '>
 					<WhiteLogo />
 					<h2 className='text-5xl font-bold my-10 text-[#1b2b00]'>
@@ -96,7 +93,6 @@ const onSubmit = async (data: LoginFormInputs) => {
 					</ul>
 				</div>
 
-				{/* Right side */}
 				<div className='p-12 w-full h-full flex flex-col justify-center items-center '>
 					<div className='flex flex-col h-full'>
 						<div className='mb-6'>
