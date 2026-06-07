@@ -12,7 +12,7 @@ const themeSlice = createSlice({
 	name: 'theme',
 	initialState,
 	reducers: {
-		setTheme: (state, action: PayloadAction<ThemeState>) => {
+		setTheme: (_state, action: PayloadAction<ThemeState>) => {
 			const newTheme = action.payload;
 			localStorage.setItem('theme', newTheme);
 			const html = document.documentElement;

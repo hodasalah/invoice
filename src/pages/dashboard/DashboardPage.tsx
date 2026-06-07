@@ -2,8 +2,6 @@ import { Header } from '@/components/dashboard/header';
 import { Sidebar } from '@/components/dashboard/sidebar';
 import { MobileSidebar } from '@/components/dashboard/sidebar/MobileSidebar';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { useDashboardData } from '@/hooks/useDashboardData';
-import { useAppSelector } from '@/store/hooks';
 import { useEffect, useState } from 'react';
 import { Outlet } from 'react-router';
 import Footer from '@/components/dashboard/footer';
@@ -15,17 +13,7 @@ export default function DashboardPage() {
   });
 
   const [mobileOpen, setMobileOpen] = useState(false);
-  const currentUser = useAppSelector(
-    state => state.user.currentUser
-  );
 
-  const {
-    loading,
-    stats,
-    invoiceStatus
-  } = useDashboardData(
-    currentUser?.uid
-  );
   useEffect(() => {
     localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
   }, [collapsed]);

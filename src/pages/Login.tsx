@@ -7,7 +7,6 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks';
 import { loginSchema } from '@/validations/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { TagsIcon } from 'lucide-react';
-import { use } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
@@ -21,7 +20,7 @@ type LoginFormInputs = {
 const Login = () => {
 	const { t } = useTranslation('auth');
 	const dispatch = useAppDispatch();
-	const { currentUser, loading, error } = useAppSelector(
+	const { loading } = useAppSelector(
 		(state) => state.user,
 	);
 

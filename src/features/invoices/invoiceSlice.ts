@@ -10,12 +10,13 @@ export interface Invoice {
 	userId: string;
 	invoiceNumber: string;
 	clientId: string;
+	clientName?: string;
 	date: string;
 	total: number;
 	currency: string;
-	customer: string;
-	amount: number;
-	status: 'paid' | 'unpaid';
+	customer?: string;
+	amount?: number;
+	status: 'paid' | 'unpaid' | 'overdue';
 }
 
 interface InvoicesState {

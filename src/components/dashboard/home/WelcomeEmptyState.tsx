@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, type Variants } from 'framer-motion';
 import {
 	FileText,
 	Users,
@@ -15,14 +15,14 @@ import { useNavigate } from 'react-router';
 import { useAppSelector } from '@/store/hooks';
 
 /* ─── Animation variants ─────────────────────────────────────── */
-const containerVariants = {
+const containerVariants: Variants = {
 	hidden: { opacity: 0 },
 	visible: {
 		opacity: 1,
 		transition: { staggerChildren: 0.13, delayChildren: 0.05 },
 	},
 };
-const itemVariants = {
+const itemVariants: Variants = {
 	hidden: { opacity: 0, y: 20 },
 	visible: {
 		opacity: 1,

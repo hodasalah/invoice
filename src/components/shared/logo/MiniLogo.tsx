@@ -1,7 +1,7 @@
 import { useTranslation } from 'react-i18next';
 
 const MiniLogo = () => {
-  const { i18n, t } = useTranslation();
+  const { i18n } = useTranslation();
   const isArabic = i18n.language === 'ar';
 
 
