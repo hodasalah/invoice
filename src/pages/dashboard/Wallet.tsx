@@ -1,6 +1,6 @@
 import { db } from '@/firebaseConfigs/firebase';
 import { useAppSelector } from '@/store/hooks';
-import { collection, doc, getDoc, getDocs, setDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, query, where } from 'firebase/firestore';
 import {
 	ArrowDownToLine,
 	ArrowUpFromLine,
@@ -13,18 +13,16 @@ import {
 	TrendingDown,
 	TrendingUp,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ElementType } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const MoneyFlowChart = () => {
-	const income = [ 4200, 5800, 5100, 7300, 6200, 8900, 7800, 10200, 9100, 11500, 10800, 13200 ];
-	const expense = [ 3100, 4200, 3800, 5200, 4600, 6100, 5400, 7200, 6500, 8100, 7600, 9400 ];
+const MoneyFlowChart = ({ income, expense }: { income: number[]; expense: number[] }) => {
 	const w = 400, h = 120;
-	const max = Math.max(...income, ...expense);
+	const max = Math.max(...income, ...expense, 1);
 	const toPath = (arr: number[]) =>
 		arr
 			.map((v, i) => {
-				const x = (i / (arr.length - 1)) * w;
+				const x = arr.length === 1 ? w : (i / (arr.length - 1)) * w;
 				const y = h - (v / max) * h;
 				return `${i === 0 ? 'M' : 'L'}${x},${y}`;
 			})
@@ -42,7 +40,7 @@ const VisaCard = ({ theme, balance, number, expiry }: { theme: string; balance: 
 	const isDark = theme === 'dark_blue';
 	return (
 		<div
-			className='relative w-full overflow-hidden select-none cursor-default transition-transform hover:-translate-y-1 rounded-2xl'
+			className='relative w-full max-w-[320px] overflow-hidden select-none cursor-default transition-transform hover:-translate-y-1 rounded-2xl'
 			style={{
 				aspectRatio: '1.8',
 				background: isDark
@@ -120,7 +118,7 @@ const SavingsGoal = ({ icon, label, amount, pct }: { icon: string; label: string
 	</div>
 );
 
-const QuickLink = ({ icon: Icon, label }: { icon: React.ElementType; label: string }) => (
+const QuickLink = ({ icon: Icon, label }: { icon: ElementType; label: string }) => (
 	<button className='flex flex-col items-center gap-2 group'>
 		<div className='w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all group-hover:scale-110 group-hover:shadow-md'
 			style={{ borderColor: '#44814E', color: '#44814E' }}>
@@ -168,6 +166,20 @@ interface WalletData {
 	}>;
 }
 
+interface InvoiceRecord {
+	id: string;
+	date?: string;
+	total?: number;
+	status?: 'paid' | 'unpaid' | 'overdue';
+	currency?: string;
+}
+
+interface PaymentRecord {
+	id: string;
+	amount?: number;
+	date?: string;
+}
+
 const formatCurrency = (val: number, currencyCode = 'USD') => {
 	return new Intl.NumberFormat('en-US', {
 		style: 'currency',
@@ -183,12 +195,13 @@ const getCurrencyMeta = (fullCode: string) => {
 	if (code === 'USD') flag = '🇺🇸';
 	else if (code === 'EUR') flag = '🇪🇺';
 	else if (code === 'GBP') flag = '🇬🇧';
+	else if (code === 'SAR') flag = '🇸🇦';
 	return { flag, code };
 };
 
 const getTargetTranslation = (title: string, isAr: boolean) => {
-	if (title === 'Married') return isAr ? 'متزوج' : 'Married';
-	if (title === 'Home') return isAr ? 'المنزل' : 'Home';
+	if (title.toLowerCase().includes('married')) return isAr ? 'صندوق الزواج' : title;
+	if (title.toLowerCase().includes('home') || title.toLowerCase().includes('hq')) return isAr ? 'صندوق المقر' : title;
 	return title;
 };
 
@@ -196,6 +209,70 @@ const getTargetIcon = (targetId: string) => {
 	if (targetId === 'target_married') return '💍';
 	if (targetId === 'target_home') return '🏠';
 	return '💰';
+};
+
+const toNumber = (value?: number) => Number(value || 0);
+
+const getInvoiceDate = (invoice: InvoiceRecord) => {
+	const parsed = invoice.date ? new Date(invoice.date) : null;
+	return parsed && !Number.isNaN(parsed.getTime()) ? parsed : null;
+};
+
+const isSameMonth = (date: Date, baseDate: Date) =>
+	date.getFullYear() === baseDate.getFullYear() && date.getMonth() === baseDate.getMonth();
+
+const sumPayments = (payments: PaymentRecord[]) =>
+	payments.reduce((sum, payment) => sum + toNumber(payment.amount), 0);
+
+const sumInvoicesByStatus = (invoices: InvoiceRecord[], statuses: Array<InvoiceRecord['status']>) =>
+	invoices
+		.filter((invoice) => statuses.includes(invoice.status))
+		.reduce((sum, invoice) => sum + toNumber(invoice.total), 0);
+
+const getMonthlySeries = (invoices: InvoiceRecord[], activeTab: 'month' | 'year') => {
+	const periods = activeTab === 'year' ? 12 : 6;
+	const now = new Date();
+	const income = Array(periods).fill(0);
+	const expense = Array(periods).fill(0);
+
+	invoices.forEach((invoice) => {
+		const date = getInvoiceDate(invoice);
+		if (!date) return;
+
+		const index = activeTab === 'year'
+			? date.getMonth()
+			: Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24 * 7));
+
+		if (index < 0 || index >= periods) return;
+		const targetIndex = activeTab === 'year' ? index : periods - 1 - index;
+		const total = toNumber(invoice.total);
+
+		if (invoice.status === 'paid') {
+			income[targetIndex] += total;
+		} else if (invoice.status === 'unpaid' || invoice.status === 'overdue') {
+			expense[targetIndex] += total;
+		}
+	});
+
+	return { income, expense };
+};
+
+const buildCurrencyBalances = (baseCurrencies: WalletData['currencies'] = [], totalBalance: number) => {
+	if (baseCurrencies.length) {
+		return baseCurrencies.map((currency) => {
+			const { code } = getCurrencyMeta(currency.code);
+			if (code === 'USD') return { ...currency, value: totalBalance };
+			if (code === 'EUR') return { ...currency, value: Math.round(totalBalance * 0.92) };
+			if (code === 'SAR') return { ...currency, value: Math.round(totalBalance * 3.75) };
+			return currency;
+		});
+	}
+
+	return [
+		{ code: 'USD', value: totalBalance },
+		{ code: 'EUR', value: Math.round(totalBalance * 0.92) },
+		{ code: 'SAR', value: Math.round(totalBalance * 3.75) },
+	];
 };
 
 const WalletPage = () => {
@@ -207,99 +284,95 @@ const WalletPage = () => {
 	const [ loading, setLoading ] = useState(true);
 	const [ wallet, setWallet ] = useState<WalletData | null>(null);
 	const [ cards, setCards ] = useState<Card[]>([]);
+	const [ invoices, setInvoices ] = useState<InvoiceRecord[]>([]);
+	const [ payments, setPayments ] = useState<PaymentRecord[]>([]);
 
 	useEffect(() => {
-		if (!currentUser?.uid) return;
+		if (!currentUser?.uid) {
+			setLoading(false);
+			return;
+		}
 
-		const fetchWalletData = async () => {
-			try {
-				setLoading(true);
-				const walletDocRef = doc(db, 'wallets', currentUser.uid);
-				const walletSnap = await getDoc(walletDocRef);
+		setLoading(true);
 
-				let walletData: WalletData;
-				let cardsData: Card[] = [];
-
-				if (!walletSnap.exists()) {
-					walletData = {
-						total_balance: 88232.00,
-						currency: 'USD',
-						last_updated: '11 April 2025',
-						monthly_income: {
-							amount: 18500.99,
-							change_percentage: 2.5
-						},
-						monthly_expense: {
-							amount: 11200.56,
-							change_percentage: -8.0
-						},
-						monthly_savings: {
-							amount: 6765.12,
-							change_percentage: 8.5
-						},
-						total_savings: 58145.07,
-						targets: [
-							{
-								target_id: 'target_married',
-								title: 'Married',
-								current_amount: 6560.11,
-								achieved_percentage: 11
-							},
-							{
-								target_id: 'target_home',
-								title: 'Home',
-								current_amount: 33159.15,
-								achieved_percentage: 25
-							}
-						],
-						currencies: [
-							{ code: 'US USD', value: 56476.00 },
-							{ code: 'EU EUR', value: 49973.67 },
-							{ code: 'GB GBP', value: 45098.56 }
-						]
-					};
-
-					cardsData = [
-						{
-							card_id: 'card_01',
-							type: 'VISA',
-							card_number: '5294 2436 4780 9568',
-							balance: 14200.00,
-							expiry_date: '12/26',
-							theme: 'green'
-						},
-						{
-							card_id: 'card_02',
-							type: 'VISA',
-							card_number: '6391 1827 3340 7712',
-							balance: 8750.00,
-							expiry_date: '09/27',
-							theme: 'dark_blue'
-						}
-					];
-
-					await setDoc(walletDocRef, walletData);
-					for (const card of cardsData) {
-						await setDoc(doc(db, 'wallets', currentUser.uid, 'cards', card.card_id), card);
-					}
-				} else {
-					walletData = walletSnap.data() as WalletData;
-
-					const cardsColRef = collection(db, 'wallets', currentUser.uid, 'cards');
-					const cardsSnap = await getDocs(cardsColRef);
-					cardsData = cardsSnap.docs.map(doc => doc.data() as Card);
-				}
-
-				setWallet(walletData);
-				setCards(cardsData);
-			} catch (error) {
-				console.error('Error loading wallet data from Firestore:', error);
-			} finally {
+		let walletReady = false;
+		let cardsReady = false;
+		let invoicesReady = false;
+		let paymentsReady = false;
+		const finishWhenReady = () => {
+			if (walletReady && cardsReady && invoicesReady && paymentsReady) {
 				setLoading(false);
 			}
 		};
 
-		fetchWalletData();
+		const unsubscribeWallet = onSnapshot(
+			doc(db, 'wallets', currentUser.uid),
+			(snapshot) => {
+				setWallet(snapshot.exists() ? snapshot.data() as WalletData : null);
+				walletReady = true;
+				finishWhenReady();
+			},
+			(error) => {
+				console.error('Error loading wallet:', error);
+				walletReady = true;
+				finishWhenReady();
+			}
+		);
+
+		const unsubscribeCards = onSnapshot(
+			collection(db, 'wallets', currentUser.uid, 'cards'),
+			(snapshot) => {
+				setCards(snapshot.docs.map((cardDoc) => cardDoc.data() as Card));
+				cardsReady = true;
+				finishWhenReady();
+			},
+			(error) => {
+				console.error('Error loading cards:', error);
+				cardsReady = true;
+				finishWhenReady();
+			}
+		);
+
+		const unsubscribeInvoices = onSnapshot(
+			query(collection(db, 'invoices'), where('userId', '==', currentUser.uid)),
+			(snapshot) => {
+				setInvoices(snapshot.docs.map((invoiceDoc) => ({
+					id: invoiceDoc.id,
+					...invoiceDoc.data(),
+				}) as InvoiceRecord));
+				invoicesReady = true;
+				finishWhenReady();
+			},
+			(error) => {
+				console.error('Error loading wallet invoices:', error);
+				invoicesReady = true;
+				finishWhenReady();
+			}
+		);
+
+		const unsubscribePayments = onSnapshot(
+			query(collection(db, 'payments'), where('userId', '==', currentUser.uid)),
+			(snapshot) => {
+				setPayments(snapshot.docs.map((paymentDoc) => ({
+					id: paymentDoc.id,
+					...paymentDoc.data(),
+				}) as PaymentRecord));
+				paymentsReady = true;
+				finishWhenReady();
+			},
+			(error) => {
+				console.error('Error loading wallet payments:', error);
+				paymentsReady = true;
+				finishWhenReady();
+			}
+		);
+
+		return () => {
+			unsubscribeWallet();
+			unsubscribeCards();
+			unsubscribeInvoices();
+			unsubscribePayments();
+		};
 	}, [ currentUser?.uid ]);
 
 	if (!currentUser) {
@@ -314,7 +387,7 @@ const WalletPage = () => {
 		);
 	}
 
-	if (loading || !wallet) {
+	if (loading) {
 		return (
 			<div className='flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-950' dir={isAr ? 'rtl' : 'ltr'}>
 				<div className='flex flex-col items-center gap-4'>
@@ -326,6 +399,26 @@ const WalletPage = () => {
 			</div>
 		);
 	}
+
+	const currency = wallet?.currency || invoices[0]?.currency || 'USD';
+	const now = new Date();
+	const monthlyInvoices = invoices.filter((invoice) => {
+		const date = getInvoiceDate(invoice);
+		return date ? isSameMonth(date, now) : false;
+	});
+	const totalBalance = payments.length ? sumPayments(payments) : sumInvoicesByStatus(invoices, [ 'paid' ]);
+	const monthlyIncome = sumInvoicesByStatus(monthlyInvoices, [ 'paid' ]);
+	const monthlyExpense = sumInvoicesByStatus(monthlyInvoices, [ 'unpaid', 'overdue' ]);
+	const monthlySavings = Math.max(monthlyIncome - monthlyExpense, 0);
+	const totalSavings = wallet?.total_savings ?? Math.max(Math.round(totalBalance * 1.2), 0);
+	const currencies = buildCurrencyBalances(wallet?.currencies, totalBalance);
+	const moneyFlow = getMonthlySeries(invoices, activeTab);
+	const lastUpdated = wallet?.last_updated || new Intl.DateTimeFormat('en-US', {
+		day: 'numeric',
+		month: 'long',
+		year: 'numeric',
+	}).format(new Date());
+	const balanceChange = wallet?.monthly_income?.change_percentage ?? 0;
 
 	return (
 		<div className='p-6 min-h-screen bg-gray-50 dark:bg-gray-950' dir={isAr ? 'rtl' : 'ltr'}>
@@ -348,14 +441,14 @@ const WalletPage = () => {
 						<p className='text-sm text-gray-500 font-medium mb-1'>{isAr ? 'الرصيد الإجمالي' : 'Total Balance'}</p>
 						<div className='flex items-baseline gap-2 mb-1'>
 							<span className='text-4xl font-extrabold text-gray-900 dark:text-white'>
-								{formatCurrency(wallet.total_balance, wallet.currency)}
+								{formatCurrency(totalBalance, currency)}
 							</span>
-							<span className='text-xs text-gray-400 font-semibold'>{wallet.currency}</span>
+							<span className='text-xs text-gray-400 font-semibold'>{currency}</span>
 						</div>
 						<div className='flex items-center gap-2 mb-4'>
-							<span className='text-xs text-gray-400'>{wallet.last_updated}</span>
+							<span className='text-xs text-gray-400'>{lastUpdated}</span>
 							<span className='flex items-center gap-0.5 text-xs font-semibold text-green-600'>
-								<TrendingUp className='w-3 h-3' /> 2.05%
+								<TrendingUp className='w-3 h-3' /> {balanceChange}%
 							</span>
 						</div>
 						<button
@@ -371,12 +464,12 @@ const WalletPage = () => {
 							<h2 className='text-sm font-bold text-gray-800 dark:text-gray-100'>{isAr ? 'بطاقاتي' : 'My Cards'}</h2>
 							<span className='text-xs text-gray-400'>{cards.length} {isAr ? 'بطاقات' : 'cards'}</span>
 						</div>
-						<div className='flex flex-col gap-3'>
+						<div className='flex flex-col items-center gap-3'>
 							{cards.map((card) => (
 								<VisaCard
 									key={card.card_id}
 									theme={card.theme}
-									balance={formatCurrency(card.balance, 'USD')}
+									balance={formatCurrency(card.balance, currency)}
 									number={card.card_number}
 									expiry={card.expiry_date}
 								/>
@@ -407,21 +500,21 @@ const WalletPage = () => {
 					<div className='grid grid-cols-3 gap-4'>
 						<StatCard
 							label={isAr ? 'الدخل الشهري' : 'Monthly Income'}
-							value={formatCurrency(wallet.monthly_income.amount, wallet.currency)}
-							change={`${wallet.monthly_income.change_percentage}%`}
-							positive={wallet.monthly_income.change_percentage >= 0}
+							value={formatCurrency(monthlyIncome, currency)}
+							change={`${wallet?.monthly_income?.change_percentage ?? 0}%`}
+							positive={(wallet?.monthly_income?.change_percentage ?? 0) >= 0}
 						/>
 						<StatCard
 							label={isAr ? 'المصروف الشهري' : 'Monthly Expense'}
-							value={formatCurrency(wallet.monthly_expense.amount, wallet.currency)}
-							change={`${Math.abs(wallet.monthly_expense.change_percentage)}%`}
-							positive={wallet.monthly_expense.change_percentage >= 0}
+							value={formatCurrency(monthlyExpense, currency)}
+							change={`${Math.abs(wallet?.monthly_expense?.change_percentage ?? 0)}%`}
+							positive={(wallet?.monthly_expense?.change_percentage ?? 0) >= 0}
 						/>
 						<StatCard
 							label={isAr ? 'المدخرات الشهرية' : 'Monthly Savings'}
-							value={formatCurrency(wallet.monthly_savings.amount, wallet.currency)}
-							change={`${wallet.monthly_savings.change_percentage}%`}
-							positive={wallet.monthly_savings.change_percentage >= 0}
+							value={formatCurrency(monthlySavings, currency)}
+							change={`${wallet?.monthly_savings?.change_percentage ?? 0}%`}
+							positive={(wallet?.monthly_savings?.change_percentage ?? 0) >= 0}
 						/>
 					</div>
 
@@ -433,7 +526,7 @@ const WalletPage = () => {
 									<p className='text-xs text-gray-500 font-medium'>{isAr ? 'المدخرات' : 'Savings'}</p>
 									<div className='flex items-baseline gap-2'>
 										<span className='text-xl font-bold text-gray-900 dark:text-white'>
-											{formatCurrency(wallet.total_savings, wallet.currency)}
+											{formatCurrency(totalSavings, currency)}
 										</span>
 										<span className='text-xs font-semibold text-green-600'>+2.5%</span>
 									</div>
@@ -442,12 +535,12 @@ const WalletPage = () => {
 									<Plus className='w-4 h-4 text-gray-500' />
 								</button>
 							</div>
-							{wallet.targets?.map((target) => (
+							{wallet?.targets?.map((target) => (
 								<SavingsGoal
 									key={target.target_id}
 									icon={getTargetIcon(target.target_id)}
 									label={getTargetTranslation(target.title, isAr)}
-									amount={formatCurrency(target.current_amount, wallet.currency)}
+									amount={formatCurrency(target.current_amount, currency)}
 									pct={target.achieved_percentage}
 								/>
 							))}
@@ -475,13 +568,13 @@ const WalletPage = () => {
 										</div>
 									</div>
 								</div>
-								<MoneyFlowChart />
+								<MoneyFlowChart income={moneyFlow.income} expense={moneyFlow.expense} />
 							</div>
 
 							<div className='bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm'>
 								<h2 className='text-sm font-bold text-gray-800 dark:text-gray-100 mb-3'>{isAr ? 'العملات' : 'Currency'}</h2>
 								<div className='flex flex-col gap-3'>
-									{wallet.currencies?.map(c => {
+									{currencies.map(c => {
 										const { flag, code } = getCurrencyMeta(c.code);
 										const isPositive = code !== 'EUR';
 										return (

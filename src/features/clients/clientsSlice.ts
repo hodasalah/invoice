@@ -1,4 +1,3 @@
-// src/features/clients/clientsSlice.ts
 
 import {
 	addData,

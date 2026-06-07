@@ -175,7 +175,10 @@ export function Header({
 				</div>
 			</div>
 			<div className='px-4 py-2.5 text-center border-t border-gray-100 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-900/30 rounded-b-2xl'>
-				<button className='text-xs text-primary hover:underline font-semibold w-full'>
+				<button
+					className='text-xs text-primary hover:underline font-semibold w-full'
+					onClick={() => navigate('/dashboard/messages')}
+				>
 					{isArabic ? 'عرض جميع الرسائل' : 'View all messages'}
 				</button>
 			</div>

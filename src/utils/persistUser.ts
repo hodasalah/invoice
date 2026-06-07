@@ -1,5 +1,3 @@
-// حفظ واسترجاع وحذف المستخدم من localStorage
-
 export const saveUserToLocalStorage = (user: any) => {
 	try {
 		localStorage.setItem('currentUser', JSON.stringify(user));

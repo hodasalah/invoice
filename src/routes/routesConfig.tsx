@@ -23,6 +23,7 @@ const NotFound = lazy(() => import('../pages/NotFound'));
 const Seed = lazy(() => import('../pages/Seed'));
 const Wallet = lazy(() => import('../pages/dashboard/Wallet'));
 const Payments = lazy(() => import('../pages/dashboard/Payments'));
+const MessagesPage = lazy(() => import('../pages/dashboard/MessagesPage'));
 const ProfilePage = lazy(() => import('../pages/dashboard/ProfilePage'));
 const NotificationPage = lazy(() => import('../pages/dashboard/NotificationPage'));
 
@@ -92,6 +93,12 @@ export const appRoutes: Route[] = [
 				path: 'notifications',
 				element: <NotificationPage />,
 				title: 'Notifications',
+				protected: true,
+			},
+			{
+				path: 'messages',
+				element: <MessagesPage />,
+				title: 'Messages',
 				protected: true,
 			},
 			{
