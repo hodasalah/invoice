@@ -71,13 +71,13 @@ const Login = () => {
 	return (
 		<div className='bg-[url("/assets/login-bg.jpg")] bg-center bg-cover h-screen md:p-[100px] p-[50px]'>
 			{loading && <h1>loading...</h1>}
-			<div className='flex flex-col md:flex-row bg-white  overflow-hidden max-w-6xl  mx-auto'>
+			<div className='flex flex-col md:flex-row dark:bg-gray-800 bg-white  overflow-hidden max-w-6xl  mx-auto'>
 				<div className='hidden md:block  p-[50px] l-bg-gradient bg-bottom max-w-[60%] flex-grow-0 flex-shrink-0 basis-[60%] '>
 					<WhiteLogo />
 					<h2 className='text-5xl font-bold my-10 text-[#1b2b00]'>
 						{t('tagline')}
 					</h2>
-					<p className='text-md text-[#1b2b00] mb-4 max-w-md'>
+					<p className='text-md   text-[#1b2b00]  mb-4 max-w-md'>
 						{t('description')}
 					</p>
 					<ul className='list pl-5 text-xl text-[#1b2b00] space-y-1 p-8 flex flex-wrap font-bold'>
@@ -99,7 +99,7 @@ const Login = () => {
 							<h2 className='text-3xl font-semibold mb-3 text-gray-800 dark:text-white'>
 								{t('login_title')}
 							</h2>
-							<p className='text-gray-600 text-sm'>
+							<p className='dark:text-gray-200 text-gray-600 text-sm'>
 								{t('login_description')}
 							</p>
 						</div>
