@@ -1,16 +1,16 @@
+import { Button } from '@/components/ui/button';
 import {
 	Dialog,
 	DialogContent,
-	DialogHeader,
-	DialogTitle,
 	DialogDescription,
 	DialogFooter,
+	DialogHeader,
+	DialogTitle,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useEffect, useState } from 'react';
-import { useAppDispatch } from '@/store/hooks';
 import { updateClient } from '@/features/clients/clientsSlice';
+import { useAppDispatch } from '@/store/hooks';
+import { useEffect, useState } from 'react';
 
 interface EditClientModalProps {
 	open: boolean;
@@ -26,13 +26,20 @@ export default function EditClientModal({
 	onUpdate,
 }: EditClientModalProps) {
 	const [formData, setFormData] = useState<any>({});
-const dispatch=useAppDispatch()
+	const dispatch = useAppDispatch();
 	useEffect(() => {
 		if (client) setFormData(client);
 	}, [client]);
 
 	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-		if(e.target.name==='country' || e.target.name==='city' || e.target.name==='street' || e.target.name==='zip' || e.target.name==='state' || e.target.name==='building'){
+		if (
+			e.target.name === 'country' ||
+			e.target.name === 'city' ||
+			e.target.name === 'street' ||
+			e.target.name === 'zip' ||
+			e.target.name === 'state' ||
+			e.target.name === 'building'
+		) {
 			setFormData({
 				...formData,
 				address: {
@@ -40,13 +47,13 @@ const dispatch=useAppDispatch()
 					[e.target.name]: e.target.value,
 				},
 			});
-		}else{
+		} else {
 			setFormData({ ...formData, [e.target.name]: e.target.value });
 		}
 	};
 
 	const handleSave = () => {
-		dispatch(updateClient({id:client.id,data:formData}));
+		dispatch(updateClient({ id: client.id, data: formData }));
 		onUpdate(formData);
 		console.log('Updated client data:', formData);
 		onClose();
@@ -59,7 +66,7 @@ const dispatch=useAppDispatch()
 		>
 			<DialogContent
 				aria-describedby={undefined}
-				className='sm:max-w-[480px] bg-white backdrop-blur-xl border border-border shadow-xl'
+				className='sm:max-w-[480px] dark:bg-gray-800 bg-white backdrop-blur-xl border border-border shadow-xl'
 			>
 				<DialogHeader>
 					<DialogTitle>Edit Client</DialogTitle>
@@ -139,4 +146,3 @@ const dispatch=useAppDispatch()
 		</Dialog>
 	);
 }
-
