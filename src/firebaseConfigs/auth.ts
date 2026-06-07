@@ -40,7 +40,6 @@ export const login = async (email: string, password: string) => {
 	return { ...user, ...userData };
 };
 
-
 // تسجيل خروج
 export const logout = async () => {
 	await signOut(auth);
