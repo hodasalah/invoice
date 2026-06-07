@@ -20,9 +20,7 @@ type LoginFormInputs = {
 const Login = () => {
 	const { t } = useTranslation('auth');
 	const dispatch = useAppDispatch();
-	const { loading } = useAppSelector(
-		(state) => state.user,
-	);
+	const { loading } = useAppSelector((state) => state.user);
 
 	const list = [
 		t('module_sales'),
@@ -46,30 +44,33 @@ const Login = () => {
 		mode: 'onTouched',
 	});
 
-const onSubmit = async (data: LoginFormInputs) => {
-	try {
-		const userData = await login(data.email, data.password);
-    dispatch(loginUser({ email: data.email, password: data.password }));
-		toast.success(t('login_success'));
+	const onSubmit = async (data: LoginFormInputs) => {
+		try {
+			const userData = await login(data.email, data.password);
+			dispatch(loginUser({ email: data.email, password: data.password }));
+			toast.success(t('login_success'));
 
-		const role = (userData as { role?: string } & Record<string, any>)?.role;
-		if (role === 'admin') {
-			navigate('/dashboard');
-		} else {
-			navigate('/dashboard/user');
+			const role = (userData as { role?: string } & Record<string, any>)
+				?.role;
+			if (role === 'admin') {
+				navigate('/dashboard');
+			} else {
+				navigate('/dashboard');
+			}
+		} catch (error: unknown) {
+			const errorMessage =
+				typeof error === 'object' &&
+				error !== null &&
+				'message' in error
+					? (error as { message?: string }).message
+					: undefined;
+			toast.error(errorMessage || t('signup_error'));
 		}
-	} catch (error: unknown) {
-		const errorMessage =
-			typeof error === 'object' && error !== null && 'message' in error
-				? (error as { message?: string }).message
-				: undefined;
-		toast.error(errorMessage || t('signup_error'));
-	}
-};
+	};
 
 	return (
 		<div className='bg-[url("/assets/login-bg.jpg")] bg-center bg-cover h-screen md:p-[100px] p-[50px]'>
-			{loading && (<h1>loading...</h1>)}
+			{loading && <h1>loading...</h1>}
 			<div className='flex flex-col md:flex-row bg-white  overflow-hidden max-w-6xl  mx-auto'>
 				<div className='hidden md:block  p-[50px] l-bg-gradient bg-bottom max-w-[60%] flex-grow-0 flex-shrink-0 basis-[60%] '>
 					<WhiteLogo />
@@ -117,7 +118,7 @@ const onSubmit = async (data: LoginFormInputs) => {
 										required
 										className='py-4'
 									/>
-									<Label htmlFor='floating_email' >
+									<Label htmlFor='floating_email'>
 										{t('email')}
 									</Label>
 									{errors.email && (
