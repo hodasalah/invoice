@@ -1,9 +1,12 @@
 // Header.tsx
 import { PrimaryBtn } from '@/components/shared/button';
 import { SearchBar } from '@/components/shared/ٍSearchBar';
+import { db } from '@/firebaseConfigs/firebase';
 import { usePageTitle } from '@/hooks/usePageTitle';
+import { useAppSelector } from '@/store/hooks';
+import { collection, onSnapshot, query, where } from 'firebase/firestore';
 import { Bell, Inbox, Mail, Menu, Plus } from 'lucide-react';
-import { useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { HeaderIcon } from './HeaderIcon';
 import { SidebarButton } from './SidebarButton';
 import { useNavigate } from 'react-router';
@@ -11,10 +14,31 @@ import LanguageSwitcher from '@/components/shared/LanguageSwitcher';
 import ThemeToggle from '@/components/shared/ThemeToggle';
 import { useTranslation } from 'react-i18next';
 
+interface HeaderMessage {
+	id: string;
+	clientName: string;
+	body: string;
+	sender: 'user' | 'client';
+	createdAt: string;
+	isRead: boolean;
+}
+
 type HeaderProps = {
 	collapsed: boolean;
 	toggleCollapse: () => void;
 	onMobileMenuClick: () => void;
+};
+
+const getInitial = (name: string) => name.trim().charAt(0).toUpperCase() || 'C';
+
+const formatMessageTime = (date: string, isArabic: boolean) => {
+	const parsed = new Date(date);
+	if (Number.isNaN(parsed.getTime())) return '';
+
+	return parsed.toLocaleTimeString(isArabic ? 'ar-SA' : 'en-US', {
+		hour: '2-digit',
+		minute: '2-digit',
+	});
 };
 
 export function Header({
@@ -30,6 +54,48 @@ export function Header({
 	const navigate = useNavigate();
 	const { i18n, t } = useTranslation('common');
 	const isArabic = i18n.language === 'ar';
+	const currentUser = useAppSelector((state) => state.user.currentUser);
+	const [messages, setMessages] = useState<HeaderMessage[]>([]);
+
+	useEffect(() => {
+		if (!currentUser?.uid) {
+			setMessages([]);
+			return;
+		}
+
+		const messagesQuery = query(
+			collection(db, 'messages'),
+			where('userId', '==', currentUser.uid),
+		);
+
+		const unsubscribe = onSnapshot(
+			messagesQuery,
+			(snapshot) => {
+				const nextMessages = snapshot.docs
+					.map((messageDoc) => ({
+						id: messageDoc.id,
+						...messageDoc.data(),
+					}) as HeaderMessage)
+					.sort(
+						(a, b) =>
+							new Date(b.createdAt).getTime() -
+							new Date(a.createdAt).getTime(),
+					);
+
+				setMessages(nextMessages);
+			},
+			(error) => {
+				console.error('Error loading header messages:', error);
+			},
+		);
+
+		return () => unsubscribe();
+	}, [currentUser?.uid]);
+
+	const recentMessages = useMemo(() => messages.slice(0, 3), [messages]);
+	const unreadMessagesCount = messages.filter(
+		(message) => message.sender === 'client' && !message.isRead,
+	).length;
 
 	// Define Popover content for Notifications
 	const notificationsContent = (
@@ -137,42 +203,36 @@ export function Header({
 				tabIndex={0}
 				className='flex flex-col max-h-[300px] overflow-y-auto no-scrollbar divide-y divide-gray-100 dark:divide-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 rounded-xl'
 			>
-				<div className='flex gap-3 p-3.5 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition cursor-pointer text-start'>
-					<div className='w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0'>
-						{isArabic ? 'خ' : 'K'}
+				{recentMessages.length === 0 ? (
+					<div className='p-6 text-center text-xs text-gray-400 dark:text-slate-500'>
+						{isArabic ? 'لا توجد رسائل بعد' : 'No messages yet'}
 					</div>
-					<div className='flex-1 min-w-0'>
-						<div className='flex items-center justify-between'>
-							<span className='text-xs font-semibold text-gray-900 dark:text-white'>
-								{isArabic ? 'خالد السعد' : 'Khalid Al-Saad'}
-							</span>
-							<span className='text-[10px] text-gray-400 dark:text-slate-500'>
-								{isArabic ? 'منذ ساعة' : '1h ago'}
-							</span>
-						</div>
-						<p className='text-xs text-gray-500 dark:text-slate-400 truncate mt-1'>
-							{isArabic ? 'هل يمكن تعديل تاريخ الاستحقاق للفاتورة؟' : 'Can you edit the due date for the invoice?'}
-						</p>
-					</div>
-				</div>
-				<div className='flex gap-3 p-3.5 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition cursor-pointer text-start'>
-					<div className='w-9 h-9 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400 font-bold text-sm shrink-0'>
-						{isArabic ? 'س' : 'S'}
-					</div>
-					<div className='flex-1 min-w-0'>
-						<div className='flex items-center justify-between'>
-							<span className='text-xs font-semibold text-gray-900 dark:text-white'>
-								{isArabic ? 'سارة أحمد' : 'Sarah Ahmed'}
-							</span>
-							<span className='text-[10px] text-gray-400 dark:text-slate-500'>
-								{isArabic ? 'منذ 3 ساعات' : '3h ago'}
-							</span>
-						</div>
-						<p className='text-xs text-gray-500 dark:text-slate-400 truncate mt-1'>
-							{isArabic ? 'تم تحويل المبلغ، يرجى تأكيد الاستلام' : 'Amount transferred, please confirm receipt'}
-						</p>
-					</div>
-				</div>
+				) : (
+					recentMessages.map((message) => (
+						<button
+							key={message.id}
+							onClick={() => navigate('/dashboard/messages')}
+							className='flex gap-3 p-3.5 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition cursor-pointer text-start w-full'
+						>
+							<div className='w-9 h-9 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-sm shrink-0'>
+								{getInitial(message.clientName)}
+							</div>
+							<div className='flex-1 min-w-0'>
+								<div className='flex items-center justify-between gap-2'>
+									<span className='text-xs font-semibold text-gray-900 dark:text-white truncate'>
+										{message.clientName}
+									</span>
+									<span className='text-[10px] text-gray-400 dark:text-slate-500 shrink-0'>
+										{formatMessageTime(message.createdAt, isArabic)}
+									</span>
+								</div>
+								<p className='text-xs text-gray-500 dark:text-slate-400 truncate mt-1'>
+									{message.body}
+								</p>
+							</div>
+						</button>
+					))
+				)}
 			</div>
 			<div className='px-4 py-2.5 text-center border-t border-gray-100 dark:border-slate-800 bg-gray-50/30 dark:bg-slate-900/30 rounded-b-2xl'>
 				<button
@@ -301,7 +361,7 @@ export function Header({
 						icon={<Mail size={20} />}
 						gradientClass='bg-gradient2'
 						tooltip={isArabic ? 'الرسائل' : 'Messages'}
-						count={2}
+						count={unreadMessagesCount}
 						popoverContent={messagesContent}
 					/>
 					<HeaderIcon

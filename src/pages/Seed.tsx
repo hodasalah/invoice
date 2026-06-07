@@ -253,6 +253,39 @@ const SeedPage = () => {
 			for (const group of generatedInvoices) {
 				batch.set(group.clientRef, group.clientData);
 
+				const messageDate = faker.date.recent({ days: 10 });
+				const clientMessageRef = doc(collection(db, 'messages'));
+				batch.set(clientMessageRef, {
+					userId: adminUid,
+					clientId: group.clientRef.id,
+					clientName: group.clientData.name,
+					body: faker.helpers.arrayElement([
+						'Could you please confirm the invoice details before payment?',
+						'We reviewed the invoice and need a small update on the due date.',
+						'Payment is scheduled this week. Please keep us posted.',
+					]),
+					sender: 'client',
+					createdAt: messageDate.toISOString(),
+					isRead: faker.helpers.arrayElement([true, false]),
+				});
+
+				const userReplyDate = new Date(messageDate);
+				userReplyDate.setHours(userReplyDate.getHours() + faker.number.int({ min: 1, max: 12 }));
+				const userMessageRef = doc(collection(db, 'messages'));
+				batch.set(userMessageRef, {
+					userId: adminUid,
+					clientId: group.clientRef.id,
+					clientName: group.clientData.name,
+					body: faker.helpers.arrayElement([
+						'Thanks for the update. I will review it and send the final copy shortly.',
+						'I updated the invoice details and attached the latest version.',
+						'Confirmed. Let me know once the payment has been processed.',
+					]),
+					sender: 'user',
+					createdAt: userReplyDate.toISOString(),
+					isRead: true,
+				});
+
 				for (const inv of group.clientInvoices) {
 					batch.set(inv.invoiceRef, inv.invoiceData);
 
@@ -319,7 +352,7 @@ const SeedPage = () => {
 			// تنفيذ جميع العمليات معاً دفعة واحدة كطلب شبكة مفرد
 			await batch.commit();
 			alert(
-				'✅ تم توليد البيانات كاملة وإنشاء كوليكشن الإشعارات بنجاح مالي تام!',
+				'✅ تم توليد البيانات كاملة وإنشاء كوليكشن الإشعارات والرسائل بنجاح مالي تام!',
 			);
 		} catch (err) {
 			console.error('❌ Error creating seeded database structures:', err);
