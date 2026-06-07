@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
 import type { Variants } from 'framer-motion';
+import { motion } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router';
 import { PrimaryBtn, SecondaryBtn } from '../shared/button';
 
@@ -14,7 +14,11 @@ const containerVariants: Variants = {
 
 const itemVariants: Variants = {
 	hidden: { opacity: 0, y: 30 },
-	visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+	visible: {
+		opacity: 1,
+		y: 0,
+		transition: { duration: 0.5, ease: 'easeOut' },
+	},
 };
 
 const Pricing = () => {
@@ -49,10 +53,10 @@ const Pricing = () => {
 						{t('pricing.subtitle')}
 					</p>
 				</motion.div>
-				<motion.div 
+				<motion.div
 					variants={containerVariants}
-					initial="hidden"
-					whileInView="visible"
+					initial='hidden'
+					whileInView='visible'
 					viewport={{ once: true, margin: '-50px' }}
 					className='grid grid-cols-1 md:grid-cols-3 gap-8 items-center'
 				>
@@ -67,13 +71,15 @@ const Pricing = () => {
 							}`}
 						>
 							{idx === 1 && (
-								<div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-medium tracking-wide">
+								<div className='absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-primary text-white px-4 py-1 rounded-full text-sm font-medium tracking-wide'>
 									{t('pricing.recommended', 'Recommended')}
 								</div>
 							)}
 							<h3
 								className={`text-2xl font-bold mb-2 ${
-									idx === 1 ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-slate-200'
+									idx === 1
+										? 'text-gray-900 dark:text-white'
+										: 'text-gray-700 dark:text-slate-200'
 								}`}
 							>
 								{plan.name}
@@ -89,7 +95,9 @@ const Pricing = () => {
 							</p>
 							<div
 								className={`text-5xl font-extrabold mb-8 ${
-									idx === 1 ? 'text-gray-900 dark:text-white' : 'text-gray-800 dark:text-slate-100'
+									idx === 1
+										? 'text-gray-900 dark:text-white'
+										: 'text-gray-800 dark:text-slate-100'
 								}`}
 							>
 								${plan.price}
@@ -111,31 +119,42 @@ const Pricing = () => {
 								} ${isArabic ? 'text-right' : 'text-left'}`}
 							>
 								{plan.features.map((feature, i) => (
-									<li key={i} className="flex items-center gap-3">
-										<span className="text-primary text-lg">✅</span> 
+									<li
+										key={i}
+										className='flex items-center gap-3'
+									>
+										<span className='text-primary text-lg'>
+											✅
+										</span>
 										<span>{feature}</span>
 									</li>
 								))}
 							</ul>
-							<div className="mt-auto pt-4">
+							<div className='mt-auto pt-4'>
 								{plan.price !== '0' ? (
-									<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+									<motion.div
+										whileHover={{ scale: 1.05 }}
+										whileTap={{ scale: 0.95 }}
+									>
 										<PrimaryBtn
 											onClick={() => navigate('/signup')}
 											disabled={false}
 											type='button'
-											className="w-full py-3 shadow-md shadow-primary/20"
+											className='w-full py-3 shadow-md shadow-primary/20'
 										>
 											{plan.button}
 										</PrimaryBtn>
 									</motion.div>
 								) : (
-									<motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+									<motion.div
+										whileHover={{ scale: 1.05 }}
+										whileTap={{ scale: 0.95 }}
+									>
 										<SecondaryBtn
 											onClick={() => navigate('/signup')}
 											disabled={false}
 											type='button'
-											className="w-full py-3 bg-white dark:bg-slate-700 border-gray-300 dark:border-slate-600"
+											className='w-full py-3 bg-slate-700 border-gray-300 dark:border-slate-600'
 										>
 											{plan.button}
 										</SecondaryBtn>

@@ -49,7 +49,7 @@ export const SecondaryBtn = ({
 			disabled={disabled}
 			className={` ${
 				icon && 'gap-2 flex  items-center'
-			} text-white hover:bg-slate-600 transition text-[rgb(203,215,225))] bg-[rgb(51,65,85)] px-4 py-2 rounded-md border-[.5px] border-slate-300 ${
+			} text-white ate-600 transition text-[rgb(203,215,225))] bg-[rgb(51,65,85)] hover:bg-slate-700 px-4 py-2 rounded-md border-[.5px] border-slate-300 ${
 				className || ''
 			} ripple`}
 		>
